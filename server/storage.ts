@@ -41,12 +41,12 @@ export class MemStorage implements IStorage {
     const appsData: App[] = [
       {
         id: "1",
-        name: "AI Avatar Generator",
-        description: "Advanced AI system that creates realistic avatars from text descriptions using cutting-edge generative models.",
+        name: "AI Avatar",
+        description: "Interactive AI avatar for DeepFunding that answers questions, provides guidance, and explains initiatives related to the DeepFunding ecosystem using natural language understanding.",
         category: "AI Agent",
         status: "Live",
-        technologies: ["Python", "Stable Diffusion", "FastAPI"],
-        demoUrl: "#",
+        technologies: ["Python", "Firestore", "FastAPI"],
+        demoUrl: "https://ai-avatar-updated-137748040614.us-central1.run.app/",
       },
       {
         id: "2",
@@ -55,7 +55,7 @@ export class MemStorage implements IStorage {
         category: "AI Agent",
         status: "Beta",
         technologies: ["GPT-4", "React", "Node.js"],
-        demoUrl: "#",
+        demoUrl: "https://aireviewassistant-137748040614.us-central1.run.app/",
       },
       {
         id: "3",
@@ -70,9 +70,9 @@ export class MemStorage implements IStorage {
         name: "AI-based Idea Filtering",
         description: "AI-powered tool that analyzes and filters project ideas based on feasibility and innovation potential.",
         category: "Tool",
-        status: "Live",
+        status: "In Development",
         technologies: ["Python", "NLP", "Redis"],
-        demoUrl: "#",
+        demoUrl: "https://aiideafilter-137748040614.us-central1.run.app",
       },
       {
         id: "5",
@@ -96,8 +96,8 @@ export class MemStorage implements IStorage {
         description: "Smart content aggregation system delivering personalized AI and tech news to the community.",
         category: "Web App",
         status: "Live",
-        technologies: ["Next.js", "GraphQL", "MongoDB"],
-        demoUrl: "#",
+        technologies: ["Next.js", "AI Models", "Firestore"],
+        demoUrl: "https://internalnewsfeednewsletterpod-137748040614.us-central1.run.app/dashboard",
       },
       {
         id: "8",
@@ -105,8 +105,8 @@ export class MemStorage implements IStorage {
         description: "AI assistant helping teams craft better project proposals through iterative feedback.",
         category: "Tool",
         status: "Beta",
-        technologies: ["OpenAI", "React", "Supabase"],
-        demoUrl: "#",
+        technologies: ["Gemini", "Nextjs", "Firestore"],
+        demoUrl: "https://ai-assisted-refinement-tool-137748040614.us-central1.run.app/",
       },
       {
         id: "9",
@@ -115,9 +115,18 @@ export class MemStorage implements IStorage {
         category: "Web App",
         status: "Live",
         technologies: ["Vue.js", "Firebase", "Tailwind"],
-        demoUrl: "#",
+        //demoUrl: "#",
       },
       {
+        id: "10",
+        name: "CrisisScope AI",
+        description: "AI-powered crisis analysis and response assistant that monitors global events, detects emerging crises, and provides real-time insights and summaries to aid decision-making and humanitarian response efforts.",
+        category: "AI Agent",
+        status: "In Development",
+        technologies: ["Python", "LangChain", "FastAPI", "NewsAPI", "Vector Databases"],
+        //demoUrl: "#",
+      }
+      /*{
         id: "10",
         name: "Code Review Agent",
         description: "Automated code review system using AI to identify bugs, suggest improvements, and ensure best practices.",
@@ -165,7 +174,7 @@ export class MemStorage implements IStorage {
         category: "AI Agent",
         status: "Prototype",
         technologies: ["Solidity", "Static Analysis", "Machine Learning"],
-      },
+      },*/
     ];
 
     // Initialize pods from Deep Lab's active pods
@@ -175,39 +184,19 @@ export class MemStorage implements IStorage {
         name: "AI Avatar",
         description: "Creating next-generation avatar generation systems with advanced AI models",
         status: "Active",
-        progress: 75,
+        progress: 85,
         teamSize: 4,
-        startDate: "2025-06-01",
-        technologies: ["Stable Diffusion", "PyTorch"],
-      },
-      {
-        id: "2",
-        name: "AI Review Assistants",
-        description: "Building intelligent review and feedback systems for improved decision making",
-        status: "Active",
-        progress: 60,
-        teamSize: 3,
-        startDate: "2025-07-15",
-        technologies: ["GPT-4", "LangChain"],
-      },
-      {
-        id: "3",
-        name: "Voting Methods Experiment",
-        description: "Researching and implementing novel democratic voting mechanisms",
-        status: "Active",
-        progress: 45,
-        teamSize: 5,
-        startDate: "2025-08-01",
-        technologies: ["Web3", "Smart Contracts"],
+        startDate: "2025-06-24",
+        technologies: ["Python", "Firestore", "Nextjs"],
       },
       {
         id: "4",
         name: "AI-based Idea Filtering",
         description: "Developing AI systems to evaluate and prioritize innovative ideas",
         status: "Active",
-        progress: 80,
+        progress: 90,
         teamSize: 3,
-        startDate: "2025-06-15",
+        startDate: "2025-06-24",
         technologies: ["NLP", "Classification Models"],
       },
       {
@@ -217,7 +206,7 @@ export class MemStorage implements IStorage {
         status: "Active",
         progress: 55,
         teamSize: 4,
-        startDate: "2025-07-01",
+        startDate: "2025-06-24",
         technologies: ["Data Analytics", "Visualization"],
       },
       {
@@ -225,11 +214,31 @@ export class MemStorage implements IStorage {
         name: "Community Hub Portal",
         description: "Building a central platform for community engagement and collaboration",
         status: "Active",
-        progress: 90,
-        teamSize: 6,
-        startDate: "2025-06-10",
-        technologies: ["React", "Firebase"],
+        progress: 40,
+        teamSize: 4,
+        startDate: "2025-08-15",
+        technologies: ["React", "MySql"],
       },
+      {
+        id: "7",
+        name: "Internal NewsFeed/Newsletter",
+        description: "Smart content aggregation system delivering personalized AI and tech news to the community.",
+        status: "Active",
+        progress: 70,
+        teamSize: 4,
+        startDate: "2025-08-15",
+        technologies: ["Next.js", "AI Models", "Firestore"],
+      },
+      //{
+      //  id: "10",
+      //  name: "CrisisScope AI",
+      //  description: "AI-powered crisis analysis and response assistant that monitors global events, detects emerging crises, and provides real-time insights and summaries to aid decision-making and humanitarian response efforts.",
+      //  status: "Planning",
+      //  progress: 0,
+      //  teamSize: 4,
+      //  startDate: "2025-10-10",
+      //  technologies: ["Python", "LangChain", "FastAPI", "NewsAPI", "Vector Databases"],
+      //}
     ];
 
     // Initialize timeline milestones
@@ -265,8 +274,8 @@ export class MemStorage implements IStorage {
       {
         id: "5",
         date: "2025-10-01",
-        title: "15+ Apps & 6 Active Pods",
-        description: "Expanded portfolio to 15+ applications with 6 thriving development pods making significant progress",
+        title: "10+ Apps & 6 Active Pods",
+        description: "Expanded portfolio to 10+ applications with 6 thriving development pods making significant progress",
         type: "achievement",
       },
     ];
@@ -330,7 +339,7 @@ export class MemStorage implements IStorage {
     return {
       totalApps: this.apps.size,
       activePods: Array.from(this.pods.values()).filter(p => p.status === "Active").length,
-      teamMembers: 20, // Based on Deep Lab's team
+      teamMembers: 40, // Based on Deep Lab's team
       monthsSinceInception: monthsDiff,
     };
   }
