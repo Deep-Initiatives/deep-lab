@@ -1,25 +1,36 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import { 
   users, 
   pods, 
   apps, 
-  milestones, 
+  milestones,
+  blogs,
   type User, 
   type Pod, 
   type App, 
-  type TimelineMilestone, 
+  type TimelineMilestone,
+  type Blog,
   type LabStats,
   type InsertUser,
   type InsertPod,
   type InsertApp,
-  type InsertMilestone
+  type InsertMilestone,
+  type InsertBlog
 } from "@shared/schema";
+import { hashPassword } from "./auth";
 import { eq, and, desc, count } from "drizzle-orm";
 
-const connectionString = process.env.DATABASE_URL || "./local.db";
-const sqlite = new Database(connectionString);
-export const db = drizzle(sqlite);
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD
+});
+
+// Database connection established successfully
+export const db = drizzle(pool);
 
 export class DatabaseStorage {
   // User methods
@@ -34,7 +45,11 @@ export class DatabaseStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    const result = await db.insert(users).values(userData).returning();
+    const hashedPassword = await hashPassword(userData.password);
+    const result = await db.insert(users).values({
+      ...userData,
+      password: hashedPassword
+    }).returning();
     return result[0];
   }
 
@@ -49,24 +64,55 @@ export class DatabaseStorage {
   }
 
   async createPod(podData: InsertPod): Promise<Pod> {
-    // Convert date strings to Date objects for SQLite
+    // Convert date strings to Date objects and ensure technologies is an array
     const processedData = {
       ...podData,
       startDate: new Date(podData.startDate),
       endDate: podData.endDate ? new Date(podData.endDate) : null,
+      technologies: Array.isArray(podData.technologies) ? podData.technologies as string[] : [],
     };
     const result = await db.insert(pods).values(processedData).returning();
     return result[0];
   }
 
   async updatePod(id: string, podData: Partial<InsertPod>): Promise<Pod | undefined> {
-    // Convert date strings to Date objects for SQLite
-    const processedData: any = { ...podData, updatedAt: new Date() };
-    if (podData.startDate) {
-      processedData.startDate = new Date(podData.startDate);
+    // Convert date strings to Date objects and ensure technologies is an array
+    const processedData: any = { ...podData };
+    
+    // Handle updatedAt
+    processedData.updatedAt = new Date();
+    
+    // Handle startDate
+    if (podData.startDate !== undefined) {
+      if (typeof podData.startDate === 'string') {
+        const startDateStr = podData.startDate as string;
+        if (startDateStr.trim() !== '') {
+          processedData.startDate = new Date(startDateStr);
+        }
+      } else if (podData.startDate instanceof Date) {
+        processedData.startDate = podData.startDate;
+      }
     }
-    if (podData.endDate) {
-      processedData.endDate = new Date(podData.endDate);
+    
+    // Handle endDate
+    if (podData.endDate !== undefined) {
+      if (typeof podData.endDate === 'string') {
+        const endDateStr = podData.endDate as string;
+        if (endDateStr.trim() !== '') {
+          processedData.endDate = new Date(endDateStr);
+        } else {
+          processedData.endDate = null;
+        }
+      } else if (podData.endDate instanceof Date) {
+        processedData.endDate = podData.endDate;
+      } else if (podData.endDate === null) {
+        processedData.endDate = null;
+      }
+    }
+    
+    // Handle technologies
+    if (podData.technologies !== undefined) {
+      processedData.technologies = Array.isArray(podData.technologies) ? podData.technologies as string[] : [];
     }
     
     const result = await db
@@ -97,14 +143,28 @@ export class DatabaseStorage {
   }
 
   async createApp(appData: InsertApp): Promise<App> {
-    const result = await db.insert(apps).values(appData).returning();
+    const processedData = {
+      ...appData,
+      technologies: Array.isArray(appData.technologies) ? appData.technologies as string[] : [],
+    };
+    const result = await db.insert(apps).values(processedData).returning();
     return result[0];
   }
 
   async updateApp(id: string, appData: Partial<InsertApp>): Promise<App | undefined> {
+    const processedData: any = { ...appData };
+    
+    // Handle updatedAt
+    processedData.updatedAt = new Date();
+    
+    // Handle technologies
+    if (appData.technologies !== undefined) {
+      processedData.technologies = Array.isArray(appData.technologies) ? appData.technologies as string[] : [];
+    }
+    
     const result = await db
       .update(apps)
-      .set({ ...appData, updatedAt: new Date() })
+      .set(processedData)
       .where(and(eq(apps.id, id), eq(apps.isActive, true)))
       .returning();
     return result[0];
@@ -148,6 +208,65 @@ export class DatabaseStorage {
       .update(milestones)
       .set({ isActive: false, updatedAt: new Date() })
       .where(and(eq(milestones.id, id), eq(milestones.isActive, true)))
+      .returning();
+    return result.length > 0;
+  }
+
+  // Blog methods
+  async getAllBlogs(): Promise<Blog[]> {
+    return await db.select().from(blogs).where(eq(blogs.isActive, true)).orderBy(desc(blogs.publishedAt));
+  }
+
+  async getBlogById(id: string): Promise<Blog | undefined> {
+    const result = await db.select().from(blogs).where(and(eq(blogs.id, id), eq(blogs.isActive, true))).limit(1);
+    return result[0];
+  }
+
+  async createBlog(blogData: InsertBlog): Promise<Blog> {
+    const processedData = {
+      ...blogData,
+      tags: Array.isArray(blogData.tags) ? blogData.tags as string[] : [],
+    };
+    const result = await db.insert(blogs).values(processedData).returning();
+    return result[0];
+  }
+
+  async updateBlog(id: string, blogData: Partial<InsertBlog>): Promise<Blog | undefined> {
+    const processedData: any = { ...blogData };
+    
+    // Handle updatedAt
+    processedData.updatedAt = new Date();
+    
+    // Handle publishedAt
+    if (blogData.publishedAt !== undefined) {
+      if (typeof blogData.publishedAt === 'string') {
+        const publishedAtStr = blogData.publishedAt as string;
+        if (publishedAtStr.trim() !== '') {
+          processedData.publishedAt = new Date(publishedAtStr);
+        }
+      } else if (blogData.publishedAt instanceof Date) {
+        processedData.publishedAt = blogData.publishedAt;
+      }
+    }
+    
+    // Handle tags
+    if (blogData.tags !== undefined) {
+      processedData.tags = Array.isArray(blogData.tags) ? blogData.tags as string[] : [];
+    }
+    
+    const result = await db
+      .update(blogs)
+      .set(processedData)
+      .where(and(eq(blogs.id, id), eq(blogs.isActive, true)))
+      .returning();
+    return result[0];
+  }
+
+  async deleteBlog(id: string): Promise<boolean> {
+    const result = await db
+      .update(blogs)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(and(eq(blogs.id, id), eq(blogs.isActive, true)))
       .returning();
     return result.length > 0;
   }

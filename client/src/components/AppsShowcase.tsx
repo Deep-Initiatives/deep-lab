@@ -49,6 +49,12 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
           {categories.map((category) => {
             const isActive = selectedCategory === category;
             const Icon = category !== "All" ? categoryIcons[category as AppCategory] : null;
+            
+            // Get category-specific gradient for active state
+            const getCategoryGradient = (cat: AppCategory | "All") => {
+              if (cat === "All") return "from-chart-1 via-chart-2 to-chart-3";
+              return categoryColors[cat as AppCategory];
+            };
 
             return (
               <button
@@ -56,7 +62,7 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                 onClick={() => setSelectedCategory(category)}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                   isActive
-                    ? "bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white shadow-lg scale-105"
+                    ? `bg-gradient-to-r ${getCategoryGradient(category)} text-white shadow-lg scale-105`
                     : "bg-muted text-muted-foreground hover-elevate"
                 }`}
                 data-testid={`filter-${category.toLowerCase().replace(/\s+/g, "-")}`}
@@ -70,8 +76,8 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {filteredApps.map((app) => {
-            const Icon = categoryIcons[app.category];
-            const gradientColor = categoryColors[app.category];
+            const Icon = categoryIcons[app.category as AppCategory];
+            const gradientColor = categoryColors[app.category as AppCategory];
 
             return (
               <Card
@@ -101,12 +107,12 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                   </p>
                   
                   <div className="flex flex-wrap gap-1.5 mt-4">
-                    {app.technologies.slice(0, 3).map((tech, index) => (
+                    {app.technologies?.slice(0, 3).map((tech, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
                         {tech}
                       </Badge>
                     ))}
-                    {app.technologies.length > 3 && (
+                    {app.technologies && app.technologies.length > 3 && (
                       <Badge variant="outline" className="text-xs">
                         +{app.technologies.length - 3}
                       </Badge>

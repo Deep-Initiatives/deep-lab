@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type App, type Pod, type TimelineMilestone, type LabStats } from "@shared/schema";
+import { type User, type InsertUser, type App, type Pod, type TimelineMilestone, type Blog, type LabStats } from "@shared/schema";
 import { dbStorage } from "./db";
 
 export interface IStorage {
@@ -25,6 +25,13 @@ export interface IStorage {
   createMilestone(milestone: any): Promise<TimelineMilestone>;
   updateMilestone(id: string, milestone: any): Promise<TimelineMilestone | undefined>;
   deleteMilestone(id: string): Promise<boolean>;
+  
+  // Blogs
+  getAllBlogs(): Promise<Blog[]>;
+  getBlogById(id: string): Promise<Blog | undefined>;
+  createBlog(blog: any): Promise<Blog>;
+  updateBlog(id: string, blog: any): Promise<Blog | undefined>;
+  deleteBlog(id: string): Promise<boolean>;
   
   // Stats
   getLabStats(): Promise<LabStats>;
@@ -102,6 +109,27 @@ export class DatabaseStorage implements IStorage {
 
   async deleteMilestone(id: string): Promise<boolean> {
     return await dbStorage.deleteMilestone(id);
+  }
+
+  // Blog methods
+  async getAllBlogs(): Promise<Blog[]> {
+    return await dbStorage.getAllBlogs();
+  }
+
+  async getBlogById(id: string): Promise<Blog | undefined> {
+    return await dbStorage.getBlogById(id);
+  }
+
+  async createBlog(blog: any): Promise<Blog> {
+    return await dbStorage.createBlog(blog);
+  }
+
+  async updateBlog(id: string, blog: any): Promise<Blog | undefined> {
+    return await dbStorage.updateBlog(id, blog);
+  }
+
+  async deleteBlog(id: string): Promise<boolean> {
+    return await dbStorage.deleteBlog(id);
   }
 
   // Stats methods

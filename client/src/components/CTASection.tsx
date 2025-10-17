@@ -62,9 +62,7 @@ export function CTASection() {
               data-testid="button-join-team-form"
             >
               <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSdUJnEPRzkyb0OJJBYVzBWCvc5TknsNmtLZvf4dwVTmnadIqA/viewform"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/join-team"
               >
                 Join Team
                 <ArrowRight className="ml-2 h-5 w-5" />

@@ -58,6 +58,17 @@ async function initializeDatabase() {
         technologies: ["React", "MySql"],
         coordinatorId: adminUser[0].id,
       },
+      {
+        id: "8",
+        name: "CrisisScope AI",
+        description: "AI-powered crisis analysis and response assistant that monitors global events, detects emerging crises, and provides real-time insights and summaries to aid decision-making and humanitarian response efforts.",
+        status: "Planning",
+        progress: 0,
+        teamSize: 4,
+        startDate: new Date("2025-10-10"),
+        technologies: ["Python", "LangChain", "FastAPI", "NewsAPI", "Vector Databases"],
+        coordinatorId: adminUser[0].id,
+      }
     ];
 
     const createdPods = await db.insert(pods).values(samplePods).returning();
@@ -100,6 +111,57 @@ async function initializeDatabase() {
         demoUrl: "https://aiideafilter-137748040614.us-central1.run.app",
         podId: createdPods[1].id,
       },
+      {
+        name: "CrisisScope AI",
+        description: "AI-powered crisis analysis and response assistant that monitors global events, detects emerging crises, and provides real-time insights and summaries to aid decision-making and humanitarian response efforts.",
+        category: "AI Agent",
+        status: "In Development",
+        technologies: ["Python", "LangChain", "FastAPI", "NewsAPI", "Vector Databases"],
+        podId: createdPods[4].id, // CrisisScope AI pod
+      },
+      {
+        name: "Impact Measure",
+        description: "Quantitative framework for measuring the real-world impact of AI projects and interventions.",
+        category: "Tool",
+        status: "In Development",
+        technologies: ["R", "PostgreSQL", "D3.js"],
+        podId: createdPods[2].id, // Impact Measurement pod
+      },
+      {
+        name: "HiveMind/MM Integration",
+        description: "Distributed AI system enabling collective intelligence through multi-model coordination.",
+        category: "Service",
+        status: "Live",
+        technologies: ["PyTorch", "Redis", "gRPC"],
+        demoUrl: "https://hivemind.deepfunding.ai/",
+        podId: createdPods[0].id, // AI Avatar pod
+      },
+      {
+        name: "Internal NewsFeed/Newsletter",
+        description: "Smart content aggregation system delivering personalized AI and tech news to the community.",
+        category: "Web App",
+        status: "Beta",
+        technologies: ["Next.js", "AI Models", "Firestore"],
+        demoUrl: "https://newsletter.deepfunding.ai/",
+        podId: createdPods[3].id, // Community Hub Portal pod
+      },
+      {
+        name: "AI Assisted Proposal Refinement",
+        description: "AI assistant helping teams craft better project proposals through iterative feedback.",
+        category: "AI Agent",
+        status: "Beta",
+        technologies: ["Gemini", "Nextjs", "Firestore"],
+        demoUrl: "https://proposal-refinement.deepfunding.ai/",
+        podId: createdPods[1].id, // AI-based Idea Filtering pod
+      },
+      {
+        name: "Community Hub Portal",
+        description: "Central platform connecting developers, researchers, and AI enthusiasts in our ecosystem.",
+        category: "Web App",
+        status: "In Development",
+        technologies: ["Vue.js", "Firebase", "Tailwind"],
+        podId: createdPods[3].id, // Community Hub Portal pod
+      }
     ];
 
     const createdApps = await db.insert(apps).values(sampleApps).returning();
