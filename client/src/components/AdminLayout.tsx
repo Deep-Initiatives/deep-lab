@@ -64,7 +64,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 className="h-12 w-12 object-contain"
               />
               <div>
-                <h1 className="text-foreground" style={{ fontFamily: 'Orbitron', fontWeight: 600, fontSize: '25px', lineHeight: '100%', letterSpacing: '0%' }}>Funding Lab</h1>
+                <h1 className="text-foreground" style={{ fontFamily: 'Orbitron', fontWeight: 600, fontSize: '25px', lineHeight: '100%', letterSpacing: '0%' }}>Funding</h1>
               </div>
             </div>
           </div>

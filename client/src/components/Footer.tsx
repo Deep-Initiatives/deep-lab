@@ -18,7 +18,6 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <img src={logoImage} alt="Deep Lab" className="h-10" />
-              <span className="text-foreground" style={{ fontFamily: 'Orbitron', fontWeight: 600, fontSize: '25px', lineHeight: '100%', letterSpacing: '0%' }}>Funding Lab</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Where innovation takes flight. Building the future of AI, one prototype at a

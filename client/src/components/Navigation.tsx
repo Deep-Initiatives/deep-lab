@@ -11,6 +11,26 @@ import {
 import { useLocation } from "wouter";
 import logoImage from "@assets/logo.png";
 
+// Custom 3x3 grid icon component
+const AppsIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="6" cy="6" r="2" fill="currentColor" />
+    <circle cx="12" cy="6" r="2" fill="currentColor" />
+    <circle cx="18" cy="6" r="2" fill="currentColor" />
+    <circle cx="6" cy="12" r="2" fill="currentColor" />
+    <circle cx="12" cy="12" r="2" fill="currentColor" />
+    <circle cx="18" cy="12" r="2" fill="currentColor" />
+    <circle cx="6" cy="18" r="2" fill="currentColor" />
+    <circle cx="12" cy="18" r="2" fill="currentColor" />
+    <circle cx="18" cy="18" r="2" fill="currentColor" />
+  </svg>
+);
+
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -57,12 +77,12 @@ export function Navigation() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "backdrop-blur-xl bg-background/80 border-b border-border"
-          : "bg-transparent"
+          ? "backdrop-blur-xl bg-gradient-to-r from-chart-1 to-chart-2/80 border-b border-border"
+          : "bg-gradient-to-r from-chart-1 to-chart-2"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center h-16 md:h-20">
           <button
             onClick={() => handleNavigation("/")}
             className="flex items-center space-x-3 group"
@@ -73,28 +93,40 @@ export function Navigation() {
               alt="Deep Lab"
               className="h-10 md:h-12 transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="text-foreground" style={{ fontFamily: 'Orbitron', fontWeight: 600, fontSize: '25px', lineHeight: '100%', letterSpacing: '0%' }}>Funding Lab</span>
           </button>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8 flex-1 justify-center">
             {navLinks.map((link) => (
               <button
                 key={link.label}
                 onClick={() => link.id ? scrollToSection(link.id) : handleNavigation(link.path)}
-                className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors hover-elevate px-3 py-2 rounded-md"
+                className="text-sm font-medium text-white/80 hover:text-white transition-colors hover-elevate px-3 py-2 rounded-md"
                 data-testid={`link-nav-${link.label.toLowerCase()}`}
               >
                 {link.label}
               </button>
             ))}
+          </div>
+
+          <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
+            <Button
+              size="sm"
+              variant="default"
+              onClick={() => handleNavigation("/join-team")}
+              className="bg-white text-chart-1 hover:bg-white/90 border-0"
+              data-testid="button-join-team"
+            >
+              Join Team
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-border hover:bg-muted"
+                  size="icon"
+                  variant="ghost"
+                  className="text-white hover:bg-white/20 p-3"
                 >
-                  Apps
+                  <AppsIcon className="h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -110,16 +142,6 @@ export function Navigation() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <ThemeToggle />
-            <Button
-              size="sm"
-              variant="default"
-              onClick={() => handleNavigation("/join-team")}
-              className="bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white border-0"
-              data-testid="button-join-team"
-            >
-              Join Team
-            </Button>
           </div>
 
           <Button
@@ -142,26 +164,29 @@ export function Navigation() {
             onClick={() => setIsMobileMenuOpen(false)}
           />
           {/* Mobile menu */}
-          <div className="md:hidden backdrop-blur-xl bg-background/98 border-b border-border shadow-lg z-50 relative">
+          <div className="md:hidden backdrop-blur-xl bg-gradient-to-r from-chart-1 to-chart-2 border-b border-border shadow-lg z-50 relative">
             <div className="px-4 py-4 space-y-2">
             {navLinks.map((link) => (
               <button
                 key={link.label}
                 onClick={() => link.id ? scrollToSection(link.id) : handleNavigation(link.path)}
-                className="block w-full text-left px-4 py-3 text-sm font-medium text-foreground/80 hover:text-foreground hover-elevate rounded-md transition-colors"
+                className="block w-full text-left px-4 py-3 text-sm font-medium text-white/80 hover:text-white hover-elevate rounded-md transition-colors"
                 data-testid={`link-mobile-${link.label.toLowerCase()}`}
               >
                 {link.label}
               </button>
             ))}
             <div className="px-4 py-2">
-              <div className="text-sm font-medium text-muted-foreground mb-2">Apps</div>
+              <div className="text-sm font-medium text-white/80 mb-2 flex items-center gap-2">
+                <AppsIcon className="h-4 w-4" />
+                Apps
+              </div>
               <div className="space-y-1">
                 {appLinks.map((app) => (
                   <button
                     key={app.url}
                     onClick={() => window.open(app.url, '_blank')}
-                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-foreground/80 hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-white/80 hover:text-white hover:bg-white/20 rounded-md transition-colors"
                   >
                     <ExternalLink className="h-4 w-4" />
                     {app.label}
@@ -170,13 +195,13 @@ export function Navigation() {
               </div>
             </div>
             <div className="flex items-center gap-2 px-4 py-2">
-              <span className="text-sm text-muted-foreground">Theme:</span>
+              <span className="text-sm text-white/80">Theme:</span>
               <ThemeToggle />
             </div>
             <Button
               variant="default"
               onClick={() => handleNavigation("/join-team")}
-              className="w-full bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white border-0"
+              className="w-full bg-white text-chart-1 hover:bg-white/90 border-0"
               data-testid="button-mobile-join"
             >
               Join Team
