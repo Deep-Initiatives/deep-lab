@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Sparkles, Cpu, Wrench, Globe } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Users, Code } from "lucide-react";
 import type { App, AppCategory } from "@shared/schema";
 
 interface AppsShowcaseProps {
@@ -25,6 +26,7 @@ const categoryColors: Record<AppCategory, string> = {
 
 export function AppsShowcase({ apps }: AppsShowcaseProps) {
   const [selectedCategory, setSelectedCategory] = useState<AppCategory | "All">("All");
+  const [selectedApp, setSelectedApp] = useState<App | null>(null);
 
   const categories: (AppCategory | "All")[] = ["All", "AI Agent", "Web App", "Tool", "Service"];
 
@@ -49,6 +51,12 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
           {categories.map((category) => {
             const isActive = selectedCategory === category;
             const Icon = category !== "All" ? categoryIcons[category as AppCategory] : null;
+            
+            // Get category-specific gradient for active state
+            const getCategoryGradient = (cat: AppCategory | "All") => {
+              if (cat === "All") return "from-chart-1 via-chart-2 to-chart-3";
+              return categoryColors[cat as AppCategory];
+            };
 
             return (
               <button
@@ -56,7 +64,7 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                 onClick={() => setSelectedCategory(category)}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                   isActive
-                    ? "bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white shadow-lg scale-105"
+                    ? `bg-gradient-to-r ${getCategoryGradient(category)} text-white shadow-lg scale-105`
                     : "bg-muted text-muted-foreground hover-elevate"
                 }`}
                 data-testid={`filter-${category.toLowerCase().replace(/\s+/g, "-")}`}
@@ -70,8 +78,8 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {filteredApps.map((app) => {
-            const Icon = categoryIcons[app.category];
-            const gradientColor = categoryColors[app.category];
+            const Icon = categoryIcons[app.category as AppCategory];
+            const gradientColor = categoryColors[app.category as AppCategory];
 
             return (
               <Card
@@ -101,12 +109,12 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                   </p>
                   
                   <div className="flex flex-wrap gap-1.5 mt-4">
-                    {app.technologies.slice(0, 3).map((tech, index) => (
+                    {app.technologies?.slice(0, 3).map((tech, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
                         {tech}
                       </Badge>
                     ))}
-                    {app.technologies.length > 3 && (
+                    {app.technologies && app.technologies.length > 3 && (
                       <Badge variant="outline" className="text-xs">
                         +{app.technologies.length - 3}
                       </Badge>
@@ -115,24 +123,89 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                 </CardContent>
 
                 <CardFooter className="pt-0">
-                  {app.demoUrl && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full group/btn"
-                      asChild
-                    >
-                      <a
-                        href={app.demoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        data-testid={`link-demo-${app.id}`}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full group/btn"
+                        onClick={() => setSelectedApp(app)}
+                        data-testid={`button-details-${app.id}`}
                       >
                         View Details
                         <ExternalLink className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </a>
-                    </Button>
-                  )}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg bg-gradient-to-br ${gradientColor}`}>
+                            <Icon className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-bold">{app.name}</h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge variant="secondary">{app.status}</Badge>
+                              <Badge variant="outline">{app.category}</Badge>
+                            </div>
+                          </div>
+                        </DialogTitle>
+                      </DialogHeader>
+                      
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold mb-2">Description</h4>
+                          <p className="text-muted-foreground leading-relaxed">
+                            {app.description}
+                          </p>
+                        </div>
+
+                        {app.technologies && app.technologies.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold mb-3 flex items-center gap-2">
+                              <Code className="h-4 w-4" />
+                              Technologies
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                              {app.technologies.map((tech, index) => (
+                                <Badge key={index} variant="outline" className="text-sm">
+                                  {tech}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {app.demoUrl && (
+                          <div>
+                            <h4 className="font-semibold mb-2">Demo</h4>
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                              asChild
+                            >
+                              <a
+                                href={app.demoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                                Visit Demo
+                              </a>
+                            </Button>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-1 gap-4 pt-4 border-t">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4" />
+                            <span>Created: {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </CardFooter>
               </Card>
             );
