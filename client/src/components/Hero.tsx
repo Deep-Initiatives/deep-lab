@@ -80,10 +80,10 @@ export function Hero({ stats }: HeroProps) {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-32 md:py-40 text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-24 md:py-32 text-center">
         
         {/* Badge */}
-        <div className="mb-8 animate-fade-in-up flex justify-center">
+        <div className="mb-6 animate-fade-in-up flex justify-center">
           <Badge className="px-6 py-3 text-base bg-white/15 backdrop-blur-xl border-white/30 text-white hover:bg-white/20 transition-all shadow-2xl">
             <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
             5+ Apps Prototyped Since June 2025
@@ -91,44 +91,42 @@ export function Hero({ stats }: HeroProps) {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 leading-tight animate-fade-in-up">
-          <span className="inline-block animate-slide-up">Where Innovation</span>
-          <br />
-          <span className="inline-block bg-gradient-to-r from-white via-white/80 to-white bg-clip-text text-transparent drop-shadow-2xl animate-slide-up-delayed">
-            Takes Flight
-          </span>
+        <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-tight animate-fade-in-up tracking-tight">
+          <span className="inline-block animate-slide-up">Where Innovation Takes Flight</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-lg md:text-2xl text-white/95 max-w-4xl mx-auto mb-12 leading-relaxed animate-fade-in-up font-light px-4">
+        <p className="text-lg md:text-2xl text-white/95 max-w-4xl mx-auto mb-8 leading-relaxed animate-fade-in-up font-light px-4">
           Deep Lab is an <span className="font-semibold">AI and development lab</span> pushing the boundaries of innovation.
           We prototype, MVP, and deploy <span className="font-semibold">cutting-edge AI agents, web applications, and services</span> at lightning speed.
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20 animate-fade-in-up">
+        <div className="flex flex-row items-center justify-center gap-3 md:gap-4 mb-12 animate-fade-in-up">
           <Button
-            size="lg"
+            size="default"
             onClick={() => scrollToSection("projects")}
-            className="group bg-white text-chart-2 hover:bg-white/95 font-bold px-10 py-7 text-lg border-0 shadow-2xl hover:shadow-white/50 transition-all hover:scale-105 rounded-full"
+            className="group bg-white text-chart-2 hover:bg-white/95 font-bold px-6 py-5 md:px-10 md:py-7 text-sm md:text-lg border-0 shadow-2xl hover:shadow-white/50 transition-all hover:scale-105 rounded-full"
             data-testid="button-view-projects"
           >
-            View Projects
-            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            <span className="hidden sm:inline">View Projects</span>
+            <span className="sm:hidden">Projects</span>
+            <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform" />
           </Button>
           <Button
-            size="lg"
+            size="default"
             variant="outline"
             onClick={() => scrollToSection("join")}
-            className="backdrop-blur-xl bg-white/10 text-white border-2 border-white/40 hover:bg-white/20 hover:border-white/60 font-bold px-10 py-7 text-lg shadow-2xl transition-all hover:scale-105 rounded-full"
+            className="backdrop-blur-xl bg-white/10 text-white border-2 border-white/40 hover:bg-white/20 hover:border-white/60 font-bold px-6 py-5 md:px-10 md:py-7 text-sm md:text-lg shadow-2xl transition-all hover:scale-105 rounded-full"
             data-testid="button-join-us"
           >
-            Join Our Team
+            <span className="hidden sm:inline">Join Our Team</span>
+            <span className="sm:hidden">Join Team</span>
           </Button>
         </div>
 
         {/* Stats Grid - Enhanced */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 max-w-7xl mx-auto animate-fade-in-up">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 max-w-7xl mx-auto animate-fade-in-up">
           {[
             { 
               label: "Apps Built", 

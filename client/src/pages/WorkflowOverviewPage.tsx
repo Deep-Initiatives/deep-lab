@@ -563,10 +563,10 @@ export default function WorkflowOverviewPage() {
             </div>
 
             <Card className="border-2 shadow-2xl overflow-hidden">
-              <div className="bg-gradient-to-br from-muted/30 to-background p-12 md:p-16">
+              <div className="bg-gradient-to-br from-muted/30 to-background p-6 md:p-12 lg:p-16">
                 <div className="relative max-w-4xl mx-auto">
-                  {/* Connection Lines */}
-                  <div className="hidden md:block absolute inset-0">
+                  {/* Connection Lines - Hidden on mobile */}
+                  <div className="hidden lg:block absolute inset-0">
                     <svg className="w-full h-full" style={{ position: 'absolute' }}>
                       <line x1="50%" y1="50%" x2="25%" y2="15%" stroke="hsl(var(--chart-1))" strokeWidth="2" opacity="0.3" strokeDasharray="5,5" />
                       <line x1="50%" y1="50%" x2="75%" y2="15%" stroke="hsl(var(--chart-2))" strokeWidth="2" opacity="0.3" strokeDasharray="5,5" />
@@ -576,18 +576,18 @@ export default function WorkflowOverviewPage() {
                   </div>
 
                   {/* Center Hub */}
-                  <div className="relative flex items-center justify-center mb-16">
-                    <div className="absolute w-64 h-64 bg-gradient-to-br from-chart-1/20 via-chart-2/20 to-chart-3/20 rounded-full blur-3xl"></div>
-                    <div className="relative w-56 h-56 rounded-full bg-gradient-to-br from-chart-1 via-chart-2 to-chart-3 flex items-center justify-center shadow-2xl transform hover:scale-110 transition-transform">
+                  <div className="relative flex items-center justify-center mb-8 md:mb-12 lg:mb-16">
+                    <div className="absolute w-48 h-48 md:w-64 md:h-64 bg-gradient-to-br from-chart-1/20 via-chart-2/20 to-chart-3/20 rounded-full blur-3xl"></div>
+                    <div className="relative w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full bg-gradient-to-br from-chart-1 via-chart-2 to-chart-3 flex items-center justify-center shadow-2xl transform hover:scale-110 transition-transform">
                       <div className="text-center">
-                        <Sparkles className="h-12 w-12 text-white mx-auto mb-2" />
-                        <span className="text-3xl font-extrabold text-white tracking-wider">DF LABS</span>
+                        <Sparkles className="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-white mx-auto mb-2" />
+                        <span className="text-xl md:text-2xl lg:text-3xl font-extrabold text-white tracking-wider">DF LABS</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Connected Clusters */}
-                  <div className="relative grid grid-cols-2 gap-6 max-w-3xl mx-auto">
+                  <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-3xl mx-auto">
                     {[
                       { name: "Product & BizDev", icon: Target, color: "chart-1" },
                       { name: "Governance", icon: Users, color: "chart-2" },
