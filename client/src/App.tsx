@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { DevelopmentBanner } from "@/components/DevelopmentBanner";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
 import { ProjectDetailsPage } from "@/pages/ProjectDetailsPage";
@@ -42,6 +43,7 @@ function App() {
       <AuthProvider>
         <ThemeProvider>
           <TooltipProvider>
+            <DevelopmentBanner />
             <Toaster />
             <Router />
           </TooltipProvider>

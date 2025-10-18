@@ -82,6 +82,41 @@ export const blogs = pgTable("blogs", {
   updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
 });
 
+export const applications = pgTable("applications", {
+  id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  role: text("role").notNull(),
+  experience: text("experience").notNull(),
+  skills: json("skills").$type<string[]>().default([]),
+  linkedin: text("linkedin"),
+  github: text("github"),
+  portfolio: text("portfolio"),
+  motivation: text("motivation").notNull(),
+  availability: text("availability").notNull(),
+  status: text("status").notNull().default("pending"), // pending, reviewed, accepted, rejected
+  notes: text("notes"),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
+});
+
+export const ideaSubmissions = pgTable("idea_submissions", {
+  id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  title: text("title").notNull(),
+  submitterName: text("submitter_name").notNull(),
+  problemStatement: text("problem_statement").notNull(),
+  proposedSolution: text("proposed_solution").notNull(),
+  targetAudience: text("target_audience").notNull(),
+  expectedImpact: text("expected_impact").notNull(),
+  requiredExpertise: json("required_expertise").$type<string[]>().default([]),
+  successMetrics: text("success_metrics"),
+  dependencies: text("dependencies"),
+  status: text("status").notNull().default("pending"), // pending, under_review, approved, rejected, in_development
+  notes: text("notes"),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
+});
+
 // Insert schemas for validation
 export const insertPodSchema = createInsertSchema(pods).pick({
   name: true,
@@ -127,6 +162,31 @@ export const insertBlogSchema = createInsertSchema(blogs).pick({
   externalUrl: true,
 });
 
+export const insertApplicationSchema = createInsertSchema(applications).pick({
+  fullName: true,
+  email: true,
+  role: true,
+  experience: true,
+  skills: true,
+  linkedin: true,
+  github: true,
+  portfolio: true,
+  motivation: true,
+  availability: true,
+});
+
+export const insertIdeaSubmissionSchema = createInsertSchema(ideaSubmissions).pick({
+  title: true,
+  submitterName: true,
+  problemStatement: true,
+  proposedSolution: true,
+  targetAudience: true,
+  expectedImpact: true,
+  requiredExpertise: true,
+  successMetrics: true,
+  dependencies: true,
+});
+
 // Type exports
 export type Pod = typeof pods.$inferSelect;
 export type InsertPod = z.infer<typeof insertPodSchema>;
@@ -136,6 +196,10 @@ export type TimelineMilestone = typeof milestones.$inferSelect;
 export type InsertMilestone = z.infer<typeof insertMilestoneSchema>;
 export type Blog = typeof blogs.$inferSelect;
 export type InsertBlog = z.infer<typeof insertBlogSchema>;
+export type Application = typeof applications.$inferSelect;
+export type InsertApplication = z.infer<typeof insertApplicationSchema>;
+export type IdeaSubmission = typeof ideaSubmissions.$inferSelect;
+export type InsertIdeaSubmission = z.infer<typeof insertIdeaSubmissionSchema>;
 
 // Legacy type exports for backward compatibility
 export type AppCategory = "AI Agent" | "Web App" | "Tool" | "Service";

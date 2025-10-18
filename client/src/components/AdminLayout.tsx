@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, LogOut, Home, Users, Code, BookOpen } from "lucide-react";
-import logoImage from "@assets/logo.png";
+import { Menu, X, LogOut, Home, Users, Code, BookOpen, FileText, Lightbulb } from "lucide-react";
+import logoImage from "@assets/logo.svg";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -16,6 +16,8 @@ const navigationItems = [
   { id: "pods", label: "Pods", href: "/admin/pods", icon: Users },
   { id: "apps", label: "Apps", href: "/admin/apps", icon: Code },
   { id: "blogs", label: "Blogs", href: "/admin/blogs", icon: BookOpen },
+  { id: "applications", label: "Applications", href: "/admin/applications", icon: FileText },
+  { id: "ideas", label: "Ideas", href: "/admin/ideas", icon: Lightbulb },
 ];
 
 export function AdminLayout({ children }: AdminLayoutProps) {
@@ -61,11 +63,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <img
                 src={logoImage}
                 alt="Deep Lab"
-                className="h-12 w-12 object-contain"
+                className="h-16 object-contain"
               />
-              <div>
-                <h1 className="text-foreground" style={{ fontFamily: 'Orbitron', fontWeight: 600, fontSize: '25px', lineHeight: '100%', letterSpacing: '0%' }}>Funding</h1>
-              </div>
             </div>
           </div>
 

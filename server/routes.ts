@@ -293,6 +293,130 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public: Submit application
+  app.post("/api/applications", async (req, res) => {
+    try {
+      const application = await storage.createApplication(req.body);
+      res.status(201).json(application);
+    } catch (error) {
+      console.error("Error creating application:", error);
+      res.status(500).json({ error: "Failed to submit application" });
+    }
+  });
+
+  // Admin: Get all applications
+  app.get("/api/admin/applications", authenticateToken, async (_req, res) => {
+    try {
+      const applications = await storage.getAllApplications();
+      res.json(applications);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      res.status(500).json({ error: "Failed to fetch applications" });
+    }
+  });
+
+  // Admin: Get application by ID
+  app.get("/api/admin/applications/:id", authenticateToken, async (req, res) => {
+    try {
+      const application = await storage.getApplication(req.params.id);
+      if (!application) {
+        return res.status(404).json({ error: "Application not found" });
+      }
+      res.json(application);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch application" });
+    }
+  });
+
+  // Admin: Update application status
+  app.patch("/api/admin/applications/:id/status", authenticateToken, async (req, res) => {
+    try {
+      const { status, notes } = req.body;
+      const application = await storage.updateApplicationStatus(req.params.id, status, notes);
+      res.json(application);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update application status" });
+    }
+  });
+
+  // Admin: Delete application
+  app.delete("/api/admin/applications/:id", authenticateToken, async (req, res) => {
+    try {
+      await storage.deleteApplication(req.params.id);
+      res.json({ message: "Application deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete application" });
+    }
+  });
+
+  // Public: Submit idea
+  app.post("/api/ideas", async (req, res) => {
+    try {
+      const idea = await storage.createIdeaSubmission(req.body);
+      res.status(201).json(idea);
+    } catch (error) {
+      console.error("Error creating idea submission:", error);
+      res.status(500).json({ error: "Failed to submit idea" });
+    }
+  });
+
+  // Public: Get all idea submissions (approved and in development only for public)
+  app.get("/api/ideas", async (_req, res) => {
+    try {
+      const allIdeas = await storage.getAllIdeaSubmissions();
+      // Filter to show all ideas (admins can filter in their view)
+      res.json(allIdeas);
+    } catch (error) {
+      console.error("Error fetching idea submissions:", error);
+      res.status(500).json({ error: "Failed to fetch idea submissions" });
+    }
+  });
+
+  // Admin: Get all idea submissions
+  app.get("/api/admin/ideas", authenticateToken, async (_req, res) => {
+    try {
+      const ideas = await storage.getAllIdeaSubmissions();
+      res.json(ideas);
+    } catch (error) {
+      console.error("Error fetching idea submissions:", error);
+      res.status(500).json({ error: "Failed to fetch idea submissions" });
+    }
+  });
+
+  // Admin: Get idea submission by ID
+  app.get("/api/admin/ideas/:id", authenticateToken, async (req, res) => {
+    try {
+      const idea = await storage.getIdeaSubmission(req.params.id);
+      if (!idea) {
+        return res.status(404).json({ error: "Idea submission not found" });
+      }
+      res.json(idea);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch idea submission" });
+    }
+  });
+
+  // Admin: Update idea submission status
+  app.patch("/api/admin/ideas/:id/status", authenticateToken, async (req, res) => {
+    try {
+      const { status, notes } = req.body;
+      const idea = await storage.updateIdeaSubmissionStatus(req.params.id, status, notes);
+      res.json(idea);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update idea submission status" });
+    }
+  });
+
+  // Admin: Delete idea submission
+  app.delete("/api/admin/ideas/:id", authenticateToken, async (req, res) => {
+    try {
+      await storage.deleteIdeaSubmission(req.params.id);
+      res.json({ message: "Idea submission deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete idea submission" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

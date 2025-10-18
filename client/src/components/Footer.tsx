@@ -1,5 +1,5 @@
 import { Github, Twitter, Linkedin, Mail } from "lucide-react";
-import logoImage from "@assets/logo.png";
+import logoImage from "@assets/logo.svg";
 
 export function Footer() {
   const scrollToSection = (id: string) => {
@@ -17,7 +17,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img src={logoImage} alt="Deep Lab" className="h-10" />
+              <img src={logoImage} alt="Deep Lab" className="h-14 md:h-16" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Where innovation takes flight. Building the future of AI, one prototype at a
@@ -88,9 +88,7 @@ export function Footer() {
             <ul className="space-y-2.5">
               <li>
                 <a
-                  href="https://ramazo3.github.io/df_labs/ideas"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/ideas"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   data-testid="link-footer-ideas"
                 >
@@ -99,9 +97,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://ramazo3.github.io/df_labs/workflow"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/workflow"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   data-testid="link-footer-workflow"
                 >
@@ -130,9 +126,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://ramazo3.github.io/df_labs/submit-idea"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/submit-idea"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   data-testid="link-footer-submit"
                 >
