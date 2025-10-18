@@ -1,92 +1,63 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Search, Lightbulb, Calendar, User, Filter } from "lucide-react";
+import { Search, Lightbulb, Calendar, User, Filter, Loader2 } from "lucide-react";
+import type { IdeaSubmission } from "@shared/schema";
 
 export default function ViewAllIdeasPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
 
-  const categories = ["all", "AI & ML", "Web Development", "Mobile Apps", "IoT", "Other"];
+  const statusFilters = ["all", "pending", "under_review", "approved", "in_development"];
   
-  const ideas = [
-    {
-      id: 1,
-      title: "AI-Powered Code Review Assistant",
-      description: "An intelligent system that automatically reviews code for bugs, security vulnerabilities, and best practices.",
-      category: "AI & ML",
-      status: "Under Review",
-      submittedBy: "John Doe",
-      submittedAt: "2024-01-15",
-      votes: 24,
-      tags: ["AI", "Code Review", "Automation"]
+  // Fetch ideas from the database
+  const { data: ideas, isLoading, error } = useQuery<IdeaSubmission[]>({
+    queryKey: ["/api/ideas"],
+    queryFn: async () => {
+      const response = await fetch("/api/ideas");
+      if (!response.ok) throw new Error("Failed to fetch ideas");
+      return response.json();
     },
-    {
-      id: 2,
-      title: "Real-time Collaboration Platform",
-      description: "A web-based platform for real-time collaborative development with live code sharing and video calls.",
-      category: "Web Development",
-      status: "In Development",
-      submittedBy: "Jane Smith",
-      submittedAt: "2024-01-10",
-      votes: 18,
-      tags: ["Collaboration", "WebRTC", "Real-time"]
-    },
-    {
-      id: 3,
-      title: "Smart Home IoT Dashboard",
-      description: "A comprehensive dashboard for managing all smart home devices with AI-powered automation suggestions.",
-      category: "IoT",
-      status: "Planning",
-      submittedBy: "Mike Johnson",
-      submittedAt: "2024-01-05",
-      votes: 31,
-      tags: ["IoT", "Smart Home", "Dashboard"]
-    },
-    {
-      id: 4,
-      title: "Mobile Learning App",
-      description: "An educational mobile app that uses gamification and AI to personalize learning experiences.",
-      category: "Mobile Apps",
-      status: "Under Review",
-      submittedBy: "Sarah Wilson",
-      submittedAt: "2023-12-28",
-      votes: 15,
-      tags: ["Education", "Mobile", "Gamification"]
-    }
-  ];
-
-  const filteredIdeas = ideas.filter(idea => {
-    const matchesSearch = idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         idea.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || idea.category === selectedCategory;
-    return matchesSearch && matchesCategory;
   });
+
+  const filteredIdeas = ideas?.filter(idea => {
+    const matchesSearch = idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         idea.problemStatement.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         idea.proposedSolution.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = selectedStatus === "all" || idea.status === selectedStatus;
+    return matchesSearch && matchesStatus;
+  }) || [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Under Review": return "bg-yellow-100 text-yellow-800";
-      case "In Development": return "bg-blue-100 text-blue-800";
-      case "Planning": return "bg-purple-100 text-purple-800";
-      case "Completed": return "bg-green-100 text-green-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "pending": return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20";
+      case "under_review": return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20";
+      case "approved": return "bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20";
+      case "in_development": return "bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20";
+      case "rejected": return "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20";
+      default: return "bg-muted text-muted-foreground border";
     }
+  };
+
+  const formatStatus = (status: string) => {
+    return status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div className="container mx-auto px-4 py-16">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+        <div className="container mx-auto px-4 pt-24 pb-16">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-transparent bg-clip-text mb-6">
               Community Ideas
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Explore innovative ideas submitted by our community and vote for your favorites
             </p>
           </div>
@@ -98,7 +69,7 @@ export default function ViewAllIdeasPage() {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                       <Input
                         placeholder="Search ideas..."
                         value={searchTerm}
@@ -108,14 +79,14 @@ export default function ViewAllIdeasPage() {
                     </div>
                   </div>
                   <div className="flex gap-2 flex-wrap">
-                    {categories.map((category) => (
+                    {statusFilters.map((status) => (
                       <Button
-                        key={category}
-                        variant={selectedCategory === category ? "default" : "outline"}
-                        onClick={() => setSelectedCategory(category)}
+                        key={status}
+                        variant={selectedStatus === status ? "default" : "outline"}
+                        onClick={() => setSelectedStatus(status)}
                         className="capitalize"
                       >
-                        {category}
+                        {status === "all" ? "All" : formatStatus(status)}
                       </Button>
                     ))}
                   </div>
@@ -124,62 +95,86 @@ export default function ViewAllIdeasPage() {
             </Card>
           </div>
 
-          {/* Ideas Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredIdeas.map((idea) => (
-              <Card key={idea.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg line-clamp-2">{idea.title}</CardTitle>
-                      <p className="text-sm text-gray-600 mt-2 line-clamp-3">{idea.description}</p>
-                    </div>
-                    <Badge className={getStatusColor(idea.status)}>
-                      {idea.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        <span>{idea.submittedBy}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>{new Date(idea.submittedAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-chart-1" />
+              <span className="ml-2 text-muted-foreground">Loading ideas...</span>
+            </div>
+          )}
 
-                    <div className="flex flex-wrap gap-1">
-                      {idea.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Lightbulb className="h-4 w-4 text-yellow-500" />
-                        <span className="text-sm font-medium">{idea.votes} votes</span>
-                      </div>
-                      <Button size="sm" variant="outline">
-                        Vote
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {filteredIdeas.length === 0 && (
+          {/* Error State */}
+          {error && (
             <div className="text-center py-12">
-              <Lightbulb className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No ideas found</h3>
-              <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+              <p className="text-red-600 dark:text-red-400">Failed to load ideas. Please try again later.</p>
+            </div>
+          )}
+
+          {/* Ideas Grid */}
+          {!isLoading && !error && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredIdeas.map((idea) => (
+                <Card key={idea.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg line-clamp-2">{idea.title}</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{idea.problemStatement}</p>
+                      </div>
+                      <Badge className={getStatusColor(idea.status)}>
+                        {formatStatus(idea.status)}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <User className="h-4 w-4" />
+                          <span className="line-clamp-1">{idea.submitterName}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{idea.createdAt ? new Date(idea.createdAt).toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                      </div>
+
+                      {idea.requiredExpertise && idea.requiredExpertise.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {idea.requiredExpertise.slice(0, 3).map((expertise, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {expertise}
+                            </Badge>
+                          ))}
+                          {idea.requiredExpertise.length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{idea.requiredExpertise.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="pt-2 border-t">
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          <span className="font-medium">Solution:</span> {idea.proposedSolution}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {!isLoading && !error && filteredIdeas.length === 0 && (
+            <div className="text-center py-12">
+              <Lightbulb className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No ideas found</h3>
+              <p className="text-muted-foreground">
+                {ideas && ideas.length === 0 
+                  ? "No ideas have been submitted yet. Be the first to submit an idea!"
+                  : "Try adjusting your search or filter criteria"}
+              </p>
             </div>
           )}
         </div>

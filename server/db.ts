@@ -6,17 +6,23 @@ import {
   apps, 
   milestones,
   blogs,
+  applications,
+  ideaSubmissions,
   type User, 
   type Pod, 
   type App, 
   type TimelineMilestone,
   type Blog,
+  type Application,
+  type IdeaSubmission,
   type LabStats,
   type InsertUser,
   type InsertPod,
   type InsertApp,
   type InsertMilestone,
-  type InsertBlog
+  type InsertBlog,
+  type InsertApplication,
+  type InsertIdeaSubmission
 } from "@shared/schema";
 import { hashPassword } from "./auth";
 import { eq, and, desc, count } from "drizzle-orm";
@@ -289,6 +295,99 @@ export class DatabaseStorage {
       teamMembers: 40, // This could be calculated from actual team data
       monthsSinceInception: monthsDiff,
     };
+  }
+
+  // Application methods
+  async createApplication(applicationData: InsertApplication): Promise<Application> {
+    const result = await db.insert(applications).values({
+      fullName: applicationData.fullName,
+      email: applicationData.email,
+      role: applicationData.role,
+      experience: applicationData.experience,
+      skills: applicationData.skills ? [...applicationData.skills] : [],
+      linkedin: applicationData.linkedin || null,
+      github: applicationData.github || null,
+      portfolio: applicationData.portfolio || null,
+      motivation: applicationData.motivation,
+      availability: applicationData.availability,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }).returning();
+    return result[0];
+  }
+
+  async getAllApplications(): Promise<Application[]> {
+    return await db.select().from(applications).orderBy(desc(applications.createdAt));
+  }
+
+  async getApplication(id: string): Promise<Application | undefined> {
+    const result = await db.select().from(applications).where(eq(applications.id, id)).limit(1);
+    return result[0];
+  }
+
+  async updateApplicationStatus(id: string, status: string, notes?: string): Promise<Application> {
+    const updateData: any = {
+      status,
+      updatedAt: new Date(),
+    };
+    if (notes !== undefined) {
+      updateData.notes = notes;
+    }
+    const result = await db.update(applications)
+      .set(updateData)
+      .where(eq(applications.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteApplication(id: string): Promise<void> {
+    await db.delete(applications).where(eq(applications.id, id));
+  }
+
+  // Idea Submission methods
+  async createIdeaSubmission(ideaData: InsertIdeaSubmission): Promise<IdeaSubmission> {
+    const result = await db.insert(ideaSubmissions).values({
+      title: ideaData.title,
+      submitterName: ideaData.submitterName,
+      problemStatement: ideaData.problemStatement,
+      proposedSolution: ideaData.proposedSolution,
+      targetAudience: ideaData.targetAudience,
+      expectedImpact: ideaData.expectedImpact,
+      requiredExpertise: ideaData.requiredExpertise ? [...ideaData.requiredExpertise] : [],
+      successMetrics: ideaData.successMetrics || null,
+      dependencies: ideaData.dependencies || null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }).returning();
+    return result[0];
+  }
+
+  async getAllIdeaSubmissions(): Promise<IdeaSubmission[]> {
+    return await db.select().from(ideaSubmissions).orderBy(desc(ideaSubmissions.createdAt));
+  }
+
+  async getIdeaSubmission(id: string): Promise<IdeaSubmission | undefined> {
+    const result = await db.select().from(ideaSubmissions).where(eq(ideaSubmissions.id, id)).limit(1);
+    return result[0];
+  }
+
+  async updateIdeaSubmissionStatus(id: string, status: string, notes?: string): Promise<IdeaSubmission> {
+    const updateData: any = {
+      status,
+      updatedAt: new Date(),
+    };
+    if (notes !== undefined) {
+      updateData.notes = notes;
+    }
+    const result = await db.update(ideaSubmissions)
+      .set(updateData)
+      .where(eq(ideaSubmissions.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteIdeaSubmission(id: string): Promise<void> {
+    await db.delete(ideaSubmissions).where(eq(ideaSubmissions.id, id));
   }
 }
 

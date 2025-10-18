@@ -10,7 +10,7 @@ export function ThemeToggle() {
       size="icon"
       variant="ghost"
       onClick={toggleTheme}
-      className="rounded-full"
+      className="rounded-full text-white hover:text-white hover:bg-white/20"
       data-testid="button-theme-toggle"
     >
       {theme === "light" ? (

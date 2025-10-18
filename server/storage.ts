@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type App, type Pod, type TimelineMilestone, type Blog, type LabStats } from "@shared/schema";
+import { type User, type InsertUser, type App, type Pod, type TimelineMilestone, type Blog, type Application, type InsertApplication, type IdeaSubmission, type InsertIdeaSubmission, type LabStats } from "@shared/schema";
 import { dbStorage } from "./db";
 
 export interface IStorage {
@@ -32,6 +32,20 @@ export interface IStorage {
   createBlog(blog: any): Promise<Blog>;
   updateBlog(id: string, blog: any): Promise<Blog | undefined>;
   deleteBlog(id: string): Promise<boolean>;
+  
+  // Applications
+  createApplication(application: InsertApplication): Promise<Application>;
+  getAllApplications(): Promise<Application[]>;
+  getApplication(id: string): Promise<Application | undefined>;
+  updateApplicationStatus(id: string, status: string, notes?: string): Promise<Application>;
+  deleteApplication(id: string): Promise<void>;
+  
+  // Idea Submissions
+  createIdeaSubmission(idea: InsertIdeaSubmission): Promise<IdeaSubmission>;
+  getAllIdeaSubmissions(): Promise<IdeaSubmission[]>;
+  getIdeaSubmission(id: string): Promise<IdeaSubmission | undefined>;
+  updateIdeaSubmissionStatus(id: string, status: string, notes?: string): Promise<IdeaSubmission>;
+  deleteIdeaSubmission(id: string): Promise<void>;
   
   // Stats
   getLabStats(): Promise<LabStats>;
@@ -130,6 +144,48 @@ export class DatabaseStorage implements IStorage {
 
   async deleteBlog(id: string): Promise<boolean> {
     return await dbStorage.deleteBlog(id);
+  }
+
+  // Application methods
+  async createApplication(application: InsertApplication): Promise<Application> {
+    return await dbStorage.createApplication(application);
+  }
+
+  async getAllApplications(): Promise<Application[]> {
+    return await dbStorage.getAllApplications();
+  }
+
+  async getApplication(id: string): Promise<Application | undefined> {
+    return await dbStorage.getApplication(id);
+  }
+
+  async updateApplicationStatus(id: string, status: string, notes?: string): Promise<Application> {
+    return await dbStorage.updateApplicationStatus(id, status, notes);
+  }
+
+  async deleteApplication(id: string): Promise<void> {
+    return await dbStorage.deleteApplication(id);
+  }
+
+  // Idea Submission methods
+  async createIdeaSubmission(idea: InsertIdeaSubmission): Promise<IdeaSubmission> {
+    return await dbStorage.createIdeaSubmission(idea);
+  }
+
+  async getAllIdeaSubmissions(): Promise<IdeaSubmission[]> {
+    return await dbStorage.getAllIdeaSubmissions();
+  }
+
+  async getIdeaSubmission(id: string): Promise<IdeaSubmission | undefined> {
+    return await dbStorage.getIdeaSubmission(id);
+  }
+
+  async updateIdeaSubmissionStatus(id: string, status: string, notes?: string): Promise<IdeaSubmission> {
+    return await dbStorage.updateIdeaSubmissionStatus(id, status, notes);
+  }
+
+  async deleteIdeaSubmission(id: string): Promise<void> {
+    return await dbStorage.deleteIdeaSubmission(id);
   }
 
   // Stats methods

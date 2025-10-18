@@ -34,11 +34,7 @@ export function CTASection() {
               asChild
               data-testid="button-submit-idea"
             >
-              <a
-                href="https://ramazo3.github.io/df_labs/submit-idea"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="/submit-idea">
                 Submit Idea
                 <ArrowRight className="ml-2 h-5 w-5" />
               </a>
