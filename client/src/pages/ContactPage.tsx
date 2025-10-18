@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Send, CheckCircle, Sparkles } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -33,62 +34,72 @@ export default function ContactPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div className="container mx-auto px-4 py-16">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+        <div className="container mx-auto px-4 pt-24 pb-16">
+          {/* Hero Section */}
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Get in Touch
+            <Badge className="mb-6 text-lg px-6 py-2 bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0">
+              <Mail className="h-4 w-4 mr-2" />
+              Contact Us
+            </Badge>
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
+              <span className="bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-transparent bg-clip-text">
+                Get in Touch
+              </span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Ready to collaborate or have questions about our projects? 
               We'd love to hear from you.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Contact Information */}
-            <div className="space-y-8">
-              <Card>
+            <div className="space-y-6">
+              <Card className="border-2 hover:border-chart-1 transition-all shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-2xl">Contact Information</CardTitle>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    <Sparkles className="h-6 w-6 text-chart-1" />
+                    Contact Information
+                  </CardTitle>
                   <CardDescription>
                     Reach out to us through any of these channels
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-blue-100 rounded-lg">
-                      <Mail className="h-6 w-6 text-blue-600" />
+                  <div className="group flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-all">
+                    <div className="p-3 bg-chart-1/10 rounded-lg group-hover:scale-110 transition-transform">
+                      <Mail className="h-6 w-6 text-chart-1" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Email</h3>
-                      <p className="text-gray-600">hello@deeplab.ai</p>
+                      <h3 className="font-semibold">Email</h3>
+                      <p className="text-sm text-muted-foreground">hello@deeplab.ai</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-green-100 rounded-lg">
-                      <Phone className="h-6 w-6 text-green-600" />
+                  <div className="group flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-all">
+                    <div className="p-3 bg-chart-2/10 rounded-lg group-hover:scale-110 transition-transform">
+                      <Phone className="h-6 w-6 text-chart-2" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Phone</h3>
-                      <p className="text-gray-600">+1 (555) 123-4567</p>
+                      <h3 className="font-semibold">Phone</h3>
+                      <p className="text-sm text-muted-foreground">+1 (555) 123-4567</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-purple-100 rounded-lg">
-                      <MapPin className="h-6 w-6 text-purple-600" />
+                  <div className="group flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-all">
+                    <div className="p-3 bg-chart-3/10 rounded-lg group-hover:scale-110 transition-transform">
+                      <MapPin className="h-6 w-6 text-chart-3" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Location</h3>
-                      <p className="text-gray-600">San Francisco, CA</p>
+                      <h3 className="font-semibold">Location</h3>
+                      <p className="text-sm text-muted-foreground">San Francisco, CA</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="border-2 hover:border-chart-2 transition-all shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-xl">Quick Response</CardTitle>
                   <CardDescription>
@@ -98,16 +109,16 @@ export default function ContactPage() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span className="text-sm text-gray-600">Business inquiries</span>
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      <span className="text-sm text-muted-foreground">Business inquiries</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span className="text-sm text-gray-600">Technical support</span>
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      <span className="text-sm text-muted-foreground">Technical support</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span className="text-sm text-gray-600">Partnership opportunities</span>
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      <span className="text-sm text-muted-foreground">Partnership opportunities</span>
                     </div>
                   </div>
                 </CardContent>
@@ -116,7 +127,7 @@ export default function ContactPage() {
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <Card>
+              <Card className="border-2 hover:border-chart-3 transition-all shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-2xl">Send us a Message</CardTitle>
                   <CardDescription>
@@ -125,17 +136,20 @@ export default function ContactPage() {
                 </CardHeader>
                 <CardContent>
                   {isSubmitted ? (
-                    <div className="text-center py-8">
-                      <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                      <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                        Message Sent!
+                    <div className="text-center py-12">
+                      <div className="inline-block p-6 bg-green-500/10 rounded-full mb-6">
+                        <CheckCircle className="h-20 w-20 text-green-600 dark:text-green-400" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3">
+                        Message Sent Successfully!
                       </h3>
-                      <p className="text-gray-600 mb-6">
+                      <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                         Thank you for reaching out. We'll get back to you within 24 hours.
                       </p>
                       <Button 
                         onClick={() => setIsSubmitted(false)}
-                        variant="outline"
+                        className="bg-gradient-to-r from-chart-1 to-chart-2 hover:opacity-90 text-white"
+                        size="lg"
                       >
                         Send Another Message
                       </Button>
@@ -150,6 +164,7 @@ export default function ContactPage() {
                             value={formData.name}
                             onChange={(e) => handleInputChange("name", e.target.value)}
                             placeholder="Your full name"
+                            className="mt-2"
                             required
                           />
                         </div>
@@ -161,6 +176,7 @@ export default function ContactPage() {
                             value={formData.email}
                             onChange={(e) => handleInputChange("email", e.target.value)}
                             placeholder="your.email@example.com"
+                            className="mt-2"
                             required
                           />
                         </div>
@@ -172,7 +188,7 @@ export default function ContactPage() {
                           value={formData.inquiryType}
                           onValueChange={(value) => handleInputChange("inquiryType", value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="mt-2">
                             <SelectValue placeholder="Select inquiry type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -192,6 +208,7 @@ export default function ContactPage() {
                           value={formData.subject}
                           onChange={(e) => handleInputChange("subject", e.target.value)}
                           placeholder="Brief subject line"
+                          className="mt-2"
                           required
                         />
                       </div>
@@ -204,13 +221,14 @@ export default function ContactPage() {
                           onChange={(e) => handleInputChange("message", e.target.value)}
                           placeholder="Tell us more about your inquiry..."
                           rows={6}
+                          className="mt-2"
                           required
                         />
                       </div>
 
                       <Button 
                         type="submit" 
-                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        className="w-full bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 hover:opacity-90 text-white shadow-lg"
                         size="lg"
                       >
                         <Send className="h-5 w-5 mr-2" />

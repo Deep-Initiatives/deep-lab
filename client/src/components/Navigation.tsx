@@ -85,7 +85,7 @@ export function Navigation() {
   };
 
   const navLinks = [
-    { label: "Home", path: "/", id: "hero" },
+    { label: "Contact", path: "/contact" },
     { label: "Projects", path: "/", id: "projects" },
     { label: "Pods", path: "/", id: "pods" },
     { label: "Blog", path: "/blog" },
