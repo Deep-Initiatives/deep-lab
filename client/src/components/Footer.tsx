@@ -148,9 +148,31 @@ export function Footer() {
 
         <div className="pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Deep Lab. All rights reserved.
-            </p>
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} Deep Lab. All rights reserved.
+              </p>
+              <div className="flex items-center gap-4">
+                <a
+                  href="https://deepfunding.ai/terms/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="link-footer-terms"
+                >
+                  Terms & Conditions
+                </a>
+                <a
+                  href="https://deepfunding.ai/privacy-policy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="link-footer-privacy"
+                >
+                  Privacy Policy
+                </a>
+              </div>
+            </div>
             <p className="text-sm text-muted-foreground">
               Powered by innovation since June 2025
             </p>

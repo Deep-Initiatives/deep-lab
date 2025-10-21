@@ -10,9 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Plus, Edit, Trash2, ExternalLink, Search, Filter, Calendar, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Blog, InsertBlog } from "@shared/schema";
 
 export function AdminBlogsPage() {
+  const { token } = useAuth();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
@@ -29,6 +31,7 @@ export function AdminBlogsPage() {
     readTime: 5,
     imageUrl: "",
     externalUrl: "",
+    featured: false,
   });
 
   const queryClient = useQueryClient();
@@ -43,7 +46,10 @@ export function AdminBlogsPage() {
     mutationFn: async (blogData: InsertBlog) => {
       const response = await fetch("/api/admin/blogs", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(blogData),
       });
       if (!response.ok) throw new Error("Failed to create blog");
@@ -71,7 +77,10 @@ export function AdminBlogsPage() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<InsertBlog> }) => {
       const response = await fetch(`/api/admin/blogs/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to update blog");
@@ -89,6 +98,9 @@ export function AdminBlogsPage() {
     mutationFn: async (id: string) => {
       const response = await fetch(`/api/admin/blogs/${id}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
       });
       if (!response.ok) throw new Error("Failed to delete blog");
     },
@@ -267,6 +279,16 @@ export function AdminBlogsPage() {
                   placeholder="https://example.com"
                 />
               </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="featured"
+                  checked={formData.featured}
+                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                  className="rounded border-gray-300"
+                />
+                <Label htmlFor="featured">Featured Post</Label>
+              </div>
               <div className="flex justify-end space-x-2">
                 <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                   Cancel
@@ -333,9 +355,16 @@ export function AdminBlogsPage() {
                   <CardTitle className="text-lg line-clamp-2">{blog.title}</CardTitle>
                   <p className="text-sm text-gray-600 mt-1 line-clamp-2">{blog.excerpt}</p>
                 </div>
-                <Badge className={getCategoryColor(blog.category)}>
-                  {blog.category}
-                </Badge>
+                <div className="flex gap-2">
+                  <Badge className={getCategoryColor(blog.category)}>
+                    {blog.category}
+                  </Badge>
+                  {blog.featured && (
+                    <Badge className="bg-gradient-to-r from-chart-1 to-chart-2 text-white">
+                      Featured
+                    </Badge>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -520,6 +549,16 @@ export function AdminBlogsPage() {
                 onChange={(e) => setFormData({ ...formData, externalUrl: e.target.value })}
                 placeholder="https://example.com"
               />
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="edit-featured"
+                checked={formData.featured}
+                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                className="rounded border-gray-300"
+              />
+              <Label htmlFor="edit-featured">Featured Post</Label>
             </div>
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>

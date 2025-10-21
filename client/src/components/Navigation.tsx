@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "@/components/ThemeProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,6 +61,7 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [, setLocation] = useLocation();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -134,9 +136,18 @@ export function Navigation() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "backdrop-blur-xl bg-background/95 border-b border-border"
-          : "bg-background"
+          ? "backdrop-blur-xl border-b border-[#B620E0]/30"
+          : ""
       }`}
+      style={{
+        background: isScrolled 
+          ? (theme === 'dark' 
+              ? "linear-gradient(to right, hsl(var(--chart-1)), hsl(var(--chart-2)), hsl(var(--chart-3))) / 95%"
+              : "linear-gradient(to right, #E0E7FF, #F3E8FF, #FED7AA) / 95%")
+          : (theme === 'dark' 
+              ? "linear-gradient(to right, hsl(var(--chart-1)), hsl(var(--chart-2)), hsl(var(--chart-3)))"
+              : "linear-gradient(to right, #E0E7FF, #F3E8FF, #FED7AA)")
+      }}
     >
       {/* Apps icon at absolute left edge - no container */}
       <div 
@@ -176,7 +187,7 @@ export function Navigation() {
                 </div>
                 
                 {/* Text in middle */}
-                <p className="text-white text-sm leading-relaxed mb-4">
+                <p className="text-white text-sm leading-relaxed mb-1">
                   DEEP Connects Bold Ideas to Real World Change and build a better future together.
                 </p>
                 
@@ -193,9 +204,9 @@ export function Navigation() {
                 {/* Funding */}
                 <div 
                   onClick={() => window.open('https://deepfunding.ai/', '_blank')}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-2 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-1 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
                 >
-                  <div className="flex items-start gap-2 mb-1">
+                  <div className="flex items-start gap-2 mb-0">
                     <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
                       <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain" />
                     </div>
@@ -211,9 +222,9 @@ export function Navigation() {
                 {/* Community */}
                 <div 
                   onClick={() => window.open('https://community.deepfunding.ai/', '_blank')}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-2 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-1 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
                 >
-                  <div className="flex items-start gap-2 mb-1">
+                  <div className="flex items-start gap-2 mb-0">
                     <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
                       <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain" />
                     </div>
@@ -225,9 +236,9 @@ export function Navigation() {
 
                 {/* Lab - Current site with white background */}
                 <div 
-                  className="bg-white border border-white/20 rounded-xl p-2 cursor-default transition-all duration-300"
+                  className="bg-white border border-white/20 rounded-xl p-1 cursor-default transition-all duration-300"
                 >
-                  <div className="flex items-start gap-2 mb-1">
+                  <div className="flex items-start gap-2 mb-0">
                     <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
                       <img src={logoLab} alt="DEEP Lab" className="w-full h-full object-contain" />
                     </div>
@@ -240,9 +251,9 @@ export function Navigation() {
                 {/* Ideation */}
                 <div 
                   onClick={() => window.open('https://ideation.deepfunding.ai', '_blank')}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-2 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-1 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
                 >
-                  <div className="flex items-start gap-2 mb-1">
+                  <div className="flex items-center gap-3 mb-0">
                     <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
                       <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain" />
                     </div>
@@ -263,13 +274,13 @@ export function Navigation() {
           {/* Mobile layout - Vertical stack */}
           <div className="md:hidden flex flex-col px-4 py-4 gap-3">
             {/* Initiatives */}
-            <div className="bg-gradient-to-br from-purple-900/80 to-pink-900/80 backdrop-blur-sm border border-white/20 rounded-xl p-6">
-              <div className="flex items-start gap-3 mb-3">
+            <div className="bg-gradient-to-br from-purple-900/80 to-pink-900/80 backdrop-blur-sm border border-white/20 rounded-xl p-3">
+              <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
                   <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain" />
                 </div>
               </div>
-              <p className="text-white/90 text-sm leading-relaxed mb-3">
+              <p className="text-white/90 text-sm leading-relaxed mb-2">
                 DEEP Connects Bold Ideas to Real World Change and build a better future together.
               </p>
               <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-white/20 text-white border border-white/30">
@@ -283,9 +294,9 @@ export function Navigation() {
                 window.open('https://deepfunding.ai/', '_blank');
                 setIsAppsDropdownOpen(false);
               }}
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-6 cursor-pointer"
+              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer"
             >
-              <div className="flex items-start gap-3 mb-3">
+              <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
                   <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain" />
                 </div>
@@ -301,9 +312,9 @@ export function Navigation() {
                 window.open('https://community.deepfunding.ai/', '_blank');
                 setIsAppsDropdownOpen(false);
               }}
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-6 cursor-pointer"
+              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer"
             >
-              <div className="flex items-start gap-3 mb-3">
+              <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
                   <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain" />
                 </div>
@@ -314,8 +325,8 @@ export function Navigation() {
             </div>
 
             {/* Lab - Current site */}
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-purple-500/50 rounded-xl p-6">
-              <div className="flex items-start gap-3 mb-3">
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-purple-500/50 rounded-xl p-3">
+              <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
                   <img src={logoImage} alt="DEEP Lab" className="w-full h-full object-contain" />
                 </div>
@@ -331,9 +342,9 @@ export function Navigation() {
                 window.open('https://ideation.deepfunding.ai', '_blank');
                 setIsAppsDropdownOpen(false);
               }}
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-6 cursor-pointer"
+              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer"
             >
-              <div className="flex items-start gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
                   <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain" />
                 </div>
@@ -371,7 +382,11 @@ export function Navigation() {
               <button
                 key={link.label}
                 onClick={() => link.id ? scrollToSection(link.id) : handleNavigation(link.path)}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover-elevate px-3 py-2 rounded-md"
+                className={`text-sm font-medium transition-colors hover-elevate px-3 py-2 rounded-md ${
+                  theme === 'dark' 
+                    ? 'text-white hover:text-white' 
+                    : 'text-gray-800 hover:text-gray-900'
+                }`}
                 data-testid={`link-nav-${link.label.toLowerCase()}`}
               >
                 {link.label}
@@ -386,6 +401,7 @@ export function Navigation() {
               variant="default"
               onClick={() => handleNavigation("/join-team")}
               data-testid="button-join-team"
+              className="bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white border-0 hover:opacity-90 transition-opacity"
             >
               Join Team
             </Button>
@@ -394,7 +410,11 @@ export function Navigation() {
           <Button
             size="icon"
             variant="ghost"
-            className="md:hidden text-foreground hover:text-foreground hover:bg-muted"
+            className={`md:hidden hover:bg-white/20 ${
+              theme === 'dark' 
+                ? 'text-white hover:text-white' 
+                : 'text-gray-800 hover:text-gray-900'
+            }`}
             onClick={() => {
               setIsMobileMenuOpen(!isMobileMenuOpen);
               setIsAppsDropdownOpen(false);
@@ -414,13 +434,24 @@ export function Navigation() {
             onClick={() => setIsMobileMenuOpen(false)}
           />
           {/* Mobile menu */}
-          <div className="md:hidden backdrop-blur-xl bg-background/95 border-b border-border shadow-lg z-50 relative">
+          <div 
+            className="md:hidden backdrop-blur-xl border-b border-[#B620E0]/30 shadow-lg z-50 relative"
+            style={{
+              background: theme === 'dark' 
+                ? "linear-gradient(to right, hsl(var(--chart-1)), hsl(var(--chart-2)), hsl(var(--chart-3))) / 95%"
+                : "linear-gradient(to right, #E0E7FF, #F3E8FF, #FED7AA) / 95%"
+            }}
+          >
           <div className="px-4 py-4 space-y-2">
             {navLinks.map((link) => (
               <button
                 key={link.label}
                 onClick={() => link.id ? scrollToSection(link.id) : handleNavigation(link.path)}
-                className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                className={`block w-full text-left px-4 py-3 text-sm font-medium hover:bg-white/20 rounded-md transition-colors ${
+                  theme === 'dark' 
+                    ? 'text-white hover:text-white' 
+                    : 'text-gray-800 hover:text-gray-900'
+                }`}
                 data-testid={`link-mobile-${link.label.toLowerCase()}`}
               >
                 {link.label}
@@ -433,7 +464,7 @@ export function Navigation() {
             <Button
               variant="default"
               onClick={() => handleNavigation("/join-team")}
-              className="w-full bg-white text-chart-1 hover:bg-white/90 border-0"
+              className="w-full bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white border-0 hover:opacity-90 transition-opacity"
               data-testid="button-mobile-join"
             >
               Join Team

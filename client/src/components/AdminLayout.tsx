@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, LogOut, Home, Users, Code, BookOpen, FileText, Lightbulb } from "lucide-react";
+import { Menu, X, LogOut, Home, Users, Code, BookOpen, FileText, Lightbulb, Mail } from "lucide-react";
 import logoImage from "@assets/logo.svg";
 
 interface AdminLayoutProps {
@@ -18,11 +18,12 @@ const navigationItems = [
   { id: "blogs", label: "Blogs", href: "/admin/blogs", icon: BookOpen },
   { id: "applications", label: "Applications", href: "/admin/applications", icon: FileText },
   { id: "ideas", label: "Ideas", href: "/admin/ideas", icon: Lightbulb },
+  { id: "contacts", label: "Contacts", href: "/admin/contacts", icon: Mail },
 ];
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { logout } = useAuth();
 
   const handleNavigation = (href: string) => {
@@ -32,6 +33,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const isActive = (href: string) => {
+    if (href === "/admin") {
+      return location === "/admin";
+    }
+    return location.startsWith(href);
   };
 
   return (
@@ -72,11 +80,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
             {navigationItems.map((item) => {
               const Icon = item.icon;
+              const active = isActive(item.href);
               return (
                 <Button
                   key={item.id}
                   variant="ghost"
-                  className="w-full justify-start gap-3 h-10 text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+                  className={`w-full justify-start gap-3 h-10 transition-all duration-200 relative ${
+                    active
+                      ? "bg-gradient-to-r from-chart-1/20 to-chart-2/20 text-chart-1 border border-chart-1/30 shadow-sm font-medium border-l-4 border-l-chart-1"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
                   onClick={() => handleNavigation(item.href)}
                 >
                   <Icon className="h-4 w-4" />

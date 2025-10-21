@@ -78,6 +78,7 @@ export const blogs = pgTable("blogs", {
   imageUrl: text("image_url"),
   externalUrl: text("external_url"),
   isActive: boolean("is_active").notNull().default(true),
+  featured: boolean("featured").notNull().default(false),
   createdAt: timestamp("created_at").$defaultFn(() => new Date()),
   updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
 });
@@ -160,6 +161,7 @@ export const insertBlogSchema = createInsertSchema(blogs).pick({
   readTime: true,
   imageUrl: true,
   externalUrl: true,
+  featured: true,
 });
 
 export const insertApplicationSchema = createInsertSchema(applications).pick({
@@ -200,6 +202,30 @@ export type Application = typeof applications.$inferSelect;
 export type InsertApplication = z.infer<typeof insertApplicationSchema>;
 export type IdeaSubmission = typeof ideaSubmissions.$inferSelect;
 export type InsertIdeaSubmission = z.infer<typeof insertIdeaSubmissionSchema>;
+
+// Contact form submissions
+export const contactSubmissions = pgTable("contact_submissions", {
+  id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  inquiryType: text("inquiry_type").notNull(), // General, Partnership, Support, Other
+  status: text("status").notNull().default("new"), // new, read, replied, closed
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
+});
+
+export const insertContactSubmissionSchema = createInsertSchema(contactSubmissions).pick({
+  name: true,
+  email: true,
+  subject: true,
+  message: true,
+  inquiryType: true,
+});
+
+export type ContactSubmission = typeof contactSubmissions.$inferSelect;
+export type InsertContactSubmission = z.infer<typeof insertContactSubmissionSchema>;
 
 // Legacy type exports for backward compatibility
 export type AppCategory = "AI Agent" | "Web App" | "Tool" | "Service";
