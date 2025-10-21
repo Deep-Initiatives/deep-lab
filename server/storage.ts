@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type App, type Pod, type TimelineMilestone, type Blog, type Application, type InsertApplication, type IdeaSubmission, type InsertIdeaSubmission, type LabStats } from "@shared/schema";
+import { type User, type InsertUser, type App, type Pod, type TimelineMilestone, type Blog, type Application, type InsertApplication, type IdeaSubmission, type InsertIdeaSubmission, type ContactSubmission, type InsertContactSubmission, type LabStats } from "@shared/schema";
 import { dbStorage } from "./db";
 
 export interface IStorage {
@@ -46,6 +46,13 @@ export interface IStorage {
   getIdeaSubmission(id: string): Promise<IdeaSubmission | undefined>;
   updateIdeaSubmissionStatus(id: string, status: string, notes?: string): Promise<IdeaSubmission>;
   deleteIdeaSubmission(id: string): Promise<void>;
+  
+  // Contact Submissions
+  createContactSubmission(contact: InsertContactSubmission): Promise<ContactSubmission>;
+  getAllContactSubmissions(): Promise<ContactSubmission[]>;
+  getContactSubmission(id: string): Promise<ContactSubmission | undefined>;
+  updateContactSubmissionStatus(id: string, status: string): Promise<ContactSubmission>;
+  deleteContactSubmission(id: string): Promise<void>;
   
   // Stats
   getLabStats(): Promise<LabStats>;
@@ -186,6 +193,27 @@ export class DatabaseStorage implements IStorage {
 
   async deleteIdeaSubmission(id: string): Promise<void> {
     return await dbStorage.deleteIdeaSubmission(id);
+  }
+
+  // Contact Submission methods
+  async createContactSubmission(contact: InsertContactSubmission): Promise<ContactSubmission> {
+    return await dbStorage.createContactSubmission(contact);
+  }
+
+  async getAllContactSubmissions(): Promise<ContactSubmission[]> {
+    return await dbStorage.getAllContactSubmissions();
+  }
+
+  async getContactSubmission(id: string): Promise<ContactSubmission | undefined> {
+    return await dbStorage.getContactSubmission(id);
+  }
+
+  async updateContactSubmissionStatus(id: string, status: string): Promise<ContactSubmission> {
+    return await dbStorage.updateContactSubmissionStatus(id, status);
+  }
+
+  async deleteContactSubmission(id: string): Promise<void> {
+    return await dbStorage.deleteContactSubmission(id);
   }
 
   // Stats methods

@@ -7,6 +7,7 @@ import { AdminAppsPage } from "@/pages/admin/AdminAppsPage";
 import { AdminBlogsPage } from "@/pages/admin/AdminBlogsPage";
 import { AdminApplicationsPage } from "@/pages/admin/AdminApplicationsPage";
 import { AdminIdeasPage } from "@/pages/admin/AdminIdeasPage";
+import { AdminContactsPage } from "@/pages/admin/AdminContactsPage";
 
 interface AdminDashboardProps {
   isAdmin: boolean;
@@ -38,6 +39,8 @@ export function AdminDashboard({ isAdmin }: AdminDashboardProps) {
       return <AdminApplicationsPage />;
     } else if (location === "/admin/ideas") {
       return <AdminIdeasPage />;
+    } else if (location === "/admin/contacts") {
+      return <AdminContactsPage />;
     } else if (location === "/admin/settings") {
       return <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1><p className="text-muted-foreground">Coming soon...</p></div>;
     } else {

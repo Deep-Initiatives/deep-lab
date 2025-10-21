@@ -91,8 +91,12 @@ export function Hero({ stats }: HeroProps) {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-tight animate-fade-in-up tracking-tight">
-          <span className="inline-block animate-slide-up">Where Innovation Takes Flight</span>
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight animate-fade-in-up">
+          Where Innovation
+          <br />
+          <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+            Takes Flight
+          </span>
         </h1>
 
         {/* Subtitle */}

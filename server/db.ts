@@ -8,6 +8,7 @@ import {
   blogs,
   applications,
   ideaSubmissions,
+  contactSubmissions,
   type User, 
   type Pod, 
   type App, 
@@ -15,6 +16,7 @@ import {
   type Blog,
   type Application,
   type IdeaSubmission,
+  type ContactSubmission,
   type LabStats,
   type InsertUser,
   type InsertPod,
@@ -22,7 +24,8 @@ import {
   type InsertMilestone,
   type InsertBlog,
   type InsertApplication,
-  type InsertIdeaSubmission
+  type InsertIdeaSubmission,
+  type InsertContactSubmission
 } from "@shared/schema";
 import { hashPassword } from "./auth";
 import { eq, and, desc, count } from "drizzle-orm";
@@ -232,7 +235,9 @@ export class DatabaseStorage {
     const processedData = {
       ...blogData,
       tags: Array.isArray(blogData.tags) ? blogData.tags as string[] : [],
+      publishedAt: new Date(blogData.publishedAt),
     };
+    
     const result = await db.insert(blogs).values(processedData).returning();
     return result[0];
   }
@@ -388,6 +393,34 @@ export class DatabaseStorage {
 
   async deleteIdeaSubmission(id: string): Promise<void> {
     await db.delete(ideaSubmissions).where(eq(ideaSubmissions.id, id));
+  }
+
+  // Contact Submissions
+  async createContactSubmission(contactData: InsertContactSubmission): Promise<ContactSubmission> {
+    const result = await db.insert(contactSubmissions).values(contactData).returning();
+    return result[0];
+  }
+
+  async getAllContactSubmissions(): Promise<ContactSubmission[]> {
+    return await db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt));
+  }
+
+  async getContactSubmission(id: string): Promise<ContactSubmission | undefined> {
+    const result = await db.select().from(contactSubmissions).where(eq(contactSubmissions.id, id)).limit(1);
+    return result[0];
+  }
+
+  async updateContactSubmissionStatus(id: string, status: string): Promise<ContactSubmission> {
+    const result = await db
+      .update(contactSubmissions)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(contactSubmissions.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteContactSubmission(id: string): Promise<void> {
+    await db.delete(contactSubmissions).where(eq(contactSubmissions.id, id));
   }
 }
 

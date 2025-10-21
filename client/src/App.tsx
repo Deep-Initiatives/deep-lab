@@ -10,6 +10,7 @@ import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
 import { ProjectDetailsPage } from "@/pages/ProjectDetailsPage";
 import BlogPage from "@/pages/BlogPage";
+import BlogDetailPage from "@/pages/BlogDetailPage";
 import ContactPage from "@/pages/ContactPage";
 import ViewAllIdeasPage from "@/pages/ViewAllIdeasPage";
 import SubmitIdeaPage from "@/pages/SubmitIdeaPage";
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/project/:id" component={({ params }) => <ProjectDetailsPage projectId={params.id} />} />
       <Route path="/blog" component={BlogPage} />
+      <Route path="/blog/:id" component={BlogDetailPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/ideas" component={ViewAllIdeasPage} />
       <Route path="/submit-idea" component={SubmitIdeaPage} />

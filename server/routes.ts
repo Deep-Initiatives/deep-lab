@@ -260,6 +260,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin API endpoints for blog management
+  app.get("/api/admin/blogs", authenticateToken, async (req, res) => {
+    try {
+      const blogs = await storage.getAllBlogs();
+      res.json(blogs);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch blogs" });
+    }
+  });
+
   app.post("/api/admin/blogs", authenticateToken, async (req, res) => {
     try {
       const blog = await storage.createBlog(req.body);
@@ -290,6 +299,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Blog deleted successfully" });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete blog" });
+    }
+  });
+
+  // Contact form submission routes
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const contact = await storage.createContactSubmission(req.body);
+      res.status(201).json(contact);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to submit contact form" });
+    }
+  });
+
+  // Admin: Get all contact submissions
+  app.get("/api/admin/contacts", authenticateToken, async (req, res) => {
+    try {
+      const contacts = await storage.getAllContactSubmissions();
+      res.json(contacts);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch contact submissions" });
+    }
+  });
+
+  // Admin: Get specific contact submission
+  app.get("/api/admin/contacts/:id", authenticateToken, async (req, res) => {
+    try {
+      const contact = await storage.getContactSubmission(req.params.id);
+      if (!contact) {
+        return res.status(404).json({ error: "Contact submission not found" });
+      }
+      res.json(contact);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch contact submission" });
+    }
+  });
+
+  // Admin: Update contact submission status
+  app.patch("/api/admin/contacts/:id/status", authenticateToken, async (req, res) => {
+    try {
+      const { status } = req.body;
+      const contact = await storage.updateContactSubmissionStatus(req.params.id, status);
+      res.json(contact);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update contact submission status" });
+    }
+  });
+
+  // Admin: Delete contact submission
+  app.delete("/api/admin/contacts/:id", authenticateToken, async (req, res) => {
+    try {
+      await storage.deleteContactSubmission(req.params.id);
+      res.json({ message: "Contact submission deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete contact submission" });
     }
   });
 
