@@ -7,7 +7,7 @@ export const users = pgTable("users", {
   id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  role: text("role").notNull().default("admin"), // admin, coordinator
+  role: text("role").notNull().default("admin"), // admin, coordinator, blog-admin
   createdAt: timestamp("created_at").$defaultFn(() => new Date()),
   updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
 });
@@ -88,13 +88,10 @@ export const applications = pgTable("applications", {
   fullName: text("full_name").notNull(),
   email: text("email").notNull(),
   role: text("role").notNull(),
-  experience: text("experience").notNull(),
-  skills: json("skills").$type<string[]>().default([]),
-  linkedin: text("linkedin"),
-  github: text("github"),
-  portfolio: text("portfolio"),
-  motivation: text("motivation").notNull(),
-  availability: text("availability").notNull(),
+  mattermostHandle: text("mattermost_handle").notNull(),
+  circles: json("circles").$type<string[]>().default([]),
+  meetsRequirements: text("meets_requirements").notNull(),
+  currentlyInCircle: text("currently_in_circle").notNull(),
   status: text("status").notNull().default("pending"), // pending, reviewed, accepted, rejected
   notes: text("notes"),
   createdAt: timestamp("created_at").$defaultFn(() => new Date()),
@@ -168,13 +165,10 @@ export const insertApplicationSchema = createInsertSchema(applications).pick({
   fullName: true,
   email: true,
   role: true,
-  experience: true,
-  skills: true,
-  linkedin: true,
-  github: true,
-  portfolio: true,
-  motivation: true,
-  availability: true,
+  mattermostHandle: true,
+  circles: true,
+  meetsRequirements: true,
+  currentlyInCircle: true,
 });
 
 export const insertIdeaSubmissionSchema = createInsertSchema(ideaSubmissions).pick({

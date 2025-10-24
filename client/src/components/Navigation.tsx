@@ -17,6 +17,11 @@ import logoInitiatives from "@assets/logo-initiatives.svg";
 import logoFunding from "@assets/logo-funding.svg";
 import logoCommunity from "@assets/logo-community.svg";
 import logoIdeation from "@assets/logo-ideation.svg";
+// Black text versions for hover states
+import logoInitiativesBlack from "@assets/logo_initiative.svg";
+import logoFundingBlack from "@assets/logo_funding.svg";
+import logoCommunityBlack from "@assets/logo_community.svg";
+import logoIdeationBlack from "@assets/logo_ideation.svg";
 
 // Custom 3x3 grid icon component - Large circular dots
 const AppsIcon = ({ className }: { className?: string }) => (
@@ -179,11 +184,12 @@ export function Navigation() {
           {/* Desktop layout */}
           <div className="hidden md:flex">
               {/* Left side box - Initiatives - spans full height */}
-              <div className="bg-white/10 backdrop-blur-sm border-r border-white/20 py-3 px-6 w-80">
+              <div className="bg-white/10 backdrop-blur-sm border-r border-white/20 py-3 px-6 w-80 group">
               <div className="flex flex-col items-start gap-2">
                 {/* Logo at top */}
                 <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
-                  <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain" />
+                  <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" />
+                  <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" />
                 </div>
                 
                 {/* Text in middle */}
@@ -208,7 +214,8 @@ export function Navigation() {
                 >
                   <div className="flex items-start gap-2 mb-0">
                     <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
-                      <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain" />
+                      <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" />
+                      <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" />
                     </div>
                     <div className="flex items-center gap-2">
                 
@@ -226,7 +233,8 @@ export function Navigation() {
                 >
                   <div className="flex items-start gap-2 mb-0">
                     <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
-                      <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain" />
+                      <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" />
+                      <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" />
                     </div>
                   </div>
                   <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors">
@@ -255,7 +263,8 @@ export function Navigation() {
                 >
                   <div className="flex items-center gap-3 mb-0">
                     <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
-                      <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain" />
+                      <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" />
+                      <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" />
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-white/20 text-white border border-white/30">
@@ -274,10 +283,11 @@ export function Navigation() {
           {/* Mobile layout - Vertical stack */}
           <div className="md:hidden flex flex-col px-4 py-4 gap-3">
             {/* Initiatives */}
-            <div className="bg-gradient-to-br from-purple-900/80 to-pink-900/80 backdrop-blur-sm border border-white/20 rounded-xl p-3">
+            <div className="bg-gradient-to-br from-purple-900/80 to-pink-900/80 backdrop-blur-sm border border-white/20 rounded-xl p-3 group">
               <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
-                  <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain" />
+                  <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" />
+                  <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" />
                 </div>
               </div>
               <p className="text-white/90 text-sm leading-relaxed mb-2">
@@ -294,11 +304,12 @@ export function Navigation() {
                 window.open('https://deepfunding.ai/', '_blank');
                 setIsAppsDropdownOpen(false);
               }}
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer"
+              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer group"
             >
               <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
-                  <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain" />
+                  <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" />
+                  <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" />
                 </div>
               </div>
               <p className="text-white/70 text-sm leading-relaxed">
@@ -312,11 +323,12 @@ export function Navigation() {
                 window.open('https://community.deepfunding.ai/', '_blank');
                 setIsAppsDropdownOpen(false);
               }}
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer"
+              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer group"
             >
               <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
-                  <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain" />
+                  <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" />
+                  <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" />
                 </div>
               </div>
               <p className="text-white/70 text-sm leading-relaxed">
@@ -342,11 +354,12 @@ export function Navigation() {
                 window.open('https://ideation.deepfunding.ai', '_blank');
                 setIsAppsDropdownOpen(false);
               }}
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer"
+              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-3 cursor-pointer group"
             >
               <div className="flex items-center gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
-                  <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain" />
+                  <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" />
+                  <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" />
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-white/20 text-white border border-white/30">

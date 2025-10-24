@@ -8,12 +8,14 @@ import { AdminBlogsPage } from "@/pages/admin/AdminBlogsPage";
 import { AdminApplicationsPage } from "@/pages/admin/AdminApplicationsPage";
 import { AdminIdeasPage } from "@/pages/admin/AdminIdeasPage";
 import { AdminContactsPage } from "@/pages/admin/AdminContactsPage";
+import AdminProfilePage from "@/pages/admin/AdminProfilePage";
 
 interface AdminDashboardProps {
   isAdmin: boolean;
+  userRole?: string;
 }
 
-export function AdminDashboard({ isAdmin }: AdminDashboardProps) {
+export function AdminDashboard({ isAdmin, userRole }: AdminDashboardProps) {
   const [location] = useLocation();
 
   if (!isAdmin) {
@@ -25,31 +27,95 @@ export function AdminDashboard({ isAdmin }: AdminDashboardProps) {
     );
   }
 
+  // Check if user has permission to access the current page
+  const hasPermission = (page: string) => {
+    if (userRole === "blog-admin") {
+      return page === "blogs" || page === "dashboard" || page === "settings";
+    }
+    return true; // Full admin has access to everything
+  };
+
   // Determine which component to render based on the current location
   const renderContent = () => {
     if (location === "/admin") {
-      return <AdminDashboardHome />;
+      return <AdminDashboardHome userRole={userRole} />;
     } else if (location === "/admin/pods") {
+      if (!hasPermission("pods")) {
+        return (
+          <div className="text-center py-8">
+            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+          </div>
+        );
+      }
       return <AdminPodsPage />;
     } else if (location === "/admin/apps") {
+      if (!hasPermission("apps")) {
+        return (
+          <div className="text-center py-8">
+            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+          </div>
+        );
+      }
       return <AdminAppsPage />;
     } else if (location === "/admin/blogs") {
+      if (!hasPermission("blogs")) {
+        return (
+          <div className="text-center py-8">
+            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+          </div>
+        );
+      }
       return <AdminBlogsPage />;
     } else if (location === "/admin/applications") {
+      if (!hasPermission("applications")) {
+        return (
+          <div className="text-center py-8">
+            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+          </div>
+        );
+      }
       return <AdminApplicationsPage />;
     } else if (location === "/admin/ideas") {
+      if (!hasPermission("ideas")) {
+        return (
+          <div className="text-center py-8">
+            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+          </div>
+        );
+      }
       return <AdminIdeasPage />;
     } else if (location === "/admin/contacts") {
+      if (!hasPermission("contacts")) {
+        return (
+          <div className="text-center py-8">
+            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+          </div>
+        );
+      }
       return <AdminContactsPage />;
     } else if (location === "/admin/settings") {
-      return <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1><p className="text-muted-foreground">Coming soon...</p></div>;
+      if (!hasPermission("settings")) {
+        return (
+          <div className="text-center py-8">
+            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+          </div>
+        );
+      }
+      return <AdminProfilePage />;
     } else {
-      return <AdminDashboardHome />;
+      return <AdminDashboardHome userRole={userRole} />;
     }
   };
 
   return (
-    <AdminLayout>
+    <AdminLayout userRole={userRole}>
       {renderContent()}
     </AdminLayout>
   );

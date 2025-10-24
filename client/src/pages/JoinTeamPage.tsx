@@ -17,13 +17,10 @@ export default function JoinTeamPage() {
     fullName: "",
     email: "",
     role: "",
-    experience: "",
-    skills: [] as string[],
-    linkedin: "",
-    github: "",
-    portfolio: "",
-    motivation: "",
-    availability: "",
+    mattermostHandle: "",
+    circles: [] as string[],
+    meetsRequirements: "",
+    currentlyInCircle: "",
   });
   const [customRole, setCustomRole] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -73,12 +70,12 @@ export default function JoinTeamPage() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSkillToggle = (skill: string, checked: boolean) => {
+  const handleCircleToggle = (circle: string, checked: boolean) => {
     setFormData(prev => ({
       ...prev,
-      skills: checked 
-        ? [...prev.skills, skill]
-        : prev.skills.filter(s => s !== skill)
+      circles: checked 
+        ? [...prev.circles, circle]
+        : prev.circles.filter(c => c !== circle)
     }));
   };
 
@@ -96,11 +93,16 @@ export default function JoinTeamPage() {
     "Other"
   ];
 
-  const availableSkills = [
-    "React", "Node.js", "Python", "TypeScript", "JavaScript",
-    "AI/ML", "Data Analysis", "UI/UX Design", "Product Management",
-    "Agile", "SQL", "NoSQL", "Docker", "Kubernetes", "AWS", "Git",
-    "TensorFlow", "PyTorch", "Blockchain", "Solidity", "Rust"
+  const circleOptions = [
+    "Data Analytics Circle",
+    "Dev Outreach Circle", 
+    "Events Circle",
+    "Focus Circle",
+    "IT Circle",
+    "Marketing Circle",
+    "Onboarding Circle",
+    "Operations Circle",
+    "Review Circle"
   ];
 
   const roleDescriptions = [
@@ -182,13 +184,10 @@ export default function JoinTeamPage() {
                             fullName: "",
                             email: "",
                             role: "",
-                            experience: "",
-                            skills: [],
-                            linkedin: "",
-                            github: "",
-                            portfolio: "",
-                            motivation: "",
-                            availability: "",
+                            mattermostHandle: "",
+                            circles: [],
+                            meetsRequirements: "",
+                            currentlyInCircle: "",
                           });
                           setCustomRole("");
                         }}
@@ -279,42 +278,33 @@ export default function JoinTeamPage() {
                         )}
 
                         <div>
-                          <Label htmlFor="experience">
-                            Years of Experience <span className="text-red-500">*</span>
+                          <Label htmlFor="mattermostHandle">
+                            Mattermost Handle <span className="text-red-500">*</span>
                           </Label>
-                          <Select 
-                            value={formData.experience} 
-                            onValueChange={(value) => handleInputChange("experience", value)}
+                          <Input
+                            id="mattermostHandle"
+                            value={formData.mattermostHandle}
+                            onChange={(e) => handleInputChange("mattermostHandle", e.target.value)}
+                            placeholder="Your Mattermost username"
                             required
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select experience level" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0-1">0-1 years</SelectItem>
-                              <SelectItem value="1-3">1-3 years</SelectItem>
-                              <SelectItem value="3-5">3-5 years</SelectItem>
-                              <SelectItem value="5-10">5-10 years</SelectItem>
-                              <SelectItem value="10+">10+ years</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          />
                         </div>
 
                         <div>
                           <Label>
-                            Skills <span className="text-red-500">*</span>
+                            Which Circle(s) are you a member of? <span className="text-red-500">*</span>
                           </Label>
                           <p className="text-sm text-muted-foreground mb-2">Select all that apply</p>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
-                            {availableSkills.map((skill) => (
-                              <div key={skill} className="flex items-center space-x-2">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
+                            {circleOptions.map((circle) => (
+                              <div key={circle} className="flex items-center space-x-2">
                                 <Checkbox
-                                  id={skill}
-                                  checked={formData.skills.includes(skill)}
-                                  onCheckedChange={(checked) => handleSkillToggle(skill, checked as boolean)}
+                                  id={circle}
+                                  checked={formData.circles.includes(circle)}
+                                  onCheckedChange={(checked) => handleCircleToggle(circle, checked as boolean)}
                                 />
-                                <Label htmlFor={skill} className="text-sm font-normal">
-                                  {skill}
+                                <Label htmlFor={circle} className="text-sm font-normal">
+                                  {circle}
                                 </Label>
                               </div>
                             ))}
@@ -322,79 +312,82 @@ export default function JoinTeamPage() {
                         </div>
                       </div>
 
-                      {/* Links */}
+                      {/* Requirements */}
                       <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                          <LinkIcon className="h-4 w-4 text-chart-2" />
-                          <h3 className="text-lg font-semibold">Professional Links</h3>
+                          <CheckCircle className="h-4 w-4 text-chart-2" />
+                          <h3 className="text-lg font-semibold">Requirements</h3>
                         </div>
 
                         <div>
-                          <Label htmlFor="linkedin">LinkedIn Profile</Label>
-                          <Input
-                            id="linkedin"
-                            value={formData.linkedin}
-                            onChange={(e) => handleInputChange("linkedin", e.target.value)}
-                            placeholder="https://linkedin.com/in/yourprofile"
-                          />
-                        </div>
-
-                        <div>
-                          <Label htmlFor="github">GitHub Profile</Label>
-                          <Input
-                            id="github"
-                            value={formData.github}
-                            onChange={(e) => handleInputChange("github", e.target.value)}
-                            placeholder="https://github.com/yourusername"
-                          />
-                        </div>
-
-                        <div>
-                          <Label htmlFor="portfolio">Portfolio/Website</Label>
-                          <Input
-                            id="portfolio"
-                            value={formData.portfolio}
-                            onChange={(e) => handleInputChange("portfolio", e.target.value)}
-                            placeholder="https://yourportfolio.com"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Motivation and Availability */}
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="motivation">
-                            Why do you want to join Deep Lab? <span className="text-red-500">*</span>
+                          <Label>
+                            Do you meet the requirements below? <span className="text-red-500">*</span>
                           </Label>
-                          <Textarea
-                            id="motivation"
-                            value={formData.motivation}
-                            onChange={(e) => handleInputChange("motivation", e.target.value)}
-                            placeholder="Tell us what excites you about joining our team..."
-                            rows={4}
-                            required
-                          />
+                          <div className="mt-2 p-4 bg-muted rounded-lg">
+                            <ul className="text-sm space-y-2 mb-4">
+                              <li>• Available time (minimum of 10 hours): To consistently contribute to projects and discussions.</li>
+                              <li>• Willingness to engage: To actively participate in collaborative problem-solving.</li>
+                              <li>• Passion to drive AI-driven solutions: A genuine enthusiasm for applying artificial intelligence to real-world challenges within our platform.</li>
+                            </ul>
+                            <div className="flex gap-4">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="radio"
+                                  id="meetsRequirements-yes"
+                                  name="meetsRequirements"
+                                  value="Yes"
+                                  checked={formData.meetsRequirements === "Yes"}
+                                  onChange={(e) => handleInputChange("meetsRequirements", e.target.value)}
+                                  required
+                                />
+                                <Label htmlFor="meetsRequirements-yes">Yes</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="radio"
+                                  id="meetsRequirements-no"
+                                  name="meetsRequirements"
+                                  value="No"
+                                  checked={formData.meetsRequirements === "No"}
+                                  onChange={(e) => handleInputChange("meetsRequirements", e.target.value)}
+                                  required
+                                />
+                                <Label htmlFor="meetsRequirements-no">No</Label>
+                              </div>
+                            </div>
+                          </div>
                         </div>
 
                         <div>
-                          <Label htmlFor="availability">
-                            Availability <span className="text-red-500">*</span>
+                          <Label>
+                            Are you currently part of any DF circle? <span className="text-red-500">*</span>
                           </Label>
-                          <Select 
-                            value={formData.availability} 
-                            onValueChange={(value) => handleInputChange("availability", value)}
-                            required
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select your availability" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="full-time">Full-time</SelectItem>
-                              <SelectItem value="part-time">Part-time</SelectItem>
-                              <SelectItem value="contract">Contract</SelectItem>
-                              <SelectItem value="flexible">Flexible</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <div className="flex gap-4 mt-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="currentlyInCircle-yes"
+                                name="currentlyInCircle"
+                                value="Yes"
+                                checked={formData.currentlyInCircle === "Yes"}
+                                onChange={(e) => handleInputChange("currentlyInCircle", e.target.value)}
+                                required
+                              />
+                              <Label htmlFor="currentlyInCircle-yes">Yes</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="currentlyInCircle-no"
+                                name="currentlyInCircle"
+                                value="No"
+                                checked={formData.currentlyInCircle === "No"}
+                                onChange={(e) => handleInputChange("currentlyInCircle", e.target.value)}
+                                required
+                              />
+                              <Label htmlFor="currentlyInCircle-no">No</Label>
+                            </div>
+                          </div>
                         </div>
                       </div>
 

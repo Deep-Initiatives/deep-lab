@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { Plus, Edit, Trash2, ExternalLink, Search, Filter } from "lucide-react";
 import type { App, InsertApp } from "@shared/schema";
 
 export function AdminAppsPage() {
+  const { token } = useAuth();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
@@ -40,7 +42,10 @@ export function AdminAppsPage() {
     mutationFn: async (appData: InsertApp) => {
       const response = await fetch("/api/admin/apps", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(appData),
       });
       if (!response.ok) throw new Error("Failed to create app");
@@ -65,7 +70,10 @@ export function AdminAppsPage() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<InsertApp> }) => {
       const response = await fetch(`/api/admin/apps/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to update app");
@@ -83,6 +91,9 @@ export function AdminAppsPage() {
     mutationFn: async (id: string) => {
       const response = await fetch(`/api/admin/apps/${id}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
       });
       if (!response.ok) throw new Error("Failed to delete app");
     },

@@ -1,10 +1,12 @@
-import { type User, type InsertUser, type App, type Pod, type TimelineMilestone, type Blog, type Application, type InsertApplication, type IdeaSubmission, type InsertIdeaSubmission, type ContactSubmission, type InsertContactSubmission, type LabStats } from "@shared/schema";
+import { type User, type InsertUser, type App, type Pod, type TimelineMilestone, type Blog, type Application, type InsertApplication, type IdeaSubmission, type InsertIdeaSubmission, type ContactSubmission, type InsertContactSubmission, type LabStats } from "../shared/schema";
 import { dbStorage } from "./db";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
+  getUserById(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, userData: Partial<InsertUser>): Promise<User>;
   
   // Apps
   getAllApps(): Promise<App[]>;

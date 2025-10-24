@@ -3,8 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Users, Code, BookOpen, TrendingUp } from "lucide-react";
 import { authenticatedFetch } from "@/lib/api";
+import { useLocation } from "wouter";
 
-export default function AdminDashboardHome() {
+interface AdminDashboardHomeProps {
+  userRole?: string;
+}
+
+export default function AdminDashboardHome({ userRole }: AdminDashboardHomeProps) {
+  const [, setLocation] = useLocation();
+  
   const { data: pods } = useQuery({
     queryKey: ["/api/pods"],
     queryFn: async () => {
@@ -104,26 +111,30 @@ export default function AdminDashboardHome() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {userRole !== "blog-admin" && (
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col items-center justify-center space-y-2 border-border hover:bg-muted"
+                onClick={() => setLocation("/admin/pods")}
+              >
+                <Users className="h-6 w-6" />
+                <span>Manage Pods</span>
+              </Button>
+            )}
+            {userRole !== "blog-admin" && (
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col items-center justify-center space-y-2 border-border hover:bg-muted"
+                onClick={() => setLocation("/admin/apps")}
+              >
+                <Code className="h-6 w-6" />
+                <span>Manage Apps</span>
+              </Button>
+            )}
             <Button
               variant="outline"
               className="h-20 flex flex-col items-center justify-center space-y-2 border-border hover:bg-muted"
-              onClick={() => window.location.href = "/admin/pods"}
-            >
-              <Users className="h-6 w-6" />
-              <span>Manage Pods</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-20 flex flex-col items-center justify-center space-y-2 border-border hover:bg-muted"
-              onClick={() => window.location.href = "/admin/apps"}
-            >
-              <Code className="h-6 w-6" />
-              <span>Manage Apps</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-20 flex flex-col items-center justify-center space-y-2 border-border hover:bg-muted"
-              onClick={() => window.location.href = "/admin/blogs"}
+              onClick={() => setLocation("/admin/blogs")}
             >
               <BookOpen className="h-6 w-6" />
               <span>Manage Blogs</span>
