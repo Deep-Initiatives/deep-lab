@@ -20,6 +20,7 @@ const navigationItems = [
   { id: "applications", label: "Applications", href: "/admin/applications", icon: FileText },
   { id: "ideas", label: "Ideas", href: "/admin/ideas", icon: Lightbulb },
   { id: "contacts", label: "Contacts", href: "/admin/contacts", icon: Mail },
+  { id: "users", label: "Users", href: "/admin/users", icon: Users },
 ];
 
 export function AdminLayout({ children, userRole }: AdminLayoutProps) {
@@ -49,9 +50,7 @@ export function AdminLayout({ children, userRole }: AdminLayoutProps) {
   // Filter navigation items based on user role
   const getFilteredNavigationItems = () => {
     if (userRole === "blog-admin") {
-      return navigationItems.filter(item => 
-        item.id === "home" || item.id === "blogs"
-      );
+      return navigationItems.filter(item => item.id === "home" || item.id === "blogs");
     }
     return navigationItems;
   };

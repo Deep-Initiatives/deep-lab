@@ -9,6 +9,7 @@ import { AdminApplicationsPage } from "@/pages/admin/AdminApplicationsPage";
 import { AdminIdeasPage } from "@/pages/admin/AdminIdeasPage";
 import { AdminContactsPage } from "@/pages/admin/AdminContactsPage";
 import AdminProfilePage from "@/pages/admin/AdminProfilePage";
+import AdminUsersPage from "@/pages/admin/AdminUsersPage";
 
 interface AdminDashboardProps {
   isAdmin: boolean;
@@ -109,6 +110,16 @@ export function AdminDashboard({ isAdmin, userRole }: AdminDashboardProps) {
         );
       }
       return <AdminProfilePage />;
+    } else if (location === "/admin/users") {
+      if (userRole !== "admin") {
+        return (
+          <div className="text-center py-8">
+            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to access this page.</p>
+          </div>
+        );
+      }
+      return <AdminUsersPage />;
     } else {
       return <AdminDashboardHome userRole={userRole} />;
     }
