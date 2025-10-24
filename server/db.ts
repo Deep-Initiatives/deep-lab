@@ -26,9 +26,10 @@ import {
   type InsertApplication,
   type InsertIdeaSubmission,
   type InsertContactSubmission
-} from "@shared/schema";
+} from "../shared/schema";
 import { hashPassword } from "./auth";
 import { eq, and, desc, count } from "drizzle-orm";
+import { IStorage } from "./storage";
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -41,9 +42,14 @@ const pool = new Pool({
 // Database connection established successfully
 export const db = drizzle(pool);
 
-export class DatabaseStorage {
+export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
     return result[0];
   }
@@ -59,6 +65,25 @@ export class DatabaseStorage {
       ...userData,
       password: hashedPassword
     }).returning();
+    return result[0];
+  }
+
+  async updateUser(id: string, userData: Partial<InsertUser>): Promise<User> {
+    const updateData: any = { ...userData };
+    
+    // Hash password if it's being updated
+    if (userData.password) {
+      updateData.password = await hashPassword(userData.password);
+    }
+    
+    const result = await db.update(users)
+      .set({
+        ...updateData,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, id))
+      .returning();
+    
     return result[0];
   }
 
@@ -235,7 +260,7 @@ export class DatabaseStorage {
     const processedData = {
       ...blogData,
       tags: Array.isArray(blogData.tags) ? blogData.tags as string[] : [],
-      publishedAt: new Date(blogData.publishedAt),
+      publishedAt: blogData.publishedAt ? new Date(blogData.publishedAt) : new Date(),
     };
     
     const result = await db.insert(blogs).values(processedData).returning();
@@ -308,13 +333,10 @@ export class DatabaseStorage {
       fullName: applicationData.fullName,
       email: applicationData.email,
       role: applicationData.role,
-      experience: applicationData.experience,
-      skills: applicationData.skills ? [...applicationData.skills] : [],
-      linkedin: applicationData.linkedin || null,
-      github: applicationData.github || null,
-      portfolio: applicationData.portfolio || null,
-      motivation: applicationData.motivation,
-      availability: applicationData.availability,
+      mattermostHandle: applicationData.mattermostHandle,
+      circles: applicationData.circles ? [...applicationData.circles] : [],
+      meetsRequirements: applicationData.meetsRequirements,
+      currentlyInCircle: applicationData.currentlyInCircle,
       createdAt: new Date(),
       updatedAt: new Date(),
     }).returning();

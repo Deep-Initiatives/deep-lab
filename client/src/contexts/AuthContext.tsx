@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -28,8 +30,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem('adminUser');
     
     if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      // Validate token by making a test API call
+      fetch('/api/admin/blogs', {
+        headers: {
+          'Authorization': `Bearer ${storedToken}`
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
+        } else {
+          // Token is invalid, clear storage
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+        }
+      })
+      .catch(() => {
+        // Network error or token invalid, clear storage
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -80,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = !!token && !!user;
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -32,6 +32,7 @@ export function AdminBlogsPage() {
     imageUrl: "",
     externalUrl: "",
     featured: false,
+    publishedAt: new Date().toISOString(),
   });
 
   const queryClient = useQueryClient();
@@ -68,6 +69,8 @@ export function AdminBlogsPage() {
         readTime: 5,
         imageUrl: "",
         externalUrl: "",
+        featured: false,
+        publishedAt: new Date().toISOString(),
       });
     },
   });
@@ -127,6 +130,8 @@ export function AdminBlogsPage() {
       readTime: blog.readTime,
       imageUrl: blog.imageUrl || "",
       externalUrl: blog.externalUrl || "",
+      featured: blog.featured,
+      publishedAt: blog.publishedAt,
     });
     setIsEditDialogOpen(true);
   };
@@ -269,6 +274,15 @@ export function AdminBlogsPage() {
                     placeholder="https://example.com/image.jpg"
                   />
                 </div>
+              </div>
+              <div>
+                <Label htmlFor="publishedAt">Published Date</Label>
+                <Input
+                  id="publishedAt"
+                  type="datetime-local"
+                  value={formData.publishedAt ? new Date(formData.publishedAt).toISOString().slice(0, 16) : ""}
+                  onChange={(e) => setFormData({ ...formData, publishedAt: new Date(e.target.value).toISOString() })}
+                />
               </div>
               <div>
                 <Label htmlFor="externalUrl">External URL (Optional)</Label>
@@ -540,6 +554,15 @@ export function AdminBlogsPage() {
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-publishedAt">Published Date</Label>
+              <Input
+                id="edit-publishedAt"
+                type="datetime-local"
+                value={formData.publishedAt ? new Date(formData.publishedAt).toISOString().slice(0, 16) : ""}
+                onChange={(e) => setFormData({ ...formData, publishedAt: new Date(e.target.value).toISOString() })}
+              />
             </div>
             <div>
               <Label htmlFor="edit-externalUrl">External URL (Optional)</Label>

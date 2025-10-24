@@ -16,6 +16,16 @@ async function initializeDatabase() {
 
     console.log("✅ Admin user created:", adminUser[0].username);
 
+    // Create blog admin user
+    const blogHashedPassword = await bcrypt.hash("blog123", 10);
+    const blogAdminUser = await db.insert(users).values({
+      username: "blog-admin",
+      password: blogHashedPassword,
+      role: "blog-admin",
+    }).returning();
+
+    console.log("✅ Blog admin user created:", blogAdminUser[0].username);
+
     // Create sample pods
     const samplePods = [
       {

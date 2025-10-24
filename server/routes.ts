@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateToken, verifyToken, comparePassword, extractTokenFromHeader } from "./auth";
+import { generateToken, verifyToken, comparePassword, extractTokenFromHeader, hashPassword } from "./auth";
 
 // Authentication middleware
 function authenticateToken(req: any, res: any, next: any) {
@@ -58,6 +58,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({ error: 'Login failed' });
+    }
+  });
+
+  // Create blog admin user (one-time setup)
+  app.post("/api/admin/create-blog-admin", async (req, res) => {
+    try {
+      // Check if blog admin already exists
+      const existingBlogAdmin = await storage.getUserByUsername("blog-admin");
+      if (existingBlogAdmin) {
+        return res.status(400).json({ error: "Blog admin user already exists" });
+      }
+
+      const hashedPassword = await hashPassword("blog123");
+      const blogAdminUser = await storage.createUser({
+        username: "blog-admin",
+        password: hashedPassword,
+        role: "blog-admin",
+      });
+
+      console.log("✅ Blog admin user created:", blogAdminUser.username);
+      
+      res.json({ 
+        message: "Blog admin user created successfully",
+        user: {
+          id: blogAdminUser.id,
+          username: blogAdminUser.username,
+          role: blogAdminUser.role
+        }
+      });
+    } catch (error) {
+      console.error("Error creating blog admin:", error);
+      res.status(500).json({ error: "Failed to create blog admin user" });
+    }
+  });
+
+  // Update user profile
+  app.patch("/api/admin/profile", authenticateToken, async (req, res) => {
+    try {
+      const { username, currentPassword, newPassword } = req.body;
+      const userId = (req as any).user.userId;
+
+      // Get current user
+      const currentUser = await storage.getUser(userId);
+      if (!currentUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const updateData: any = {};
+
+      // Update username if provided and different
+      if (username && username !== currentUser.username) {
+        // Check if username is already taken
+        const existingUser = await storage.getUserByUsername(username);
+        if (existingUser && existingUser.id !== userId) {
+          return res.status(400).json({ error: "Username already taken" });
+        }
+        updateData.username = username;
+      }
+
+      // Update password if provided
+      if (newPassword) {
+        if (!currentPassword) {
+          return res.status(400).json({ error: "Current password is required to change password" });
+        }
+
+        // Verify current password
+        const isValidPassword = await comparePassword(currentPassword, currentUser.password);
+        if (!isValidPassword) {
+          return res.status(400).json({ error: "Current password is incorrect" });
+        }
+
+        // Hash new password
+        updateData.password = await hashPassword(newPassword);
+      }
+
+      // Update user if there are changes
+      if (Object.keys(updateData).length > 0) {
+        const updatedUser = await storage.updateUser(userId, updateData);
+        
+        res.json({
+          message: "Profile updated successfully",
+          user: {
+            id: updatedUser.id,
+            username: updatedUser.username,
+            role: updatedUser.role
+          }
+        });
+      } else {
+        res.json({ message: "No changes to update" });
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ error: "Failed to update profile" });
     }
   });
 
