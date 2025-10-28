@@ -188,8 +188,8 @@ export function Navigation() {
               <div className="flex flex-col items-start gap-1">
                 {/* Logo at top */}
                 <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
-                  <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" />
-                  <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" />
+                  <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                  <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                 </div>
                 
                 {/* Text in middle */}
@@ -214,8 +214,8 @@ export function Navigation() {
                 >
                   <div className="flex items-start gap-1 mb-0">
                     <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
-                      <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" />
-                      <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" />
+                      <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                      <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                     </div>
                     <div className="flex items-center gap-2">
                 
@@ -233,8 +233,8 @@ export function Navigation() {
                 >
                   <div className="flex items-start gap-2 mb-0">
                     <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
-                      <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" />
-                      <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" />
+                      <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                      <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                     </div>
                   </div>
                   <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-1">
@@ -263,8 +263,8 @@ export function Navigation() {
                 >
                   <div className="flex items-center gap-3 mb-0">
                     <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
-                      <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" />
-                      <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" />
+                      <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                      <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-white/20 text-white border border-white/30">
@@ -286,8 +286,8 @@ export function Navigation() {
             <div className="border border-white/20 rounded-xl p-3 group">
               <div className="flex items-start gap-3 mb-0">
                 <div className="w-44 h-32 flex items-center justify-center flex-shrink-0">
-                  <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" />
-                  <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" />
+                  <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                  <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                 </div>
               </div>
               <p className="text-white/90 text-sm leading-relaxed mb-2">
@@ -308,8 +308,8 @@ export function Navigation() {
             >
               <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
-                  <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" />
-                  <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" />
+                  <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                  <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                 </div>
               </div>
               <p className="text-white/70 text-sm leading-relaxed">
@@ -327,8 +327,8 @@ export function Navigation() {
             >
               <div className="flex items-start gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
-                  <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" />
-                  <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" />
+                  <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                  <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                 </div>
               </div>
               <p className="text-white/70 text-sm leading-relaxed">
@@ -358,8 +358,8 @@ export function Navigation() {
             >
               <div className="flex items-center gap-3 mb-0">
                 <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
-                  <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" />
-                  <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" />
+                  <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                  <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-white/20 text-white border border-white/30">
