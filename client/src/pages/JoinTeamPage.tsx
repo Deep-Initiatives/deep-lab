@@ -391,7 +391,7 @@ export default function JoinTeamPage() {
                         </div>
                       </div>
 
-                      {/* <Button 
+                      <Button 
                         type="submit" 
                         className="w-full"
                         size="lg"
@@ -399,7 +399,7 @@ export default function JoinTeamPage() {
                       >
                         {isSubmitting ? "Submitting..." : "Submit Application"}
                         {!isSubmitting && <ArrowRight className="h-5 w-5 ml-2" />}
-                      </Button> */}
+                      </Button>
                     </form>
                   )}
                 </CardContent>

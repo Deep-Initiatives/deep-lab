@@ -6,9 +6,41 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Search, Calendar, User, Clock, ArrowRight, Mail } from "lucide-react";
+import { Search, Calendar, User, Clock, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Blog } from "@shared/schema";
+
+// Custom tablet writing icon
+const TabletWritingIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M3 4C3 2.89543 3.89543 2 5 2H19C20.1046 2 21 2.89543 21 4V20C21 21.1046 20.1046 22 19 22H5C3.89543 22 3 21.1046 3 20V4Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M7 8H17M7 12H17M7 16H13"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15 18L17 20L21 16"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 export default function BlogPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,7 +79,7 @@ export default function BlogPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <Badge className="mb-6 text-lg px-6 py-2 bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0">
-              <Mail className="h-4 w-4 mr-2" />
+              <TabletWritingIcon className="h-4 w-4 mr-2" />
               Blog
             </Badge>
             <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
@@ -225,7 +257,7 @@ export default function BlogPage() {
                   className="bg-white/10 border-white/20 text-white placeholder:text-white/70"
                 />
                 <Button className="bg-white text-chart-1 hover:bg-white/90">
-                  <Mail className="h-4 w-4 mr-2" />
+                  <TabletWritingIcon className="h-4 w-4 mr-2" />
                   Subscribe
                 </Button>
               </div>
