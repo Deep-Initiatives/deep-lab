@@ -74,9 +74,9 @@ export function Hero({ stats }: HeroProps) {
 
       {/* Floating Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute top-20 left-20 w-48 h-48 sm:w-72 sm:h-72 bg-white/5 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-20 w-64 h-64 sm:w-96 sm:h-96 bg-white/5 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-white/5 rounded-full blur-3xl animate-pulse-slow" />
       </div>
 
       {/* Main Content */}
@@ -91,7 +91,7 @@ export function Hero({ stats }: HeroProps) {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight animate-fade-in-up">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight animate-fade-in-up px-4">
           Where Innovation
           <br />
           <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
@@ -100,17 +100,17 @@ export function Hero({ stats }: HeroProps) {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-lg md:text-2xl text-white/95 max-w-4xl mx-auto mb-8 leading-relaxed animate-fade-in-up font-light px-4">
+        <p className="text-base sm:text-lg md:text-2xl text-white/95 max-w-4xl mx-auto mb-8 leading-relaxed animate-fade-in-up font-light px-4">
           Deep Lab is an <span className="font-semibold">AI and development lab</span> pushing the boundaries of innovation.
           We prototype, MVP, and deploy <span className="font-semibold">cutting-edge AI agents, web applications, and services</span> at lightning speed.
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-row items-center justify-center gap-3 md:gap-4 mb-12 animate-fade-in-up">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-12 animate-fade-in-up px-4">
           <Button
             size="default"
             onClick={() => scrollToSection("projects")}
-            className="group bg-white text-chart-2 hover:bg-white/95 font-bold px-6 py-5 md:px-10 md:py-7 text-sm md:text-lg border-0 shadow-2xl hover:shadow-white/50 transition-all hover:scale-105 rounded-full"
+            className="group bg-white text-chart-2 hover:bg-white/95 font-bold px-6 py-4 sm:px-10 sm:py-7 text-sm md:text-lg border-0 shadow-2xl hover:shadow-white/50 transition-all hover:scale-105 rounded-full w-full sm:w-auto"
             data-testid="button-view-projects"
           >
             <span className="hidden sm:inline">View Projects</span>
@@ -121,7 +121,7 @@ export function Hero({ stats }: HeroProps) {
             size="default"
             variant="outline"
             onClick={() => scrollToSection("join")}
-            className="backdrop-blur-xl bg-white/10 text-white border-2 border-white/40 hover:bg-white/20 hover:border-white/60 font-bold px-6 py-5 md:px-10 md:py-7 text-sm md:text-lg shadow-2xl transition-all hover:scale-105 rounded-full"
+            className="backdrop-blur-xl bg-white/10 text-white border-2 border-white/40 hover:bg-white/20 hover:border-white/60 font-bold px-6 py-4 sm:px-10 sm:py-7 text-sm md:text-lg shadow-2xl transition-all hover:scale-105 rounded-full w-full sm:w-auto"
             data-testid="button-join-us"
           >
             <span className="hidden sm:inline">Join Our Team</span>
@@ -130,7 +130,7 @@ export function Hero({ stats }: HeroProps) {
         </div>
 
         {/* Stats Grid - Enhanced */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 max-w-7xl mx-auto animate-fade-in-up">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8 max-w-7xl mx-auto animate-fade-in-up px-4">
           {[
             { 
               label: "Apps Built", 
@@ -165,28 +165,28 @@ export function Hero({ stats }: HeroProps) {
             return (
               <div
                 key={index}
-                className="group relative backdrop-blur-xl bg-white/10 hover:bg-white/15 border-2 border-white/30 hover:border-white/50 rounded-2xl p-6 transition-all hover:scale-105 hover:shadow-2xl animate-count-up"
+                className="group relative backdrop-blur-xl bg-white/10 hover:bg-white/15 border-2 border-white/30 hover:border-white/50 rounded-2xl p-3 sm:p-4 md:p-6 transition-all hover:scale-105 hover:shadow-2xl animate-count-up"
                 data-testid={`stat-${stat.label.toLowerCase().replace(/\s+/g, "-")}`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Gradient Glow on Hover */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-20 rounded-2xl transition-opacity duration-300 blur-xl`} />
                 
-                <div className="relative flex items-center gap-4">
+                <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4">
                   {/* Icon */}
                   <div className="flex-shrink-0">
-                    <div className="p-3 bg-white/20 rounded-full group-hover:scale-110 transition-transform">
-                      <Icon className="h-6 w-6 text-white" />
+                    <div className="p-2 sm:p-3 bg-white/20 rounded-full group-hover:scale-110 transition-transform">
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
                     </div>
                   </div>
 
                   {/* Value and Label */}
-                  <div className="flex-1 text-left">
-                    <div className="text-5xl md:text-6xl font-black text-white mb-1 drop-shadow-lg tracking-tight">
+                  <div className="flex-1 text-left min-w-0">
+                    <div className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-white mb-1 drop-shadow-lg tracking-tight">
                       {stat.value}
                       {stat.suffix}
                     </div>
-                    <div className="text-sm md:text-base text-white/95 font-semibold tracking-wide">
+                    <div className="text-xs sm:text-sm md:text-base text-white/95 font-semibold tracking-wide">
                       {stat.label}
                     </div>
                   </div>

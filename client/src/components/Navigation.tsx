@@ -184,16 +184,16 @@ export function Navigation() {
           {/* Desktop layout */}
           <div className="hidden md:flex">
               {/* Left side box - Initiatives - spans full height */}
-              <div className="bg-white/10 backdrop-blur-sm border-r border-white/20 py-3 px-6 w-80 group">
-              <div className="flex flex-col items-start gap-2">
+              <div className="py-3 px-6 w-80 group">
+              <div className="flex flex-col items-start gap-1">
                 {/* Logo at top */}
-                <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
+                <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
                   <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" />
                   <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" />
                 </div>
                 
                 {/* Text in middle */}
-                <p className="text-white text-sm leading-relaxed mb-1">
+                <p className="text-white text-sm leading-relaxed mb-3">
                   DEEP Connects Bold Ideas to Real World Change and build a better future together.
                 </p>
                 
@@ -206,14 +206,14 @@ export function Navigation() {
             
             {/* Right side - grid of 4 apps */}
             <div className="flex-1 px-8 py-3">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-8">
                 {/* Funding */}
                 <div 
                   onClick={() => window.open('https://deepfunding.ai/', '_blank')}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-1 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
+                  className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
                 >
-                  <div className="flex items-start gap-2 mb-0">
-                    <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start gap-1 mb-0">
+                    <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
                       <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" />
                       <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" />
                     </div>
@@ -221,7 +221,7 @@ export function Navigation() {
                 
                     </div>
                   </div>
-                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors">
+                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-1">
                     An ecosystem for innovators to secure grants and resources to bring bold ideas to life.
                   </p>
                 </div>
@@ -229,29 +229,29 @@ export function Navigation() {
                 {/* Community */}
                 <div 
                   onClick={() => window.open('https://community.deepfunding.ai/', '_blank')}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-1 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
+                  className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
                 >
                   <div className="flex items-start gap-2 mb-0">
-                    <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
+                    <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
                       <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" />
                       <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" />
                     </div>
                   </div>
-                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors">
+                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-1">
                     A collaborative space where builders, researchers, and supporters connect.
                   </p>
                 </div>
 
                 {/* Lab - Current site with white background */}
                 <div 
-                  className="bg-white border border-white/20 rounded-xl p-1 cursor-default transition-all duration-300"
+                  className="bg-white rounded-xl p-1 cursor-default transition-all duration-300"
                 >
                   <div className="flex items-start gap-2 mb-0">
-                    <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
+                    <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
                       <img src={logoLab} alt="DEEP Lab" className="w-full h-full object-contain" />
                     </div>
                   </div>
-                  <p className="text-gray-700 text-sm leading-relaxed">
+                  <p className="text-gray-700 text-sm leading-relaxed -mt-1">
                     The experimental arm of Deep, where new products, technologies, and methods are incubated.
                   </p>
                 </div>
@@ -259,10 +259,10 @@ export function Navigation() {
                 {/* Ideation */}
                 <div 
                   onClick={() => window.open('https://ideation.deepfunding.ai', '_blank')}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-1 hover:bg-white hover:border-white/20 cursor-pointer transition-all duration-300 group"
+                  className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
                 >
                   <div className="flex items-center gap-3 mb-0">
-                    <div className="w-32 h-24 flex items-center justify-center flex-shrink-0">
+                    <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
                       <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" />
                       <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" />
                     </div>
@@ -272,7 +272,7 @@ export function Navigation() {
                         </span>
                     </div>
                   </div>
-                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors">
+                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-1">
                     Discover, share, and shape groundbreaking ideas with a community that values your voice. Explore trending concepts or submit your own to make an impact.
                   </p>
                 </div>
@@ -283,9 +283,9 @@ export function Navigation() {
           {/* Mobile layout - Vertical stack */}
           <div className="md:hidden flex flex-col px-4 py-4 gap-3">
             {/* Initiatives */}
-            <div className="bg-gradient-to-br from-purple-900/80 to-pink-900/80 backdrop-blur-sm border border-white/20 rounded-xl p-3 group">
+            <div className="border border-white/20 rounded-xl p-3 group">
               <div className="flex items-start gap-3 mb-0">
-                <div className="w-40 h-28 flex items-center justify-center flex-shrink-0">
+                <div className="w-44 h-32 flex items-center justify-center flex-shrink-0">
                   <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" />
                   <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" />
                 </div>
@@ -414,7 +414,7 @@ export function Navigation() {
               variant="default"
               onClick={() => handleNavigation("/join-team")}
               data-testid="button-join-team"
-              className="bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white border-0 hover:opacity-90 transition-opacity"
+              className="bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90 transition-opacity"
             >
               Join Team
             </Button>
@@ -477,7 +477,7 @@ export function Navigation() {
             <Button
               variant="default"
               onClick={() => handleNavigation("/join-team")}
-              className="w-full bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white border-0 hover:opacity-90 transition-opacity"
+              className="w-full bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90 transition-opacity"
               data-testid="button-mobile-join"
             >
               Join Team

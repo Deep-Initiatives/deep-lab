@@ -42,7 +42,7 @@ const pool = new Pool({
 // Database connection established successfully
 export const db = drizzle(pool);
 
-export class DatabaseStorage implements IStorage {
+export class DatabaseStorage {
   // User methods
   async getUser(id: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
@@ -85,6 +85,15 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return result[0];
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    const result = await db.select().from(users);
+    return result as User[];
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
   }
 
   // Pod methods

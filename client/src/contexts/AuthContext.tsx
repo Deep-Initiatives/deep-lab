@@ -59,15 +59,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Listen for auth logout events
+  // Listen for auth events
   useEffect(() => {
+    const handleAuthLogin = (event: CustomEvent) => {
+      const { user, token } = event.detail;
+      setToken(token);
+      setUser(user);
+    };
+
     const handleAuthLogout = () => {
       setToken(null);
       setUser(null);
     };
 
+    window.addEventListener('auth-login', handleAuthLogin as EventListener);
     window.addEventListener('auth-logout', handleAuthLogout);
-    return () => window.removeEventListener('auth-logout', handleAuthLogout);
+    
+    return () => {
+      window.removeEventListener('auth-login', handleAuthLogin as EventListener);
+      window.removeEventListener('auth-logout', handleAuthLogout);
+    };
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
@@ -86,6 +97,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(data.user);
         localStorage.setItem('adminToken', data.token);
         localStorage.setItem('adminUser', JSON.stringify(data.user));
+        
+        // Trigger a custom event to notify other components
+        window.dispatchEvent(new CustomEvent('auth-login', { 
+          detail: { user: data.user, token: data.token } 
+        }));
+        
         return true;
       }
       return false;

@@ -18,13 +18,19 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isLoading) return; // Prevent double submission
+    
     setIsLoading(true);
     setError("");
 
     try {
       const success = await login(username, password);
       if (success) {
-        setLocation("/admin");
+        // Small delay to ensure state is updated
+        setTimeout(() => {
+          setLocation("/admin");
+        }, 100);
       } else {
         setError("Invalid username or password");
       }

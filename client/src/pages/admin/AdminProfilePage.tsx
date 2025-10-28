@@ -25,6 +25,7 @@ export default function AdminProfilePage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+
   const updateProfileMutation = useMutation({
     mutationFn: async (data: { username?: string; currentPassword?: string; newPassword?: string }) => {
       const response = await fetch("/api/admin/profile", {
@@ -71,6 +72,7 @@ export default function AdminProfilePage() {
     },
   });
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -116,6 +118,7 @@ export default function AdminProfilePage() {
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
 
   return (
     <div className="space-y-6">
@@ -261,6 +264,8 @@ export default function AdminProfilePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add-user form moved to Users page */}
 
       {/* Security Notice
       <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">

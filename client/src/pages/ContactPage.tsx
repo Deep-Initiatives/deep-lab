@@ -11,6 +11,33 @@ import { Footer } from "@/components/Footer";
 import { Mail, Phone, MapPin, Send, CheckCircle, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// Custom contact icon
+const ContactIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle
+      cx="12"
+      cy="7"
+      r="4"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export default function ContactPage() {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -69,7 +96,7 @@ export default function ContactPage() {
           {/* Hero Section */}
           <div className="text-center mb-16">
             <Badge className="mb-6 text-lg px-6 py-2 bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0">
-              <Mail className="h-4 w-4 mr-2" />
+              <ContactIcon className="h-4 w-4 mr-2" />
               Contact Us
             </Badge>
             <h1 className="text-4xl md:text-6xl font-extrabold mb-6">

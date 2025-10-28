@@ -154,6 +154,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin-only: create admin or blog-admin user
+  app.post("/api/admin/users", authenticateToken, async (req, res) => {
+    try {
+      const { role: requesterRole } = (req as any).user || {};
+      if (requesterRole !== "admin") {
+        return res.status(403).json({ error: "Only admin can create users" });
+      }
+
+      const { username, password, role } = req.body || {};
+
+      if (!username || !password || !role) {
+        return res.status(400).json({ error: "username, password and role are required" });
+      }
+
+      if (!["admin", "blog-admin"].includes(role)) {
+        return res.status(400).json({ error: "Invalid role. Must be 'admin' or 'blog-admin'" });
+      }
+
+      // Ensure username is unique
+      const existing = await storage.getUserByUsername(username);
+      if (existing) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+
+      // Important: pass plain password; hashing is handled in storage/db layer
+      const newUser = await storage.createUser({ username, password, role } as any);
+
+      res.status(201).json({
+        message: "User created successfully",
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          role: newUser.role,
+        },
+      });
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ error: "Failed to create user" });
+    }
+  });
+
+  // Admin-only: list users
+  app.get("/api/admin/users", authenticateToken, async (req, res) => {
+    try {
+      const { role: requesterRole } = (req as any).user || {};
+      if (requesterRole !== "admin") {
+        return res.status(403).json({ error: "Only admin can list users" });
+      }
+      const users = await storage.getAllUsers();
+      const sanitized = users.map(u => ({ id: u.id, username: u.username, role: u.role, createdAt: (u as any).createdAt ?? null }));
+      res.json(sanitized);
+    } catch (error) {
+      console.error("Error listing users:", error);
+      res.status(500).json({ error: "Failed to list users" });
+    }
+  });
+
+  // Admin-only: update user (username or role, and optionally password)
+  app.patch("/api/admin/users/:id", authenticateToken, async (req, res) => {
+    try {
+      const { role: requesterRole, userId: requesterId } = (req as any).user || {};
+      if (requesterRole !== "admin") {
+        return res.status(403).json({ error: "Only admin can update users" });
+      }
+      const { username, role, password } = req.body || {};
+      const targetId = req.params.id;
+
+      // Prevent removing last admin or demoting self to blog-admin if desired (simple guard: allow self-update but not role change of self)
+      if (targetId === requesterId && role && role !== "admin") {
+        return res.status(400).json({ error: "Admins cannot demote their own role" });
+      }
+
+      const update: any = {};
+      if (username) {
+        const existing = await storage.getUserByUsername(username);
+        if (existing && existing.id !== targetId) {
+          return res.status(400).json({ error: "Username already exists" });
+        }
+        update.username = username;
+      }
+      if (role) {
+        if (!["admin", "blog-admin"].includes(role)) {
+          return res.status(400).json({ error: "Invalid role" });
+        }
+        update.role = role;
+      }
+      if (password) {
+        update.password = password; // hashing handled in db layer
+      }
+
+      if (Object.keys(update).length === 0) {
+        return res.json({ message: "No changes to update" });
+      }
+
+      const updated = await storage.updateUser(targetId, update);
+      res.json({ id: updated.id, username: updated.username, role: updated.role });
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ error: "Failed to update user" });
+    }
+  });
+
+  // Admin-only: delete user
+  app.delete("/api/admin/users/:id", authenticateToken, async (req, res) => {
+    try {
+      const { role: requesterRole, userId: requesterId } = (req as any).user || {};
+      if (requesterRole !== "admin") {
+        return res.status(403).json({ error: "Only admin can delete users" });
+      }
+      const targetId = req.params.id;
+      if (targetId === requesterId) {
+        return res.status(400).json({ error: "Admins cannot delete themselves" });
+      }
+      await storage.deleteUser(targetId);
+      res.json({ message: "User deleted" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ error: "Failed to delete user" });
+    }
+  });
+
   // Get all apps
   app.get("/api/apps", async (_req, res) => {
     try {

@@ -7,6 +7,8 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, userData: Partial<InsertUser>): Promise<User>;
+  getAllUsers(): Promise<User[]>;
+  deleteUser(id: string): Promise<void>;
   
   // Apps
   getAllApps(): Promise<App[]>;
@@ -67,12 +69,28 @@ export class DatabaseStorage implements IStorage {
     return await dbStorage.getUser(id);
   }
 
+  async getUserById(id: string): Promise<User | undefined> {
+    return await dbStorage.getUserById(id);
+  }
+
   async getUserByUsername(username: string): Promise<User | undefined> {
     return await dbStorage.getUserByUsername(username);
   }
 
   async createUser(user: InsertUser): Promise<User> {
     return await dbStorage.createUser(user);
+  }
+
+  async updateUser(id: string, userData: Partial<InsertUser>): Promise<User> {
+    return await dbStorage.updateUser(id, userData);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await dbStorage.getAllUsers();
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    return await dbStorage.deleteUser(id);
   }
 
   // App methods
