@@ -31,16 +31,16 @@ const AppsIcon = ({ className }: { className?: string }) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* 3x3 Grid of circles - extremely tight spacing */}
-    <circle cx="35" cy="35" r="6" fill="currentColor" />
-    <circle cx="50" cy="35" r="6" fill="currentColor" />
-    <circle cx="65" cy="35" r="6" fill="currentColor" />
-    <circle cx="35" cy="50" r="6" fill="currentColor" />
+    {/* 3x3 Grid of circles - small spacing */}
+    <circle cx="30" cy="30" r="6" fill="currentColor" />
+    <circle cx="50" cy="30" r="6" fill="currentColor" />
+    <circle cx="70" cy="30" r="6" fill="currentColor" />
+    <circle cx="30" cy="50" r="6" fill="currentColor" />
     <circle cx="50" cy="50" r="6" fill="currentColor" />
-    <circle cx="65" cy="50" r="6" fill="currentColor" />
-    <circle cx="35" cy="65" r="6" fill="currentColor" />
-    <circle cx="50" cy="65" r="6" fill="currentColor" />
-    <circle cx="65" cy="65" r="6" fill="currentColor" />
+    <circle cx="70" cy="50" r="6" fill="currentColor" />
+    <circle cx="30" cy="70" r="6" fill="currentColor" />
+    <circle cx="50" cy="70" r="6" fill="currentColor" />
+    <circle cx="70" cy="70" r="6" fill="currentColor" />
   </svg>
 );
 
@@ -164,7 +164,7 @@ export function Navigation() {
           className="h-full w-full flex items-center justify-center md:pointer-events-none"
           onClick={() => setIsAppsDropdownOpen(!isAppsDropdownOpen)}
         >
-          <AppsIcon className="h-full w-full text-primary-foreground" />
+          <AppsIcon className="h-12 w-12 md:h-13 md:w-13 text-primary-foreground" />
         </div>
       </div>
 
@@ -187,7 +187,7 @@ export function Navigation() {
               <div className="py-3 px-6 w-80 group">
               <div className="flex flex-col items-start gap-1">
                 {/* Logo at top */}
-                <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
+                <div className="w-44 h-24 flex items-center justify-center flex-shrink-0">
                   <img src={logoInitiatives} alt="DEEP Initiatives" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                   <img src={logoInitiativesBlack} alt="DEEP Initiatives" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
                 </div>
@@ -208,73 +208,81 @@ export function Navigation() {
             <div className="flex-1 px-8 py-3">
               <div className="grid grid-cols-2 gap-8">
                 {/* Funding */}
-                <div 
-                  onClick={() => window.open('https://deepfunding.ai/', '_blank')}
-                  className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
-                >
-                  <div className="flex items-start gap-1 mb-0">
-                    <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
-                      <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
-                      <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                <div className="flex items-start">
+                  <div 
+                    onClick={() => window.open('https://deepfunding.ai/', '_blank')}
+                    className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
+                  >
+                    <div className="flex items-start gap-1 mb-0">
+                      <div className="w-44 h-24 flex items-center justify-center flex-shrink-0">
+                        <img src={logoFunding} alt="DEEP Funding" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                        <img src={logoFundingBlack} alt="DEEP Funding" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                      </div>
+                      <div className="flex items-center gap-2">
+                  
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                
-                    </div>
+                    <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-3">
+                      An ecosystem for innovators to secure grants and resources to bring bold ideas to life.
+                    </p>
                   </div>
-                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-1">
-                    An ecosystem for innovators to secure grants and resources to bring bold ideas to life.
-                  </p>
                 </div>
 
                 {/* Community */}
-                <div 
-                  onClick={() => window.open('https://community.deepfunding.ai/', '_blank')}
-                  className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
-                >
-                  <div className="flex items-start gap-2 mb-0">
-                    <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
-                      <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
-                      <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                <div className="flex items-start">
+                  <div 
+                    onClick={() => window.open('https://community.deepfunding.ai/', '_blank')}
+                    className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
+                  >
+                    <div className="flex items-start gap-2 mb-0">
+                      <div className="w-44 h-24 flex items-center justify-center flex-shrink-0">
+                        <img src={logoCommunity} alt="DEEP Community" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                        <img src={logoCommunityBlack} alt="DEEP Community" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                      </div>
                     </div>
+                    <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-3">
+                      A collaborative space where builders, researchers, and supporters connect.
+                    </p>
                   </div>
-                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-1">
-                    A collaborative space where builders, researchers, and supporters connect.
-                  </p>
                 </div>
 
                 {/* Lab - Current site with white background */}
-                <div 
-                  className="bg-white rounded-xl p-1 cursor-default transition-all duration-300"
-                >
-                  <div className="flex items-start gap-2 mb-0">
-                    <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
-                      <img src={logoLab} alt="DEEP Lab" className="w-full h-full object-contain" />
+                <div className="flex items-start">
+                  <div 
+                    className="bg-white rounded-xl p-1 cursor-default transition-all duration-300"
+                  >
+                    <div className="flex items-start gap-2 mb-0">
+                      <div className="w-44 h-24 flex items-center justify-center flex-shrink-0">
+                        <img src={logoLab} alt="DEEP Lab" className="w-full h-full object-contain" />
+                      </div>
                     </div>
+                    <p className="text-gray-700 text-sm leading-relaxed -mt-3">
+                      The experimental arm of Deep, where new products, technologies, and methods are incubated.
+                    </p>
                   </div>
-                  <p className="text-gray-700 text-sm leading-relaxed -mt-1">
-                    The experimental arm of Deep, where new products, technologies, and methods are incubated.
-                  </p>
                 </div>
 
                 {/* Ideation */}
-                <div 
-                  onClick={() => window.open('https://ideation.deepfunding.ai', '_blank')}
-                  className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
-                >
-                  <div className="flex items-center gap-3 mb-0">
-                    <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
-                      <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
-                      <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                <div className="flex items-start">
+                  <div 
+                    onClick={() => window.open('https://ideation.deepfunding.ai', '_blank')}
+                    className="rounded-xl p-1 hover:bg-white cursor-pointer transition-all duration-300 group"
+                  >
+                    <div className="flex items-center gap-3 mb-0">
+                      <div className="w-36 h-16 flex items-center justify-center flex-shrink-0">
+                        <img src={logoIdeation} alt="DEEP Ideation" className="w-full h-full object-contain group-hover:hidden" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                        <img src={logoIdeationBlack} alt="DEEP Ideation" className="w-full h-full object-contain hidden group-hover:block" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                      </div>
+                      <div className="flex items-center gap-2">
+                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-white/20 text-white border border-white/30">
+                            Coming Soon
+                          </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-white/20 text-white border border-white/30">
-                          Coming Soon
-                        </span>
-                    </div>
+                    <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-1">
+                      Discover, share, and shape groundbreaking ideas with a community that values your voice. Explore trending concepts or submit your own to make an impact.
+                    </p>
                   </div>
-                  <p className="text-white group-hover:text-gray-700 text-sm leading-relaxed transition-colors -mt-1">
-                    Discover, share, and shape groundbreaking ideas with a community that values your voice. Explore trending concepts or submit your own to make an impact.
-                  </p>
                 </div>
               </div>
             </div>
