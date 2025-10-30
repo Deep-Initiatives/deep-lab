@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import logoMono from "@assets/logo.svg";
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("");
@@ -45,6 +46,10 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-chart-1 via-chart-2 to-chart-3 flex items-center justify-center p-4">
       <Card className="w-full max-w-md backdrop-blur-sm bg-background/80 border-border shadow-xl">
         <CardHeader className="text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <img src={logoMono} alt="DEEP" className="h-10 w-10 object-contain" />
+            <span style={{ color: 'inherit', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', alignItems: 'center' as const }}>Lab</span>
+          </div>
           <CardTitle className="text-2xl font-bold text-foreground">Admin Login</CardTitle>
           <CardDescription className="text-muted-foreground">
             Sign in to access the admin dashboard
