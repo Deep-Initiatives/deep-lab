@@ -179,7 +179,7 @@ export function Navigation() {
               <div className="pt-8 pb-16 px-6 w-96 group border-r-2 border-white/20">
               <div className="flex flex-col items-start gap-1">
                 {/* Logo + Title */}
-                <div className="flex items-center gap-3 mb-2 p-2">
+                <div className="flex items-center gap-3 mb-2 px-2">
                   <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
                   <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Initiatives</span>
                 </div>
@@ -201,13 +201,13 @@ export function Navigation() {
             </div>
             
             {/* Right side - grid of 4 apps */}
-            <div className="flex-1 px-8 pt-3 pb-16 flex items-center">
+            <div className="flex-1 px-8 pt-8 pb-16 flex items-center">
               <div className="grid grid-cols-2 gap-8 gap-y-4">
                 {/* Funding */}
                 <div className="flex items-start">
                   <div 
                     onClick={() => window.open('https://deepfunding.ai/', '_blank')}
-                    className="px-4 py-3 md:pt-8 cursor-pointer group"
+                    className="px-4 pt-0 pb-3 cursor-pointer group"
                     style={{
                       borderRadius: '0px',
                       transition: 'background-color 0.1s ease, border-radius 0s ease',
@@ -218,9 +218,11 @@ export function Navigation() {
                         // Set square immediately
                         element.style.backgroundColor = 'white';
                         element.style.borderRadius = '0px';
-                        element.style.transition = 'background-color 0.1s ease, border-radius 0s ease';
+                        element.style.paddingTop = '1rem';
+                        element.style.marginTop = '-1rem';
+                        element.style.transition = 'background-color 0.1s ease, border-radius 0s ease, padding-top 0.1s ease, margin-top 0.1s ease';
                         // Increase background footprint without layout shift
-                        // no padding/margin change to avoid layout shift
+                        // Compensate padding with negative margin to prevent movement
                         
                         // Force reflow to ensure square is rendered
                         void element.offsetHeight;
@@ -229,7 +231,7 @@ export function Navigation() {
                         requestAnimationFrame(() => {
                           requestAnimationFrame(() => {
                             if (element) {
-                              element.style.transition = 'background-color 0.1s ease, border-radius 0.4s ease';
+                              element.style.transition = 'background-color 0.1s ease, border-radius 0.4s ease, padding-top 0.1s ease, margin-top 0.1s ease';
                               element.style.borderRadius = '0.75rem';
                             }
                           });
@@ -238,10 +240,22 @@ export function Navigation() {
                     }}
                     onMouseLeave={(e) => {
                       if (e.currentTarget) {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transition = 'background-color 0.1s ease, border-radius 0s ease';
-                        e.currentTarget.style.borderRadius = '0px';
-                        // no padding/margin reset needed
+                        const element = e.currentTarget;
+                        // Ensure border radius stays rounded during fade - background should disappear curved
+                        // Explicitly keep it rounded and remove border-radius from transition so it doesn't animate
+                        element.style.borderRadius = '0.75rem';
+                        element.style.transition = 'background-color 0.3s ease, padding-top 0.1s ease, margin-top 0.1s ease';
+                        // Transition background to transparent so it fades with curved shape
+                        element.style.backgroundColor = 'transparent';
+                        element.style.paddingTop = '';
+                        element.style.marginTop = '';
+                        // Reset border radius only after background has fully faded (keep it curved until then)
+                        setTimeout(() => {
+                          if (element) {
+                            element.style.borderRadius = '0px';
+                            element.style.transition = 'background-color 0.1s ease, border-radius 0s ease, padding-top 0.1s ease, margin-top 0.1s ease';
+                          }
+                        }, 350);
                       }
                     }}
                   >
@@ -256,10 +270,10 @@ export function Navigation() {
                 </div>
 
                 {/* Community */}
-                <div className="flex items-start md:mt-3">
+                <div className="flex items-start">
                   <div 
                     onClick={() => window.open('https://community.deepfunding.ai/', '_blank')}
-                    className="px-4 py-3 md:pt-8 cursor-pointer group"
+                    className="px-4 pt-0 pb-3 cursor-pointer group"
                     style={{
                       borderRadius: '0px',
                       transition: 'background-color 0.1s ease, border-radius 0s ease',
@@ -270,9 +284,11 @@ export function Navigation() {
                         // Set square immediately
                         element.style.backgroundColor = 'white';
                         element.style.borderRadius = '0px';
-                        element.style.transition = 'background-color 0.1s ease, border-radius 0s ease';
+                        element.style.paddingTop = '1rem';
+                        element.style.marginTop = '-1rem';
+                        element.style.transition = 'background-color 0.1s ease, border-radius 0s ease, padding-top 0.1s ease, margin-top 0.1s ease';
                         // Increase background footprint without layout shift
-                        // no padding/margin change to avoid layout shift
+                        // Compensate padding with negative margin to prevent movement
                         
                         // Force reflow to ensure square is rendered
                         void element.offsetHeight;
@@ -281,7 +297,7 @@ export function Navigation() {
                         requestAnimationFrame(() => {
                           requestAnimationFrame(() => {
                             if (element) {
-                              element.style.transition = 'background-color 0.1s ease, border-radius 0.4s ease';
+                              element.style.transition = 'background-color 0.1s ease, border-radius 0.4s ease, padding-top 0.1s ease, margin-top 0.1s ease';
                               element.style.borderRadius = '0.75rem';
                             }
                           });
@@ -290,10 +306,22 @@ export function Navigation() {
                     }}
                     onMouseLeave={(e) => {
                       if (e.currentTarget) {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transition = 'background-color 0.1s ease, border-radius 0s ease';
-                        e.currentTarget.style.borderRadius = '0px';
-                        // no padding/margin reset needed
+                        const element = e.currentTarget;
+                        // Ensure border radius stays rounded during fade - background should disappear curved
+                        // Explicitly keep it rounded and remove border-radius from transition so it doesn't animate
+                        element.style.borderRadius = '0.75rem';
+                        element.style.transition = 'background-color 0.3s ease, padding-top 0.1s ease, margin-top 0.1s ease';
+                        // Transition background to transparent so it fades with curved shape
+                        element.style.backgroundColor = 'transparent';
+                        element.style.paddingTop = '';
+                        element.style.marginTop = '';
+                        // Reset border radius only after background has fully faded (keep it curved until then)
+                        setTimeout(() => {
+                          if (element) {
+                            element.style.borderRadius = '0px';
+                            element.style.transition = 'background-color 0.1s ease, border-radius 0s ease, padding-top 0.1s ease, margin-top 0.1s ease';
+                          }
+                        }, 350);
                       }
                     }}
                   >
@@ -323,9 +351,9 @@ export function Navigation() {
                 </div>
 
                 {/* Ideation */}
-                <div className="flex items-start md:mt-3">
+                <div className="flex items-start md:mt-4">
                   <div 
-                    className="rounded-xl p-1 cursor-default transition-all duration-300 group"
+                    className="rounded-xl px-4 pt-0 pb-3 cursor-default transition-all duration-300 group"
                   >
                     <div className="flex items-center gap-3 mb-0">
                       <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
