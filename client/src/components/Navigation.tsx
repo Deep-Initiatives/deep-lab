@@ -185,18 +185,22 @@ export function Navigation() {
                 </div>
 
                 {/* Description */}
-                <p className="mb-0" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
+                <p className="mb-0 pl-2" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                 DEEP - Where bold, bright and beneficial ideas are turned into real world solutions to create a better future for all! 
                 </p>
 
                 {/* Coming Soon badge */}
-                <span style={{
-                  color: '#D2D0D7', fontFamily: 'DM Sans', fontSize: 12, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px',
-                  display: 'flex', padding: '4px 12px', justifyContent: 'center', alignItems: 'center', gap: 10, borderRadius: 60,
-                  border: '1px solid #A39EB2', background: 'rgba(255, 255, 255, 0.04)', width: 'fit-content', marginTop: 20
+                <div className="pl-2" style={{
+                  marginTop: 20
                 }}>
-                  Coming Soon
-                </span>
+                  <span style={{
+                    color: '#D2D0D7', fontFamily: 'DM Sans', fontSize: 12, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px',
+                    display: 'flex', padding: '4px 12px', justifyContent: 'center', alignItems: 'center', gap: 10, borderRadius: 60,
+                    border: '1px solid #A39EB2', background: 'rgba(255, 255, 255, 0.04)', width: 'fit-content'
+                  }}>
+                    Coming Soon
+                  </span>
+                </div>
               </div>
             </div>
             
