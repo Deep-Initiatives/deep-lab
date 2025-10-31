@@ -1,5 +1,5 @@
 import { Github, Twitter, Linkedin, Mail } from "lucide-react";
-import logoImage from "@assets/logo.svg";
+import logoMono from "@assets/logo.svg";
 
 export function Footer() {
   const scrollToSection = (id: string) => {
@@ -16,8 +16,9 @@ export function Footer() {
       <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <img src={logoImage} alt="Deep Lab" className="h-14 md:h-16" />
+            <div className="flex items-center gap-2">
+              <img src={logoMono} alt="DEEP" className="h-14 md:h-16 object-contain" />
+              <span style={{ color: 'inherit', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', alignItems: 'center' as const }}>Lab</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Where innovation takes flight. Building the future of AI, one prototype at a
