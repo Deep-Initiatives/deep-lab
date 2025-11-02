@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Users, Code } from "lucide-react";
+import { ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Users, Code, ArrowRight } from "lucide-react";
 import type { App, AppCategory } from "@shared/schema";
 
 interface AppsShowcaseProps {
@@ -27,6 +28,7 @@ const categoryColors: Record<AppCategory, string> = {
 export function AppsShowcase({ apps }: AppsShowcaseProps) {
   const [selectedCategory, setSelectedCategory] = useState<AppCategory | "All">("All");
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
+  const [, setLocation] = useLocation();
 
   const categories: (AppCategory | "All")[] = ["All", "AI Agent", "Web App", "Tool", "Service"];
 
@@ -34,6 +36,9 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
     selectedCategory === "All"
       ? apps
       : apps.filter((app) => app.category === selectedCategory);
+
+  // Show only first 12 projects on homepage
+  const displayedApps = filteredApps.slice(0, 12);
 
   return (
     <section id="projects" className="py-20 md:py-32 bg-card">
@@ -77,7 +82,7 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {filteredApps.map((app) => {
+          {displayedApps.map((app) => {
             const Icon = categoryIcons[app.category as AppCategory];
             const gradientColor = categoryColors[app.category as AppCategory];
 
@@ -212,11 +217,24 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
           })}
         </div>
 
-        {filteredApps.length === 0 && (
+        {displayedApps.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
               No apps found in this category yet. Check back soon!
             </p>
+          </div>
+        )}
+
+        {apps.length > 12 && filteredApps.length > 12 && (
+          <div className="text-center mt-12">
+            <Button
+              onClick={() => setLocation("/projects")}
+              size="lg"
+              className="bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white hover:opacity-90 transition-opacity"
+            >
+              Show More
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </div>
         )}
       </div>

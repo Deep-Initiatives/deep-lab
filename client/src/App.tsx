@@ -16,6 +16,7 @@ import ViewAllIdeasPage from "@/pages/ViewAllIdeasPage";
 import SubmitIdeaPage from "@/pages/SubmitIdeaPage";
 import JoinTeamPage from "@/pages/JoinTeamPage";
 import WorkflowOverviewPage from "@/pages/WorkflowOverviewPage";
+import ProjectsPage from "@/pages/ProjectsPage";
 import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
 import AdminLoginPage from "@/pages/admin/AdminLoginPage";
 
@@ -23,6 +24,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomePage} />
+      <Route path="/projects" component={ProjectsPage} />
       <Route path="/project/:id" component={({ params }) => <ProjectDetailsPage projectId={params.id} />} />
       <Route path="/blog" component={BlogPage} />
       <Route path="/blog/:id" component={BlogDetailPage} />

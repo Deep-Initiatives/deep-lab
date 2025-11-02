@@ -8,16 +8,29 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Trash2, User, Lightbulb, Calendar, CheckCircle, XCircle, Clock, Filter, Sparkles, Target } from "lucide-react";
+import { Eye, Trash2, User, Lightbulb, Calendar, CheckCircle, XCircle, Clock, Filter, Sparkles, Target, Plus } from "lucide-react";
 import type { IdeaSubmission } from "@shared/schema";
 import { formatDistance } from "date-fns";
 
 export function AdminIdeasPage() {
   const [selectedIdea, setSelectedIdea] = useState<IdeaSubmission | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isPodDialogOpen, setIsPodDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
   const [statusUpdateData, setStatusUpdateData] = useState({ status: "", notes: "" });
+  const [podData, setPodData] = useState({
+    name: "",
+    description: "",
+    status: "Active",
+    progress: 0,
+    teamSize: 1,
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: "",
+    technologies: [] as string[],
+    coordinatorId: "",
+  });
   
   const queryClient = useQueryClient();
 
@@ -33,19 +46,66 @@ export function AdminIdeasPage() {
 
   // Update idea status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status, notes }: { id: string; status: string; notes?: string }) => {
+    mutationFn: async ({ id, status, notes, podData }: { id: string; status: string; notes?: string; podData?: any }) => {
+      const body = { status, notes };
+      if (podData) {
+        (body as any).podData = podData;
+      }
+      
       const response = await authenticatedFetch(`/api/admin/ideas/${id}/status`, {
         method: "PATCH",
-        body: JSON.stringify({ status, notes }),
+        body: JSON.stringify(body),
       });
-      if (!response.ok) throw new Error("Failed to update status");
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: "Failed to update status" }));
+        throw new Error(error.error || "Failed to update status");
+      }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: async (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/ideas"] });
+      // If status is approved, also refresh the apps list to show the new project
+      const normalizedStatus = variables.status?.toLowerCase().trim();
+      if (normalizedStatus === "approved") {
+        // Wait a short moment for the backend to finish creating the app
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Invalidate and refetch the apps query to show the new project
+        await queryClient.invalidateQueries({ queryKey: ["/api/apps"] });
+        await queryClient.refetchQueries({ queryKey: ["/api/apps"] });
+      }
+      // If status is in_development, also refresh the pods list
+      if (normalizedStatus === "in_development") {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await queryClient.invalidateQueries({ queryKey: ["/api/pods"] });
+        await queryClient.refetchQueries({ queryKey: ["/api/pods"] });
+      }
+      // If status is rejected, refresh both apps and pods lists in case items were deleted
+      if (normalizedStatus === "rejected") {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await queryClient.invalidateQueries({ queryKey: ["/api/apps"] });
+        await queryClient.invalidateQueries({ queryKey: ["/api/pods"] });
+        await queryClient.refetchQueries({ queryKey: ["/api/apps"] });
+        await queryClient.refetchQueries({ queryKey: ["/api/pods"] });
+      }
       setIsViewDialogOpen(false);
+      setIsPodDialogOpen(false);
       setSelectedIdea(null);
       setStatusUpdateData({ status: "", notes: "" });
+      // Reset pod data
+      setPodData({
+        name: "",
+        description: "",
+        status: "Active",
+        progress: 0,
+        teamSize: 1,
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: "",
+        technologies: [],
+        coordinatorId: "",
+      });
+    },
+    onError: (error: Error) => {
+      alert(`Failed to update status: ${error.message}`);
     },
   });
 
@@ -65,15 +125,79 @@ export function AdminIdeasPage() {
   const handleViewIdea = (idea: IdeaSubmission) => {
     setSelectedIdea(idea);
     setStatusUpdateData({ status: idea.status, notes: idea.notes || "" });
+    // Pre-fill pod data from idea when opening
+    setPodData({
+      name: idea.title,
+      description: idea.proposedSolution || idea.problemStatement || "",
+      status: "Active",
+      progress: 0,
+      teamSize: 1,
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: "",
+      technologies: Array.isArray(idea.requiredExpertise) ? idea.requiredExpertise : (idea.requiredExpertise ? [idea.requiredExpertise] : []),
+      coordinatorId: "",
+    });
     setIsViewDialogOpen(true);
   };
 
   const handleUpdateStatus = () => {
     if (selectedIdea) {
+      const normalizedStatus = statusUpdateData.status?.toLowerCase().trim();
+      
+      // If status is "in_development", show pod dialog first
+      if (normalizedStatus === "in_development") {
+        setIsPodDialogOpen(true);
+      } else {
+        // For other statuses, update directly
+        updateStatusMutation.mutate({
+          id: selectedIdea.id,
+          status: statusUpdateData.status,
+          notes: statusUpdateData.notes,
+        });
+      }
+    }
+  };
+
+  const handleCreatePod = () => {
+    if (selectedIdea) {
+      // Validate required fields
+      if (!podData.name || !podData.description || !podData.startDate) {
+        alert("Please fill in all required fields (Name, Description, Start Date)");
+        return;
+      }
+      
+      // Pre-fill pod data from idea if not already filled
+      // Convert date strings to ISO format if needed
+      const formatDate = (dateString: string | null | undefined): string | null => {
+        if (!dateString) return null;
+        // If it's already in ISO format, return as is
+        if (dateString.includes('T')) return dateString;
+        // If it's in YYYY-MM-DD format, convert to ISO
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          return new Date(dateString + 'T00:00:00').toISOString();
+        }
+        return dateString;
+      };
+      
+      const finalPodData = {
+        name: podData.name || selectedIdea.title,
+        description: podData.description || selectedIdea.proposedSolution || selectedIdea.problemStatement,
+        status: podData.status || "Active",
+        progress: podData.progress || 0,
+        teamSize: podData.teamSize || 1,
+        startDate: formatDate(podData.startDate) || new Date().toISOString(),
+        endDate: formatDate(podData.endDate),
+        technologies: podData.technologies.length > 0 
+          ? podData.technologies 
+          : (Array.isArray(selectedIdea.requiredExpertise) ? selectedIdea.requiredExpertise : (selectedIdea.requiredExpertise ? [selectedIdea.requiredExpertise] : [])),
+        coordinatorId: podData.coordinatorId || null,
+      };
+      
       updateStatusMutation.mutate({
         id: selectedIdea.id,
         status: statusUpdateData.status,
         notes: statusUpdateData.notes,
+        podData: finalPodData,
       });
     }
   };
@@ -229,7 +353,7 @@ export function AdminIdeasPage() {
                               </div>
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-3 w-3" />
-                                Submitted {formatDistance(new Date(idea.createdAt), new Date(), { addSuffix: true })}
+                                Submitted {idea.createdAt ? formatDistance(new Date(idea.createdAt), new Date(), { addSuffix: true }) : 'N/A'}
                               </div>
                             </div>
 
@@ -316,7 +440,7 @@ export function AdminIdeasPage() {
                   <div>
                     <Label className="text-muted-foreground">Submitted On</Label>
                     <p className="font-medium">
-                      {new Date(selectedIdea.createdAt).toLocaleDateString()}
+                      {selectedIdea.createdAt ? new Date(selectedIdea.createdAt).toLocaleDateString() : 'N/A'}
                     </p>
                   </div>
                 </div>
@@ -430,6 +554,167 @@ export function AdminIdeasPage() {
                     {updateStatusMutation.isPending ? "Updating..." : "Update Status"}
                   </Button>
                 </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Pod Creation Dialog - shown when status is changed to "in_development" */}
+      <Dialog open={isPodDialogOpen} onOpenChange={setIsPodDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Innovation Pod</DialogTitle>
+          </DialogHeader>
+          {selectedIdea && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Creating a pod for: <span className="font-semibold">{selectedIdea.title}</span>
+              </p>
+
+              {/* Pod Name */}
+              <div>
+                <Label htmlFor="pod-name">Pod Name <span className="text-red-500">*</span></Label>
+                <Input
+                  id="pod-name"
+                  value={podData.name}
+                  onChange={(e) => setPodData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder={selectedIdea.title}
+                  className="mt-1"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <Label htmlFor="pod-description">Description <span className="text-red-500">*</span></Label>
+                <Textarea
+                  id="pod-description"
+                  value={podData.description}
+                  onChange={(e) => setPodData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder={selectedIdea.proposedSolution || selectedIdea.problemStatement}
+                  rows={4}
+                  className="mt-1"
+                />
+              </div>
+
+              {/* Status and Progress */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="pod-status">Status <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={podData.status}
+                    onValueChange={(value) => setPodData(prev => ({ ...prev, status: value }))}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Planning">Planning</SelectItem>
+                      <SelectItem value="Completed">Completed</SelectItem>
+                      <SelectItem value="On Hold">On Hold</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="pod-progress">Progress (%)</Label>
+                  <Input
+                    id="pod-progress"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={podData.progress}
+                    onChange={(e) => setPodData(prev => ({ ...prev, progress: parseInt(e.target.value) || 0 }))}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              {/* Team Size and Start Date */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="pod-team-size">Team Size</Label>
+                  <Input
+                    id="pod-team-size"
+                    type="number"
+                    min="1"
+                    value={podData.teamSize}
+                    onChange={(e) => setPodData(prev => ({ ...prev, teamSize: parseInt(e.target.value) || 1 }))}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="pod-start-date">Start Date <span className="text-red-500">*</span></Label>
+                  <Input
+                    id="pod-start-date"
+                    type="date"
+                    value={podData.startDate}
+                    onChange={(e) => setPodData(prev => ({ ...prev, startDate: e.target.value }))}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              {/* End Date */}
+              <div>
+                <Label htmlFor="pod-end-date">End Date (Optional)</Label>
+                <Input
+                  id="pod-end-date"
+                  type="date"
+                  value={podData.endDate}
+                  onChange={(e) => setPodData(prev => ({ ...prev, endDate: e.target.value }))}
+                  className="mt-1"
+                />
+              </div>
+
+              {/* Technologies */}
+              <div>
+                <Label htmlFor="pod-technologies">Technologies (comma-separated)</Label>
+                <Input
+                  id="pod-technologies"
+                  value={Array.isArray(podData.technologies) ? podData.technologies.join(", ") : (Array.isArray(selectedIdea.requiredExpertise) ? selectedIdea.requiredExpertise.join(", ") : "")}
+                  onChange={(e) => {
+                    const techs = e.target.value.split(",").map(t => t.trim()).filter(t => t.length > 0);
+                    setPodData(prev => ({ ...prev, technologies: techs }));
+                  }}
+                  placeholder={Array.isArray(selectedIdea.requiredExpertise) ? selectedIdea.requiredExpertise.join(", ") : ""}
+                  className="mt-1"
+                />
+                {selectedIdea.requiredExpertise && selectedIdea.requiredExpertise.length > 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Pre-filled from idea requirements. Edit as needed.
+                  </p>
+                )}
+              </div>
+
+              {/* Coordinator ID (Optional) */}
+              <div>
+                <Label htmlFor="pod-coordinator">Coordinator ID (Optional)</Label>
+                <Input
+                  id="pod-coordinator"
+                  value={podData.coordinatorId}
+                  onChange={(e) => setPodData(prev => ({ ...prev, coordinatorId: e.target.value }))}
+                  placeholder="Enter coordinator user ID"
+                  className="mt-1"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsPodDialogOpen(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreatePod}
+                  disabled={updateStatusMutation.isPending || !podData.name || !podData.description || !podData.startDate}
+                  className="flex-1"
+                >
+                  {updateStatusMutation.isPending ? "Creating..." : "Create Pod & Update Status"}
+                </Button>
               </div>
             </div>
           )}

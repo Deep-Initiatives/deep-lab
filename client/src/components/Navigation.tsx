@@ -83,11 +83,10 @@ export function Navigation() {
   };
 
   const navLinks = [
-    { label: "Contact", path: "/contact" },
-    { label: "Projects", path: "/", id: "projects" },
-    { label: "Pods", path: "/", id: "pods" },
+    { label: "Ideas", path: "/ideas" },
+    { label: "Projects", path: "/projects" },
+    { label: "Workflow", path: "/workflow" },
     { label: "Blog", path: "/blog" },
-    { label: "Journey", path: "/", id: "journey" },
   ];
 
   const appLinks = [
@@ -486,7 +485,7 @@ export function Navigation() {
             {navLinks.map((link) => (
               <button
                 key={link.label}
-                onClick={() => link.id ? scrollToSection(link.id) : handleNavigation(link.path)}
+                onClick={() => handleNavigation(link.path)}
                 className={`text-sm font-medium transition-colors hover-elevate px-3 py-2 rounded-md ${
                   theme === 'dark' 
                     ? 'text-white hover:text-white' 
@@ -551,7 +550,7 @@ export function Navigation() {
             {navLinks.map((link) => (
               <button
                 key={link.label}
-                onClick={() => link.id ? scrollToSection(link.id) : handleNavigation(link.path)}
+                onClick={() => handleNavigation(link.path)}
                 className={`block w-full text-left px-4 py-3 text-sm font-medium hover:bg-white/20 rounded-md transition-colors ${
                   theme === 'dark' 
                     ? 'text-white hover:text-white' 

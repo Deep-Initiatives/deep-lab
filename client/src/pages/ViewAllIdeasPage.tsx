@@ -4,14 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Search, Lightbulb, Calendar, User, Filter, Loader2 } from "lucide-react";
+import { Search, Lightbulb, Calendar, User, Filter, Loader2, Target, Zap, CheckCircle, TrendingUp, Users as UsersIcon, Code } from "lucide-react";
 import type { IdeaSubmission } from "@shared/schema";
 
 export default function ViewAllIdeasPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedIdea, setSelectedIdea] = useState<IdeaSubmission | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const statusFilters = ["all", "pending", "under_review", "approved", "in_development"];
   
@@ -114,7 +117,14 @@ export default function ViewAllIdeasPage() {
           {!isLoading && !error && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredIdeas.map((idea) => (
-                <Card key={idea.id} className="hover:shadow-lg transition-shadow">
+                <Card 
+                  key={idea.id} 
+                  className="hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => {
+                    setSelectedIdea(idea);
+                    setIsDialogOpen(true);
+                  }}
+                >
                   <CardHeader>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
@@ -165,6 +175,147 @@ export default function ViewAllIdeasPage() {
               ))}
             </div>
           )}
+
+          {/* Idea Details Modal */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              {selectedIdea && (
+                <>
+                  <DialogHeader>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <DialogTitle className="text-2xl md:text-3xl font-bold mb-2">
+                          {selectedIdea.title}
+                        </DialogTitle>
+                        <DialogDescription className="flex items-center gap-4 mt-2">
+                          <Badge className={getStatusColor(selectedIdea.status)}>
+                            {formatStatus(selectedIdea.status)}
+                          </Badge>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <User className="h-4 w-4" />
+                            <span>{selectedIdea.submitterName}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4" />
+                            <span>{selectedIdea.createdAt ? new Date(selectedIdea.createdAt).toLocaleDateString() : 'N/A'}</span>
+                          </div>
+                        </DialogDescription>
+                      </div>
+                    </div>
+                  </DialogHeader>
+                  
+                  <div className="space-y-6 mt-4">
+                    {/* Problem Statement */}
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                        <Target className="h-5 w-5 text-chart-1" />
+                        Problem Statement
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                        {selectedIdea.problemStatement}
+                      </p>
+                    </div>
+
+                    {/* Proposed Solution */}
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                        <Zap className="h-5 w-5 text-chart-2" />
+                        Proposed Solution
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                        {selectedIdea.proposedSolution}
+                      </p>
+                    </div>
+
+                    {/* Target Audience */}
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                        <UsersIcon className="h-5 w-5 text-chart-3" />
+                        Target Audience
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                        {selectedIdea.targetAudience}
+                      </p>
+                    </div>
+
+                    {/* Expected Impact */}
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-chart-4" />
+                        Expected Impact
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                        {selectedIdea.expectedImpact}
+                      </p>
+                    </div>
+
+                    {/* Required Expertise */}
+                    {selectedIdea.requiredExpertise && selectedIdea.requiredExpertise.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                          <Code className="h-5 w-5 text-chart-5" />
+                          Required Expertise
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedIdea.requiredExpertise.map((expertise, index) => (
+                            <Badge key={index} variant="secondary" className="text-sm">
+                              {expertise}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Success Metrics */}
+                    {selectedIdea.successMetrics && (
+                      <div>
+                        <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                          Success Metrics
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                          {selectedIdea.successMetrics}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Dependencies */}
+                    {selectedIdea.dependencies && (
+                      <div>
+                        <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                          <Filter className="h-5 w-5 text-orange-500" />
+                          Dependencies
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                          {selectedIdea.dependencies}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Notes (if any) */}
+                    {selectedIdea.notes && (
+                      <div>
+                        <h3 className="font-semibold text-lg mb-2">Notes</h3>
+                        <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                          {selectedIdea.notes}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Timestamps */}
+                    <div className="pt-4 border-t text-sm text-muted-foreground space-y-1">
+                      {selectedIdea.createdAt && (
+                        <p>Submitted: {new Date(selectedIdea.createdAt).toLocaleString()}</p>
+                      )}
+                      {selectedIdea.updatedAt && selectedIdea.updatedAt !== selectedIdea.createdAt && (
+                        <p>Last Updated: {new Date(selectedIdea.updatedAt).toLocaleString()}</p>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
 
           {!isLoading && !error && filteredIdeas.length === 0 && (
             <div className="text-center py-12">

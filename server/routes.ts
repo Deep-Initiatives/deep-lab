@@ -676,10 +676,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Update idea submission status
   app.patch("/api/admin/ideas/:id/status", authenticateToken, async (req, res) => {
     try {
-      const { status, notes } = req.body;
-      const idea = await storage.updateIdeaSubmissionStatus(req.params.id, status, notes);
+      const { status, notes, podData } = req.body;
+      const ideaId = req.params.id;
+      
+      // Get the current idea to check if we need to create an app or pod
+      const currentIdea = await storage.getIdeaSubmission(ideaId);
+      if (!currentIdea) {
+        return res.status(404).json({ error: "Idea submission not found" });
+      }
+      
+      const previousStatus = currentIdea.status?.toLowerCase().trim();
+      const normalizedStatus = status?.toLowerCase().trim();
+      
+      // If status is being changed to "rejected", delete associated app/pod if they exist
+      if (normalizedStatus === "rejected" && (previousStatus === "approved" || previousStatus === "in_development")) {
+        try {
+          // Delete associated app/project if it exists (check regardless of previous status to handle edge cases)
+          const allApps = await storage.getAllApps();
+          const associatedApp = allApps.find(app => app.name.toLowerCase() === currentIdea.title.toLowerCase());
+          if (associatedApp) {
+            await storage.deleteApp(associatedApp.id);
+          }
+          
+          // Delete associated pod if it exists (check regardless of previous status to handle edge cases)
+          const allPods = await storage.getAllPods();
+          const associatedPod = allPods.find(pod => pod.name.toLowerCase() === currentIdea.title.toLowerCase());
+          if (associatedPod) {
+            await storage.deletePod(associatedPod.id);
+          }
+        } catch (deletionError) {
+          // Don't fail the status update if deletion fails - log it but continue
+        }
+      }
+      
+      // Update the idea status
+      const idea = await storage.updateIdeaSubmissionStatus(ideaId, status, notes);
+      
+      // If status is "approved", automatically create an app/project
+      if (normalizedStatus === "approved") {
+        try {
+          // Check if an app with the same name already exists
+          const allApps = await storage.getAllApps();
+          const existingApp = allApps.find(app => app.name.toLowerCase() === idea.title.toLowerCase());
+          
+          if (!existingApp) {
+            // Prepare app data
+            const appData = {
+              name: idea.title,
+              description: idea.proposedSolution || idea.problemStatement || "No description provided",
+              category: "Web App" as const,
+              status: "Prototype" as const,
+              technologies: Array.isArray(idea.requiredExpertise) ? idea.requiredExpertise : (idea.requiredExpertise ? [idea.requiredExpertise] : []),
+              icon: null,
+              demoUrl: null,
+              githubUrl: null,
+              podId: null,
+            };
+            
+            // Create a new app from the approved idea
+            await storage.createApp(appData);
+          }
+        } catch (appCreationError) {
+          // Don't fail the status update if app creation fails - log it but continue
+        }
+      }
+      
+      // If status is "in_development", create a pod with the provided pod data
+      if (normalizedStatus === "in_development") {
+        if (!podData || (typeof podData === 'object' && Object.keys(podData).length === 0)) {
+          return res.status(400).json({ error: "Pod data is required when changing status to 'in_development'" });
+        }
+        
+        try {
+          // Check if a pod with the same name already exists
+          const allPods = await storage.getAllPods();
+          const existingPod = allPods.find(pod => pod.name.toLowerCase() === (podData.name || idea.title).toLowerCase());
+          
+          if (!existingPod) {
+            // Create a new pod from the idea with provided pod data
+            const podDataToCreate = {
+              name: podData.name || idea.title,
+              description: podData.description || idea.proposedSolution || idea.problemStatement || "No description provided",
+              status: podData.status || "Active",
+              progress: podData.progress || 0,
+              teamSize: podData.teamSize || 1,
+              startDate: podData.startDate || new Date().toISOString(),
+              endDate: podData.endDate || null,
+              technologies: Array.isArray(podData.technologies) ? podData.technologies : (podData.technologies ? [podData.technologies] : (Array.isArray(idea.requiredExpertise) ? idea.requiredExpertise : (idea.requiredExpertise ? [idea.requiredExpertise] : []))),
+              coordinatorId: podData.coordinatorId || null,
+            };
+            
+            await storage.createPod(podDataToCreate);
+          }
+        } catch (podCreationError) {
+          return res.status(500).json({ error: "Failed to create pod", details: podCreationError instanceof Error ? podCreationError.message : String(podCreationError) });
+        }
+      }
+      
       res.json(idea);
     } catch (error) {
+      console.error("Error updating idea submission status:", error);
       res.status(500).json({ error: "Failed to update idea submission status" });
     }
   });
@@ -691,6 +787,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Idea submission deleted successfully" });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete idea submission" });
+    }
+  });
+
+  // Admin: Create app for approved idea (utility endpoint)
+  app.post("/api/admin/ideas/:id/create-app", authenticateToken, async (req, res) => {
+    try {
+      const ideaId = req.params.id;
+      const idea = await storage.getIdeaSubmission(ideaId);
+      
+      if (!idea) {
+        return res.status(404).json({ error: "Idea submission not found" });
+      }
+
+      if (idea.status !== "approved") {
+        return res.status(400).json({ error: "Idea must be approved to create an app" });
+      }
+
+      // Check if an app with the same name already exists
+      const allApps = await storage.getAllApps();
+      const existingApp = allApps.find(app => app.name.toLowerCase() === idea.title.toLowerCase());
+      
+      if (existingApp) {
+        return res.status(400).json({ 
+          error: "App already exists for this idea",
+          app: existingApp
+        });
+      }
+
+      // Create a new app from the approved idea
+      const newApp = await storage.createApp({
+        name: idea.title,
+        description: idea.proposedSolution || idea.problemStatement,
+        category: "Web App", // Default category, can be changed later
+        status: "Prototype", // Default status for newly approved ideas
+        technologies: Array.isArray(idea.requiredExpertise) ? idea.requiredExpertise : [],
+        icon: null,
+        demoUrl: null,
+        githubUrl: null,
+        podId: null,
+      });
+
+      console.log(`✅ Manually created app "${newApp.name}" (ID: ${newApp.id}) from approved idea "${idea.title}" (ID: ${idea.id})`);
+
+      res.json({ 
+        message: "App created successfully",
+        app: newApp
+      });
+    } catch (error) {
+      console.error("Error creating app from idea:", error);
+      res.status(500).json({ error: "Failed to create app from idea" });
     }
   });
 
