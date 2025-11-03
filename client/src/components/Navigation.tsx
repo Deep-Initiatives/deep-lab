@@ -175,7 +175,7 @@ export function Navigation() {
           <div className="hidden md:flex">
               {/* Left side box - Initiatives - spans full height */}
 
-              <div className="pt-8 pb-16 px-6 w-96 group border-r-2 border-white/20">
+              <div className="pt-8 pb-16 px-6 w-96 group border-r-2 border-white/20" style={{ background: 'linear-gradient(135deg, #14082E 0%, rgb(120,50,150) 50%, #3d1f5c 100%)' }}>
               <div className="flex flex-col items-start gap-1">
                 {/* Logo + Title */}
                 <div className="flex items-center gap-3 mb-2 px-2">
@@ -266,7 +266,7 @@ export function Navigation() {
                       <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
                       <span className="text-white group-hover:text-black transition-colors" style={{ fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Funding</span>
                     </div>
-                    <p className="mt-1 text-white group-hover:text-black text-sm leading-relaxed transition-colors">
+                    <p className="mt-1 transition-colors group-hover:!text-[#4A4A4A]" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                       An ecosystem for innovators to secure grants and resources to bring bold ideas to life.
                     </p>
                   </div>
@@ -332,7 +332,7 @@ export function Navigation() {
                       <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
                       <span className="text-white group-hover:text-black transition-colors" style={{ fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Communities</span>
                     </div>
-                    <p className="mt-1 text-white group-hover:text-black text-sm leading-relaxed transition-colors">
+                    <p className="mt-1 transition-colors group-hover:!text-[#4A4A4A]" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                       A collaborative space where builders, researchers, and supporters connect.
                     </p>
                   </div>
@@ -347,7 +347,7 @@ export function Navigation() {
                       <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
                       <span style={{ color: '#000', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Lab</span>
                     </div>
-                    <p className="text-black text-sm leading-relaxed mt-2">
+                    <p className="mt-2" style={{ color: '#4A4A4A', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                       The experimental arm of Deep, where new products, technologies, and methods are incubated.
                     </p>
                   </div>
@@ -369,7 +369,7 @@ export function Navigation() {
                         COMING SOON
                       </span>
                     </div>
-                    <p className="text-white text-sm leading-relaxed mt-1">
+                    <p className="mt-1" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                       Discover, share, and shape groundbreaking ideas with a community that values your voice.<br />
                       Explore trending concepts or submit your own to make an impact.
                     </p>
@@ -382,7 +382,7 @@ export function Navigation() {
           {/* Mobile layout - Vertical stack */}
           <div className="md:hidden flex flex-col px-4 py-3 gap-4">
             {/* Initiatives */}
-            <div className="border-2 border-white/20 rounded-none pt-12 pb-5 px-5 -mx-4 -mt-3 group" style={{ boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.45)' }}>
+            <div className="border-2 border-white/20 rounded-none pt-12 pb-5 px-5 -mx-4 -mt-3 group" style={{ boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.45)', background: 'linear-gradient(135deg, #14082E 0%, rgb(120,50,150) 50%, #3d1f5c 100%)' }}>
               <div className="flex items-center gap-3 mb-3">
                 <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
                 <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Initiatives</span>
@@ -411,7 +411,7 @@ export function Navigation() {
                 <img src={logoMono} alt="DEEP" className="w-8 h-8 object-contain" />
                 <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Funding</span>
               </div>
-              <p className="mt-1 text-white/70 text-sm leading-relaxed">
+              <p className="mt-1 text-white/70" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                 An ecosystem for innovators to secure grants and resources to bring bold ideas to life.
               </p>
             </div>
@@ -428,7 +428,7 @@ export function Navigation() {
                 <img src={logoMono} alt="DEEP" className="w-8 h-8 object-contain" />
                 <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Communities</span>
               </div>
-              <p className="mt-1 text-white/70 text-sm leading-relaxed">
+              <p className="mt-1 text-white/70" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                 A collaborative space where builders, researchers, and supporters connect.
               </p>
             </div>
@@ -439,7 +439,7 @@ export function Navigation() {
                 <img src={logoMono} alt="DEEP" className="w-8 h-8 object-contain" />
                 <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Lab</span>
               </div>
-              <p className="text-white text-sm leading-relaxed mt-2">
+              <p className="mt-2" style={{ color: '#B0B5BD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                 The experimental arm of Deep, where new products, technologies, and methods are incubated.
               </p>
             </div>
@@ -459,7 +459,7 @@ export function Navigation() {
                   COMING SOON
                 </span>
               </div>
-              <p className="mt-1 text-white/70 text-sm leading-relaxed">
+              <p className="mt-1 text-white/70" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
                 Discover, share, and shape groundbreaking ideas with a community that values your voice. Explore trending concepts or submit your own to make an impact.
               </p>
             </div>
@@ -476,7 +476,7 @@ export function Navigation() {
             data-testid="button-logo"
           >
             <div className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-105">
-              <img src={logoMono} alt="DEEP" className="h-8 w-8 md:h-12 md:w-12 object-contain" />
+              <img src={logoMono} alt="DEEP" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
               <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', alignItems: 'center' as const }}>Lab</span>
             </div>
           </button>
@@ -486,11 +486,17 @@ export function Navigation() {
               <button
                 key={link.label}
                 onClick={() => handleNavigation(link.path)}
-                className={`text-sm font-medium transition-colors hover-elevate px-3 py-2 rounded-md ${
-                  theme === 'dark' 
-                    ? 'text-white hover:text-white' 
-                    : 'text-gray-800 hover:text-gray-900'
-                }`}
+                style={{
+                  fontFamily: '"DM Sans", sans-serif',
+                  height: "88px",
+                  lineHeight: "88px",
+                  fontSize: "16px",
+                  fontWeight: 700,
+                  color: theme === 'dark' ? "#FFFFFF" : "#1A1A1A",
+                  padding: "0 20px",
+                  textTransform: "none",
+                }}
+                className="transition-colors hover-elevate"
                 data-testid={`link-nav-${link.label.toLowerCase()}`}
               >
                 {link.label}
@@ -580,3 +586,4 @@ export function Navigation() {
     </nav>
   );
 }
+

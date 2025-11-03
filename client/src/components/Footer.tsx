@@ -1,11 +1,26 @@
-import { Github, Twitter, Linkedin, Mail } from "lucide-react";
 import logoMono from "@assets/logo.svg";
+import { useLocation } from "wouter";
 
 export function Footer() {
+  const [location, setLocation] = useLocation();
+  
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+    // If not on homepage, navigate there first, then scroll
+    if (location !== "/") {
+      setLocation("/");
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } else {
+      // Already on homepage, just scroll
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
@@ -17,49 +32,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <img src={logoMono} alt="DEEP" className="h-14 md:h-16 object-contain" />
+              <img src={logoMono} alt="DEEP" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
               <span style={{ color: 'inherit', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', alignItems: 'center' as const }}>Lab</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Where innovation takes flight. Building the future of AI, one prototype at a
               time.
             </p>
-            <div className="flex items-center gap-3">
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-md hover-elevate transition-all"
-                data-testid="link-social-github"
-              >
-                <Github className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-md hover-elevate transition-all"
-                data-testid="link-social-twitter"
-              >
-                <Twitter className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-md hover-elevate transition-all"
-                data-testid="link-social-linkedin"
-              >
-                <Linkedin className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
-              </a>
-              <a
-                href="mailto:contact@deep-lab.ai"
-                className="p-2 rounded-md hover-elevate transition-all"
-                data-testid="link-social-email"
-              >
-                <Mail className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
-              </a>
-            </div>
           </div>
 
           <div>
