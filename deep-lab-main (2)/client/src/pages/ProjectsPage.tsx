@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -7,9 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Code, ArrowRight, Search, Loader2, Filter } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel, SelectSeparator } from "@/components/ui/select";
+import { ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Code, ArrowRight } from "lucide-react";
 import type { App, AppCategory } from "@shared/schema";
 
 const categoryIcons: Record<AppCategory, any> = {
@@ -27,56 +25,21 @@ const categoryColors: Record<AppCategory, string> = {
 };
 
 export default function ProjectsPage() {
-  const [selectedFilter, setSelectedFilter] = useState<string>("All");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<AppCategory | "All">("All");
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [, setLocation] = useLocation();
 
   const categories: (AppCategory | "All")[] = ["All", "AI Agent", "Web App", "Tool", "Service"];
-  const statusFilters = ["in development", "in progress", "prototype", "beta testing"];
 
   // Fetch all apps from the database
   const { data: apps, isLoading, error } = useQuery<App[]>({
     queryKey: ["/api/apps"],
   });
 
-  const filteredApps = (apps || []).filter((app) => {
-    const matchesSearch = 
-      app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.technologies?.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    // Handle combined filter (category or status)
-    if (selectedFilter === "All") {
-      return matchesSearch;
-    }
-    
-    // Check if it's a category filter
-    const isCategory = categories.includes(selectedFilter as AppCategory | "All");
-    if (isCategory) {
-      return matchesSearch && app.category === selectedFilter;
-    }
-    
-    // Otherwise it's a status filter
-    const appStatusLower = app.status.toLowerCase();
-    const selectedStatusLower = selectedFilter.toLowerCase();
-    
-    // Handle status matching with variations
-    if (selectedStatusLower === "in development") {
-      return matchesSearch && appStatusLower.includes("development");
-    }
-    if (selectedStatusLower === "in progress") {
-      return matchesSearch && (appStatusLower.includes("progress") || appStatusLower.includes("active"));
-    }
-    if (selectedStatusLower === "prototype") {
-      return matchesSearch && appStatusLower.includes("prototype");
-    }
-    if (selectedStatusLower === "beta testing") {
-      return matchesSearch && appStatusLower.includes("beta");
-    }
-    
-    return matchesSearch;
-  });
+  const filteredApps =
+    selectedCategory === "All"
+      ? apps || []
+      : (apps || []).filter((app) => app.category === selectedCategory);
 
   return (
     <>
@@ -92,73 +55,40 @@ export default function ProjectsPage() {
             </p>
           </div>
 
-          {/* Search and Filters */}
-          <div className="mb-12">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input
-                        placeholder="Search projects..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full md:w-64">
-                    <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-                      <SelectTrigger className="w-full">
-                        <div className="flex items-center gap-2">
-                          <Filter className="h-4 w-4" />
-                          <SelectValue placeholder="Filter by category or status" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All Projects</SelectItem>
-                        <SelectSeparator />
-                        <SelectGroup>
-                          <SelectLabel>Category</SelectLabel>
-                          {categories.filter(cat => cat !== "All").map((category) => {
-                            const Icon = categoryIcons[category as AppCategory];
-                            return (
-                              <SelectItem key={category} value={category}>
-                                <div className="flex items-center gap-2">
-                                  {Icon && <Icon className="h-4 w-4" />}
-                                  {category}
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                        <SelectSeparator />
-                        <SelectGroup>
-                          <SelectLabel>Status</SelectLabel>
-                          {statusFilters.map((status) => {
-                            const formatStatus = (s: string) => {
-                              return s.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-                            };
-                            return (
-                              <SelectItem key={status} value={status}>
-                                {formatStatus(status)}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Category Filters */}
+          <div className="flex flex-wrap justify-center gap-3 mb-12">
+            {categories.map((category) => {
+              const isActive = selectedCategory === category;
+              const Icon = category !== "All" ? categoryIcons[category as AppCategory] : null;
+              
+              // Get category-specific gradient for active state
+              const getCategoryGradient = (cat: AppCategory | "All") => {
+                if (cat === "All") return "from-chart-1 via-chart-2 to-chart-3";
+                return categoryColors[cat as AppCategory];
+              };
+
+              return (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                    isActive
+                      ? `bg-gradient-to-r ${getCategoryGradient(category)} text-white shadow-lg scale-105`
+                      : "bg-muted text-muted-foreground hover-elevate"
+                  }`}
+                  data-testid={`filter-${category.toLowerCase().replace(/\s+/g, "-")}`}
+                >
+                  {Icon && <Icon className="h-4 w-4" />}
+                  {category}
+                </button>
+              );
+            })}
           </div>
 
           {/* Loading State */}
           {isLoading && (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-chart-1" />
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chart-1" />
               <span className="ml-2 text-muted-foreground">Loading projects...</span>
             </div>
           )}
@@ -311,12 +241,8 @@ export default function ProjectsPage() {
 
           {!isLoading && !error && filteredApps.length === 0 && (
             <div className="text-center py-12">
-              <Sparkles className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No projects found</h3>
               <p className="text-muted-foreground">
-                {apps && apps.length === 0 
-                  ? "No projects have been added yet. Check back soon!"
-                  : "Try adjusting your search or filter criteria"}
+                No projects found in this category yet. Check back soon!
               </p>
             </div>
           )}
