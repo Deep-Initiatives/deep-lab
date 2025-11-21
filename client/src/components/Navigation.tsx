@@ -1,63 +1,21 @@
-import { useState, useEffect } from "react";
-import { Menu, X, ExternalLink } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useLocation } from "wouter";
-import logoImage from "@assets/logo.png";
-import logoDark from "@assets/logo-dark.svg";
 import logoMono from "@assets/logo.svg";
 
-// Custom 3x3 grid icon component - Large circular dots
-const AppsIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 100 100"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* 3x3 Grid of circles - small spacing */}
-    <circle cx="30" cy="30" r="6" fill="currentColor" />
-    <circle cx="50" cy="30" r="6" fill="currentColor" />
-    <circle cx="70" cy="30" r="6" fill="currentColor" />
-    <circle cx="30" cy="50" r="6" fill="currentColor" />
-    <circle cx="50" cy="50" r="6" fill="currentColor" />
-    <circle cx="70" cy="50" r="6" fill="currentColor" />
-    <circle cx="30" cy="70" r="6" fill="currentColor" />
-    <circle cx="50" cy="70" r="6" fill="currentColor" />
-    <circle cx="70" cy="70" r="6" fill="currentColor" />
-  </svg>
-);
-
-// DEEP Logo component for the apps - fills entire square from edge to edge
-const DeepLogo = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 48 48"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* 5 horizontal bars filling the entire square from edge to edge */}
-    <rect x="0" y="0" width="48" height="9" fill="#FF6B6B" />
-    <rect x="0" y="9.6" width="48" height="9" fill="#4ECDC4" />
-    <rect x="0" y="19.2" width="48" height="9" fill="#45B7D1" />
-    <rect x="0" y="28.8" width="48" height="9" fill="#96CEB4" />
-    <rect x="0" y="38.4" width="48" height="9.6" fill="#DDA15E" />
-  </svg>
-);
+const GLOBAL_SWITCHER_ENDPOINT =
+  "https://deepfunding.ai/wp-json/deep/v1/global-switcher";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [, setLocation] = useLocation();
   const { theme } = useTheme();
+  const switcherContainerRef = useRef<HTMLDivElement | null>(null);
+  const switcherMountRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,19 +25,537 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const controller = new AbortController();
+    let mounted = true;
+    let overlayObserver: MutationObserver | null = null;
+    const originalBodyClassListAdd = document.body.classList.add;
+    let handleOrientationChange: (() => void) | null = null;
+
+    const removeExistingSwitcher = () => {
+      const existing = document.body.querySelector<HTMLDivElement>(
+        '[data-global-switcher="true"]'
+      );
+      if (existing?.parentNode) {
+        existing.parentNode.removeChild(existing);
+      }
+    };
+
+    const appendScripts = (container: HTMLElement) => {
+      const scripts = Array.from(container.querySelectorAll("script"));
+      scripts.forEach((script) => {
+        const newScript = document.createElement("script");
+        Array.from(script.attributes).forEach((attr) =>
+          newScript.setAttribute(attr.name, attr.value)
+        );
+        newScript.text = `${script.textContent ?? ""}\nif (document.readyState !== "loading") {\n  const event = new Event("DOMContentLoaded");\n  document.dispatchEvent(event);\n}`;
+        script.replaceWith(newScript);
+      });
+    };
+
+    const injectFallbackScript = () => {
+      // Check if fallback script already exists
+      if (document.getElementById("global-switcher-fallback-script")) {
+        return;
+      }
+
+      const fallbackScript = document.createElement("script");
+      fallbackScript.id = "global-switcher-fallback-script";
+      fallbackScript.textContent = `
+        document.addEventListener("DOMContentLoaded", function () {
+          let hoverInTimeout, hoverOutTimeout;
+          let clickedRecently = false;
+
+          const isLargeScreen = () => window.innerWidth > 1200;
+
+          const switcherWrapper = document.querySelector(".df-switch-tabs-wrapper");
+          const toggleButton = document.getElementById("toggle-switch-tabs");
+
+          function openSwitcher() {
+            switcherWrapper?.classList.add("active");
+            // Force visibility on mobile
+            if (switcherWrapper && window.innerWidth <= 1200) {
+              // Get the toggle button position
+              let topPosition = 80; // Default navbar height
+              if (toggleButton) {
+                const toggleRect = toggleButton.getBoundingClientRect();
+                topPosition = toggleRect.top + toggleRect.height;
+              }
+              
+              switcherWrapper.style.setProperty("display", "block", "important");
+              switcherWrapper.style.setProperty("visibility", "visible", "important");
+              switcherWrapper.style.setProperty("opacity", "1", "important");
+              switcherWrapper.style.setProperty("z-index", "70", "important");
+              switcherWrapper.style.setProperty("position", "fixed", "important");
+              switcherWrapper.style.setProperty("left", "0", "important");
+              switcherWrapper.style.setProperty("right", "0", "important");
+              switcherWrapper.style.setProperty("top", topPosition + "px", "important");
+              switcherWrapper.style.setProperty("width", "100vw", "important");
+              switcherWrapper.style.setProperty("max-width", "100vw", "important");
+              switcherWrapper.style.setProperty("max-height", "calc(100vh - " + topPosition + "px)", "important");
+              switcherWrapper.style.setProperty("overflow-y", "auto", "important");
+              
+              // Ensure wrapper content is visible
+              const switchWrapper = switcherWrapper.querySelector(".df-switch-wrapper");
+              if (switchWrapper) {
+                switchWrapper.style.setProperty("display", "block", "important");
+                switchWrapper.style.setProperty("visibility", "visible", "important");
+                switchWrapper.style.setProperty("opacity", "1", "important");
+                switchWrapper.style.setProperty("width", "100%", "important");
+              }
+            }
+            // Don't add overlay class to prevent blur on switcher dropdown
+            // document.body.classList.add("profile-icon-overlay");
+          }
+
+          function closeSwitcher() {
+            switcherWrapper?.classList.remove("active");
+            // Hide on mobile
+            if (switcherWrapper && window.innerWidth <= 1200) {
+              switcherWrapper.style.setProperty("display", "none", "important");
+            }
+            setTimeout(() => {
+              if (!switcherWrapper?.classList.contains("active")) {
+                // document.body.classList.remove("profile-icon-overlay");
+              }
+            }, 10);
+          }
+
+          // Toggle click - works on all screen sizes
+          toggleButton?.addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (switcherWrapper?.classList.contains("active")) {
+              closeSwitcher();
+            } else {
+              openSwitcher();
+            }
+          });
+
+          // Hover in/out - only for large screens
+          const hoverTargets = [switcherWrapper, toggleButton].filter(Boolean);
+          hoverTargets.forEach((el) => {
+            el.addEventListener("mouseenter", function () {
+              clearTimeout(hoverOutTimeout);
+              hoverInTimeout = setTimeout(function () {
+                if (isLargeScreen()) openSwitcher();
+              }, 200);
+            });
+
+            el.addEventListener("mouseleave", function () {
+              clearTimeout(hoverInTimeout);
+              hoverOutTimeout = setTimeout(function () {
+                if (isLargeScreen() && !clickedRecently) {
+                  closeSwitcher();
+                }
+              }, 1500);
+            });
+          });
+
+          // Click outside to close - works on all screen sizes
+          document.addEventListener("click", function (event) {
+            const target = event.target;
+            const clickedInside =
+              switcherWrapper?.contains(target) || toggleButton?.contains(target);
+
+            if (!clickedInside) {
+              closeSwitcher();
+            }
+
+            clickedRecently = clickedInside;
+            setTimeout(() => (clickedRecently = false), 1000);
+          });
+        });
+        
+        // Trigger if DOM is already loaded
+        if (document.readyState !== "loading") {
+          const event = new Event("DOMContentLoaded");
+          document.dispatchEvent(event);
+        }
+      `;
+      document.head.appendChild(fallbackScript);
+    };
+
+    const applySwitcherColor = () => {
+      const toggle = switcherContainerRef.current?.querySelector<HTMLElement>(".globalswitcher");
+      if (toggle) {
+        toggle.style.setProperty("background-color", "hsl(25, 100%, 63%)", "important");
+        toggle.style.setProperty("border", "none", "important");
+        toggle.style.setProperty("outline", "none", "important");
+        toggle.style.setProperty("box-shadow", "none", "important");
+        const toggleLink = toggle.querySelector<HTMLAnchorElement>("a");
+        if (toggleLink) {
+          toggleLink.style.setProperty("background-color", "hsl(25, 100%, 63%)", "important");
+          toggleLink.style.setProperty("border", "none", "important");
+          toggleLink.style.setProperty("outline", "none", "important");
+        }
+      }
+    };
+
+    const updatePosition = () => {
+      const anchor = switcherMountRef.current;
+      const container = switcherContainerRef.current;
+
+      if (!anchor || !container) {
+        return;
+      }
+
+      const anchorRect = anchor.getBoundingClientRect();
+
+      container.style.position = "fixed";
+      container.style.left = "0px";
+      container.style.top = "0px";
+      container.style.width = "100vw";
+      container.style.maxWidth = "100vw";
+      container.style.pointerEvents = "auto";
+      container.style.height = "0px";
+      container.style.overflow = "visible";
+      container.style.zIndex = "60";
+
+      const toggle = container.querySelector<HTMLElement>(".globalswitcher");
+      if (toggle) {
+        toggle.style.position = "fixed";
+        toggle.style.left = `${anchorRect.left}px`;
+        toggle.style.top = `${anchorRect.top}px`;
+        toggle.style.display = "flex";
+        toggle.style.alignItems = "stretch";
+        toggle.style.justifyContent = "stretch";
+        toggle.style.width = `${anchorRect.width}px`;
+        toggle.style.height = `${anchorRect.height}px`;
+        toggle.style.pointerEvents = "auto";
+        toggle.style.zIndex = "60";
+        toggle.style.setProperty("background-color", "hsl(25, 100%, 63%)", "important");
+        toggle.style.setProperty("border", "none", "important");
+        toggle.style.setProperty("outline", "none", "important");
+        toggle.style.setProperty("box-shadow", "none", "important");
+
+        const toggleLink = toggle.querySelector<HTMLAnchorElement>("a");
+        if (toggleLink) {
+          toggleLink.style.width = `${anchorRect.width}px`;
+          toggleLink.style.height = `${anchorRect.height}px`;
+          toggleLink.style.display = "flex";
+          toggleLink.style.alignItems = "center";
+          toggleLink.style.justifyContent = "center";
+          toggleLink.style.setProperty("background-color", "hsl(25, 100%, 63%)", "important");
+          toggleLink.style.setProperty("border", "none", "important");
+          toggleLink.style.setProperty("outline", "none", "important");
+        }
+
+        // Reapply color after a short delay to override any external CSS
+        setTimeout(() => {
+          applySwitcherColor();
+        }, 100);
+      }
+
+      const wrapper = container.querySelector<HTMLElement>(
+        ".df-switch-tabs-wrapper"
+      );
+      if (wrapper) {
+        wrapper.style.position = "fixed";
+        wrapper.style.left = "0px";
+        wrapper.style.top = `${anchorRect.top + anchorRect.height}px`;
+        wrapper.style.width = "100vw";
+        wrapper.style.maxWidth = "100vw";
+        wrapper.style.pointerEvents = "auto";
+        wrapper.style.zIndex = "70";
+        // Ensure dropdown is visible and properly sized on mobile
+        if (window.innerWidth <= 1200) {
+          wrapper.style.maxHeight = "calc(100vh - " + (anchorRect.top + anchorRect.height) + "px)";
+          wrapper.style.overflowY = "auto";
+          wrapper.style.display = wrapper.classList.contains("active") ? "block" : "none";
+        } else {
+          wrapper.style.display = "";
+        }
+      }
+    };
+
+    const handleViewportChange = () => updatePosition();
+
+    const loadGlobalSwitcher = async () => {
+      try {
+        const response = await fetch(GLOBAL_SWITCHER_ENDPOINT, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load global switcher: ${response.status}`);
+        }
+
+        const data: { html?: string } = await response.json();
+
+        if (!mounted || !data?.html) {
+          return;
+        }
+
+        removeExistingSwitcher();
+
+        const container = document.createElement("div");
+        container.setAttribute("data-global-switcher", "true");
+        container.innerHTML = data.html;
+
+        document.body.appendChild(container);
+        switcherContainerRef.current = container;
+
+        appendScripts(container);
+        updatePosition();
+
+        // Override the overlay class addition to prevent blur on switcher
+        document.body.classList.add = function (...tokens: string[]) {
+          if (tokens.includes('profile-icon-overlay')) {
+            // Don't add the overlay class - it causes blur on switcher
+            return;
+          }
+          return originalBodyClassListAdd.apply(this, tokens);
+        };
+
+        // Watch for overlay class being added and remove it immediately
+        overlayObserver = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+              if (document.body.classList.contains('profile-icon-overlay')) {
+                document.body.classList.remove('profile-icon-overlay');
+              }
+            }
+          });
+        });
+        overlayObserver.observe(document.body, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
+
+        // Inject fallback script in case main script doesn't load
+        injectFallbackScript();
+
+        // Add CSS override style
+        const styleId = "global-switcher-color-override";
+        if (!document.getElementById(styleId)) {
+          const style = document.createElement("style");
+          style.id = styleId;
+          style.textContent = `
+            .globalswitcher,
+            .globalswitcher a {
+              background-color: hsl(25, 100%, 63%) !important;
+              border: none !important;
+              outline: none !important;
+            }
+            .globalswitcher {
+              position: fixed !important;
+              z-index: 60 !important;
+              border: none !important;
+              box-shadow: none !important;
+            }
+            .globalswitcher * {
+              border: none !important;
+            }
+            .df-switch-tabs-wrapper {
+              z-index: 70 !important;
+              position: fixed !important;
+            }
+            /* Ensure wrapper and all children are visible when active */
+            .df-switch-tabs-wrapper.active {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+            .df-switch-tabs-wrapper.active .df-switch-wrapper {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+            /* Mobile visibility and responsiveness */
+            @media (max-width: 1200px) {
+              .globalswitcher {
+                display: flex !important;
+                visibility: visible !important;
+                position: fixed !important;
+                border: none !important;
+                outline: none !important;
+                box-shadow: none !important;
+              }
+              .globalswitcher a {
+                display: flex !important;
+                width: 100% !important;
+                height: 100% !important;
+                border: none !important;
+                outline: none !important;
+              }
+              .df-switch-tabs-wrapper {
+                position: fixed !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                top: auto !important;
+                display: none !important;
+              }
+              .df-switch-tabs-wrapper.active {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                transform: none !important;
+                height: auto !important;
+                max-height: calc(100vh - 80px) !important;
+                overflow-y: auto !important;
+              }
+              .df-switch-tabs-wrapper .df-switch-wrapper {
+                width: 100% !important;
+                max-width: 100% !important;
+                display: block !important;
+                visibility: visible !important;
+              }
+              .df-switch-tabs-wrapper.active .df-switch-wrapper {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+              .df-switch-tabs-wrapper.active .df-switch-tabs,
+              .df-switch-tabs-wrapper.active .df-switch-tab,
+              .df-switch-tabs-wrapper.active .nav,
+              .df-switch-tabs-wrapper.active .nav-item,
+              .df-switch-tabs-wrapper.active .nav-link {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+              /* Ensure all content inside is visible */
+              .df-switch-tabs-wrapper.active * {
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+              /* Ensure images, text, and other elements are visible */
+              .df-switch-tabs-wrapper.active img,
+              .df-switch-tabs-wrapper.active p,
+              .df-switch-tabs-wrapper.active h1,
+              .df-switch-tabs-wrapper.active h2,
+              .df-switch-tabs-wrapper.active h3,
+              .df-switch-tabs-wrapper.active h4,
+              .df-switch-tabs-wrapper.active span,
+              .df-switch-tabs-wrapper.active div,
+              .df-switch-tabs-wrapper.active a {
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+              .df-switch-tabs-wrapper.active img {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+              /* Ensure nav items and links are visible */
+              .df-switch-tabs-wrapper.active .nav-item,
+              .df-switch-tabs-wrapper.active .nav-link,
+              .df-switch-tabs-wrapper.active [class*="nav"] {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+              /* Ensure the wrapper takes full width on mobile */
+              .df-switch-tabs-wrapper.active {
+                background: transparent !important;
+              }
+            }
+            [data-global-switcher="true"],
+            [data-global-switcher="true"] *,
+            .globalswitcher,
+            .globalswitcher *,
+            .df-switch-tabs-wrapper,
+            .df-switch-tabs-wrapper * {
+              filter: none !important;
+              backdrop-filter: none !important;
+              -webkit-backdrop-filter: none !important;
+            }
+            .globalswitcher,
+            .globalswitcher *,
+            .globalswitcher a,
+            .globalswitcher a * {
+              border: none !important;
+              outline: none !important;
+              box-shadow: none !important;
+            }
+            body.profile-icon-overlay [data-global-switcher="true"],
+            body.profile-icon-overlay .globalswitcher,
+            body.profile-icon-overlay .df-switch-tabs-wrapper,
+            body.profile-icon-overlay [data-global-switcher="true"] *,
+            body.profile-icon-overlay .globalswitcher *,
+            body.profile-icon-overlay .df-switch-tabs-wrapper * {
+              filter: none !important;
+              backdrop-filter: none !important;
+              -webkit-backdrop-filter: none !important;
+            }
+            /* Prevent any blur from navbar affecting switcher */
+            nav[class*="backdrop-blur"] ~ [data-global-switcher="true"],
+            nav[class*="backdrop-blur"] ~ [data-global-switcher="true"] * {
+              filter: none !important;
+              backdrop-filter: none !important;
+              -webkit-backdrop-filter: none !important;
+            }
+          `;
+          document.head.appendChild(style);
+        }
+
+        // Apply color after scripts execute
+        setTimeout(() => {
+          applySwitcherColor();
+          updatePosition();
+        }, 200);
+
+        window.addEventListener("resize", handleViewportChange);
+        window.addEventListener("scroll", handleViewportChange, { passive: true });
+        // Mobile orientation change
+        handleOrientationChange = () => {
+          setTimeout(handleViewportChange, 100);
+        };
+        window.addEventListener("orientationchange", handleOrientationChange);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error("Failed to initialize global switcher", error);
+        }
+      }
+    };
+
+    loadGlobalSwitcher();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("scroll", handleViewportChange);
+      if (handleOrientationChange) {
+        window.removeEventListener("orientationchange", handleOrientationChange);
+      }
+
+      if (switcherContainerRef.current?.parentNode) {
+        switcherContainerRef.current.parentNode.removeChild(
+          switcherContainerRef.current
+        );
+        switcherContainerRef.current = null;
+      }
+
+      // Remove fallback script
+      const fallbackScript = document.getElementById("global-switcher-fallback-script");
+      if (fallbackScript?.parentNode) {
+        fallbackScript.parentNode.removeChild(fallbackScript);
+      }
+
+      // Disconnect overlay observer
+      if (overlayObserver) {
+        overlayObserver.disconnect();
+      }
+
+      // Restore original classList.add
+      document.body.classList.add = originalBodyClassListAdd;
+
+      document.body.classList.remove("profile-icon-overlay");
+    };
+  }, []);
+
   const handleNavigation = (path: string) => {
     setLocation(path);
     setIsMobileMenuOpen(false);
-    setIsAppsDropdownOpen(false);
-  };
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsMobileMenuOpen(false);
-      setIsAppsDropdownOpen(false);
-    }
   };
 
   const navLinks = [
@@ -89,394 +565,30 @@ export function Navigation() {
     { label: "Blog", path: "/blog" },
   ];
 
-  const appLinks = [
-    { 
-      id: "initiatives",
-      label: "Initiatives", 
-      description: "DEEP - Where bold, bright and beneficial ideas are turned into real world solutions to create a better future for all!", 
-      url: "https://deepfunding.ai/",
-      badge: "Coming Soon"
-    },
-    { 
-      id: "funding",
-      label: "Funding", 
-      description: "An ecosystem for innovators to secure grants and resources to bring bold ideas to life.", 
-      url: "https://deepfunding.ai/",
-      badge: "NEW"
-    },
-    { 
-      id: "community",
-      label: "Community", 
-      description: "A collaborative space where builders, researchers, and supporters connect.", 
-      url: "https://community.deepfunding.ai/",
-      badge: null
-    },
-    { 
-      id: "lab",
-      label: "Lab", 
-      description: "The experimental arm of Deep, where new products, technologies, and methods are incubated.", 
-      url: "https://lab.deepfunding.ai",
-      badge: null
-    },
-    { 
-      id: "ideation",
-      label: "Ideation", 
-      description: "Discover, share, and shape groundbreaking ideas with a community that values your voice. Explore trending concepts or submit your own to make an impact.", 
-      url: "https://ideation.deepfunding.ai",
-      badge: "Coming Soon"
-    },
-  ];
-
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
           ? "backdrop-blur-xl border-b border-[#B620E0]/30"
           : ""
-      }`}
+        }`}
       style={{
-        background: isScrolled 
-          ? (theme === 'dark' 
-              ? "linear-gradient(to right, hsl(var(--chart-1)), hsl(var(--chart-2)), hsl(var(--chart-3))) / 95%"
-              : "linear-gradient(to right, #E0E7FF, #F3E8FF, #FED7AA) / 95%")
-          : (theme === 'dark' 
-              ? "linear-gradient(to right, hsl(var(--chart-1)), hsl(var(--chart-2)), hsl(var(--chart-3)))"
-              : "linear-gradient(to right, #E0E7FF, #F3E8FF, #FED7AA)")
+        background: "#311B50"
       }}
     >
-      {/* Apps icon at absolute left edge - no container */}
-      <div 
-        className="absolute left-0 top-0 h-16 md:h-20 w-16 md:w-20 bg-chart-1 hover:bg-chart-1/90 cursor-pointer z-50 group"
-        onMouseEnter={() => setIsAppsDropdownOpen(true)}
-        onMouseLeave={() => setIsAppsDropdownOpen(false)}
-      >
-        <div 
-          className="h-full w-full flex items-center justify-center md:pointer-events-none"
-          onClick={() => setIsAppsDropdownOpen(!isAppsDropdownOpen)}
-        >
-          <AppsIcon className="h-12 w-12 md:h-13 md:w-13 text-primary-foreground" />
-        </div>
-      </div>
-
-      {/* Apps dropdown - hover on desktop, click on mobile */}
-      {isAppsDropdownOpen && (
-        <>
-          {/* Backdrop overlay - only on mobile */}
-          <div 
-            className="md:hidden fixed inset-0 bg-black/20 z-40"
-            onClick={() => setIsAppsDropdownOpen(false)}
-          />
-          <div 
-            className="absolute top-full left-0 w-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 transition-all duration-200 z-50 max-h-[calc(100vh-5rem)] overflow-y-auto"
-            onMouseEnter={() => setIsAppsDropdownOpen(true)}
-            onMouseLeave={() => setIsAppsDropdownOpen(false)}
-          >
-          {/* Desktop layout */}
-          <div className="hidden md:flex">
-              {/* Left side box - Initiatives - spans full height */}
-
-              <div className="pt-8 pb-16 px-6 w-96 group border-r-2 border-white/20" style={{ background: 'linear-gradient(135deg, #14082E 0%, rgb(120,50,150) 50%, #3d1f5c 100%)' }}>
-              <div className="flex flex-col items-start gap-1">
-                {/* Logo + Title */}
-                <div className="flex items-center gap-3 mb-2 px-2">
-                  <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
-                  <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Initiatives</span>
-                </div>
-
-                {/* Description */}
-                <p className="mb-0 pl-2" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                DEEP - Where bold, bright and beneficial ideas are turned into real world solutions to create a better future for all! 
-                </p>
-
-                {/* Coming Soon badge */}
-                <div className="pl-2" style={{
-                  marginTop: 20
-                }}>
-                  <span style={{
-                    color: '#D2D0D7', fontFamily: 'DM Sans', fontSize: 12, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px',
-                    display: 'flex', padding: '4px 12px', justifyContent: 'center', alignItems: 'center', gap: 10, borderRadius: 60,
-                    border: '1px solid #A39EB2', background: 'rgba(255, 255, 255, 0.04)', width: 'fit-content'
-                  }}>
-                    Coming Soon
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Right side - grid of 4 apps */}
-            <div className="flex-1 px-8 pt-8 pb-16 flex items-center">
-              <div className="grid grid-cols-2 gap-8 gap-y-4">
-                {/* Funding */}
-                <div className="flex items-start">
-                  <div 
-                    onClick={() => window.open('https://deepfunding.ai/', '_blank')}
-                    className="px-4 pt-0 pb-3 cursor-pointer group"
-                    style={{
-                      borderRadius: '0px',
-                      transition: 'background-color 0.1s ease, border-radius 0s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (e.currentTarget) {
-                        const element = e.currentTarget;
-                        // Set square immediately
-                        element.style.backgroundColor = 'white';
-                        element.style.borderRadius = '0px';
-                        element.style.paddingTop = '1rem';
-                        element.style.marginTop = '-1rem';
-                        element.style.transition = 'background-color 0.1s ease, border-radius 0s ease, padding-top 0.1s ease, margin-top 0.1s ease';
-                        // Increase background footprint without layout shift
-                        // Compensate padding with negative margin to prevent movement
-                        
-                        // Force reflow to ensure square is rendered
-                        void element.offsetHeight;
-                        
-                        // Then animate to rounded
-                        requestAnimationFrame(() => {
-                          requestAnimationFrame(() => {
-                            if (element) {
-                              element.style.transition = 'background-color 0.1s ease, border-radius 0.4s ease, padding-top 0.1s ease, margin-top 0.1s ease';
-                              element.style.borderRadius = '0.75rem';
-                            }
-                          });
-                        });
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (e.currentTarget) {
-                        const element = e.currentTarget;
-                        // Ensure border radius stays rounded during fade - background should disappear curved
-                        // Explicitly keep it rounded and remove border-radius from transition so it doesn't animate
-                        element.style.borderRadius = '0.75rem';
-                        element.style.transition = 'background-color 0.3s ease, padding-top 0.1s ease, margin-top 0.1s ease';
-                        // Transition background to transparent so it fades with curved shape
-                        element.style.backgroundColor = 'transparent';
-                        element.style.paddingTop = '';
-                        element.style.marginTop = '';
-                        // Reset border radius only after background has fully faded (keep it curved until then)
-                        setTimeout(() => {
-                          if (element) {
-                            element.style.borderRadius = '0px';
-                            element.style.transition = 'background-color 0.1s ease, border-radius 0s ease, padding-top 0.1s ease, margin-top 0.1s ease';
-                          }
-                        }, 350);
-                      }
-                    }}
-                  >
-                    <div className="flex items-center gap-3 mb-0">
-                      <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
-                      <span className="text-white group-hover:text-black transition-colors" style={{ fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Funding</span>
-                    </div>
-                    <p className="mt-1 transition-colors group-hover:!text-[#4A4A4A]" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                      An ecosystem for innovators to secure grants and resources to bring bold ideas to life.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Community */}
-                <div className="flex items-start">
-                  <div 
-                    onClick={() => window.open('https://community.deepfunding.ai/', '_blank')}
-                    className="px-4 pt-0 pb-3 cursor-pointer group"
-                    style={{
-                      borderRadius: '0px',
-                      transition: 'background-color 0.1s ease, border-radius 0s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (e.currentTarget) {
-                        const element = e.currentTarget;
-                        // Set square immediately
-                        element.style.backgroundColor = 'white';
-                        element.style.borderRadius = '0px';
-                        element.style.paddingTop = '1rem';
-                        element.style.marginTop = '-1rem';
-                        element.style.transition = 'background-color 0.1s ease, border-radius 0s ease, padding-top 0.1s ease, margin-top 0.1s ease';
-                        // Increase background footprint without layout shift
-                        // Compensate padding with negative margin to prevent movement
-                        
-                        // Force reflow to ensure square is rendered
-                        void element.offsetHeight;
-                        
-                        // Then animate to rounded
-                        requestAnimationFrame(() => {
-                          requestAnimationFrame(() => {
-                            if (element) {
-                              element.style.transition = 'background-color 0.1s ease, border-radius 0.4s ease, padding-top 0.1s ease, margin-top 0.1s ease';
-                              element.style.borderRadius = '0.75rem';
-                            }
-                          });
-                        });
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (e.currentTarget) {
-                        const element = e.currentTarget;
-                        // Ensure border radius stays rounded during fade - background should disappear curved
-                        // Explicitly keep it rounded and remove border-radius from transition so it doesn't animate
-                        element.style.borderRadius = '0.75rem';
-                        element.style.transition = 'background-color 0.3s ease, padding-top 0.1s ease, margin-top 0.1s ease';
-                        // Transition background to transparent so it fades with curved shape
-                        element.style.backgroundColor = 'transparent';
-                        element.style.paddingTop = '';
-                        element.style.marginTop = '';
-                        // Reset border radius only after background has fully faded (keep it curved until then)
-                        setTimeout(() => {
-                          if (element) {
-                            element.style.borderRadius = '0px';
-                            element.style.transition = 'background-color 0.1s ease, border-radius 0s ease, padding-top 0.1s ease, margin-top 0.1s ease';
-                          }
-                        }, 350);
-                      }
-                    }}
-                  >
-                    <div className="flex items-center gap-3 mb-0">
-                      <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
-                      <span className="text-white group-hover:text-black transition-colors" style={{ fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Communities</span>
-                    </div>
-                    <p className="mt-1 transition-colors group-hover:!text-[#4A4A4A]" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                      A collaborative space where builders, researchers, and supporters connect.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Lab - Current site with white background */}
-                <div className="flex items-start md:mt-3">
-                  <div 
-                    className="bg-white rounded-xl px-4 py-3 cursor-default transition-all duration-300"
-                  >
-                    <div className="flex items-center gap-3 mb-0">
-                      <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
-                      <span style={{ color: '#000', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Lab</span>
-                    </div>
-                    <p className="mt-2" style={{ color: '#4A4A4A', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                      The experimental arm of Deep, where new products, technologies, and methods are incubated.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Ideation */}
-                <div className="flex items-start md:mt-4">
-                  <div 
-                    className="rounded-xl px-4 pt-0 pb-3 cursor-default transition-all duration-300 group"
-                  >
-                    <div className="flex items-center gap-3 mb-0">
-                      <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
-                      <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Ideation</span>
-                      <span style={{
-                        color: '#D2D0D7', fontFamily: 'DM Sans', fontSize: 12, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px',
-                        display: 'flex', padding: '4px 12px', justifyContent: 'center', alignItems: 'center', gap: 10, borderRadius: 60,
-                        border: '1px solid #A39EB2', background: 'rgba(255, 255, 255, 0.04)'
-                      }}>
-                        COMING SOON
-                      </span>
-                    </div>
-                    <p className="mt-1" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                      Discover, share, and shape groundbreaking ideas with a community that values your voice.<br />
-                      Explore trending concepts or submit your own to make an impact.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile layout - Vertical stack */}
-          <div className="md:hidden flex flex-col px-4 py-3 gap-4">
-            {/* Initiatives */}
-            <div className="border-2 border-white/20 rounded-none pt-12 pb-5 px-5 -mx-4 -mt-3 group" style={{ boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.45)', background: 'linear-gradient(135deg, #14082E 0%, rgb(120,50,150) 50%, #3d1f5c 100%)' }}>
-              <div className="flex items-center gap-3 mb-3">
-                <img src={logoMono} alt="DEEP" className="w-10 h-10 object-contain" />
-                <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 24, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Initiatives</span>
-              </div>
-              <p className="mb-0" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                DEEP Connects Bold Ideas to Real World Change<br />and build a better future together.
-              </p>
-              <span style={{
-                color: '#D2D0D7', fontFamily: 'DM Sans', fontSize: 12, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px',
-                display: 'flex', padding: '4px 12px', justifyContent: 'center', alignItems: 'center', gap: 10, borderRadius: 60,
-                border: '1px solid #A39EB2', background: 'rgba(255, 255, 255, 0.04)', width: 'fit-content', marginTop: 20
-              }}>
-                Coming Soon
-              </span>
-            </div>
-
-            {/* Funding */}
-            <div 
-              onClick={() => {
-                window.open('https://deepfunding.ai/', '_blank');
-                setIsAppsDropdownOpen(false);
-              }}
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-4 cursor-pointer group"
-            >
-              <div className="flex items-center gap-3 mb-0">
-                <img src={logoMono} alt="DEEP" className="w-8 h-8 object-contain" />
-                <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Funding</span>
-              </div>
-              <p className="mt-1 text-white/70" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                An ecosystem for innovators to secure grants and resources to bring bold ideas to life.
-              </p>
-            </div>
-
-            {/* Community */}
-            <div 
-              onClick={() => {
-                window.open('https://community.deepfunding.ai/', '_blank');
-                setIsAppsDropdownOpen(false);
-              }}
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-4 cursor-pointer group"
-            >
-              <div className="flex items-center gap-3 mb-0">
-                <img src={logoMono} alt="DEEP" className="w-8 h-8 object-contain" />
-                <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Communities</span>
-              </div>
-              <p className="mt-1 text-white/70" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                A collaborative space where builders, researchers, and supporters connect.
-              </p>
-            </div>
-
-            {/* Lab - Current site */}
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-purple-500/50 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-0">
-                <img src={logoMono} alt="DEEP" className="w-8 h-8 object-contain" />
-                <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Lab</span>
-              </div>
-              <p className="mt-2" style={{ color: '#B0B5BD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                The experimental arm of Deep, where new products, technologies, and methods are incubated.
-              </p>
-            </div>
-
-            {/* Ideation */}
-            <div 
-              className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-xl p-4 cursor-default group"
-            >
-              <div className="flex items-center gap-3 mb-0">
-                <img src={logoMono} alt="DEEP" className="w-8 h-8 object-contain" />
-                <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', gap: 12, alignItems: 'center' as const }}>Ideation</span>
-                <span style={{
-                  color: '#D2D0D7', fontFamily: 'DM Sans', fontSize: 12, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px',
-                  display: 'flex', padding: '4px 12px', justifyContent: 'center', alignItems: 'center', gap: 10, borderRadius: 60,
-                  border: '1px solid #A39EB2', background: 'rgba(255, 255, 255, 0.04)'
-                }}>
-                  COMING SOON
-                </span>
-              </div>
-              <p className="mt-1 text-white/70" style={{ color: '#D2D6DD', fontFamily: 'DM Sans', fontSize: 14, fontStyle: 'normal', fontWeight: 600, lineHeight: '20px' }}>
-                Discover, share, and shape groundbreaking ideas with a community that values your voice. Explore trending concepts or submit your own to make an impact.
-              </p>
-            </div>
-          </div>
-        </div>
-        </>
-      )}
+      <div
+        ref={switcherMountRef}
+        className="absolute left-0 top-0 z-50 w-16 h-16 md:w-20 md:h-20"
+      />
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <button
             onClick={() => handleNavigation("/")}
-            className="flex items-center space-x-3 group ml-16 md:ml-20"
+            className="flex items-center space-x-3 ml-16 md:ml-20"
             data-testid="button-logo"
           >
-            <div className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-105">
-              <img src={logoMono} alt="DEEP" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+            <div className="flex items-center gap-2">
+              <img src={logoMono} alt="DEEP" className="w-6 h-6 md:w-8 md:h-8 object-contain" />
               <span style={{ color: '#FFF', fontFamily: 'Orbitron', fontSize: 20, fontStyle: 'normal', fontWeight: 700, lineHeight: '20px', display: 'flex', alignItems: 'center' as const }}>Lab</span>
             </div>
           </button>
@@ -492,7 +604,7 @@ export function Navigation() {
                   lineHeight: "88px",
                   fontSize: "16px",
                   fontWeight: 700,
-                  color: theme === 'dark' ? "#FFFFFF" : "#1A1A1A",
+                  color: "#FFFFFF",
                   padding: "0 20px",
                   textTransform: "none",
                 }}
@@ -520,14 +632,12 @@ export function Navigation() {
           <Button
             size="icon"
             variant="ghost"
-            className={`md:hidden hover:bg-white/20 ${
-              theme === 'dark' 
-                ? 'text-white hover:text-white' 
+            className={`md:hidden hover:bg-white/20 ${theme === 'dark'
+                ? 'text-white hover:text-white'
                 : 'text-gray-800 hover:text-gray-900'
-            }`}
+              }`}
             onClick={() => {
               setIsMobileMenuOpen(!isMobileMenuOpen);
-              setIsAppsDropdownOpen(false);
             }}
             data-testid="button-mobile-menu-toggle"
           >
@@ -539,48 +649,42 @@ export function Navigation() {
       {isMobileMenuOpen && (
         <>
           {/* Backdrop overlay */}
-          <div 
+          <div
             className="fixed inset-0 bg-black/20 z-40 md:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           {/* Mobile menu */}
-          <div 
+          <div
             className="md:hidden backdrop-blur-xl border-b border-[#B620E0]/30 shadow-lg z-50 relative"
             style={{
-              background: theme === 'dark' 
-                ? "linear-gradient(to right, hsl(var(--chart-1)), hsl(var(--chart-2)), hsl(var(--chart-3))) / 95%"
-                : "linear-gradient(to right, #E0E7FF, #F3E8FF, #FED7AA) / 95%"
+              background: "#311B50"
             }}
           >
-          <div className="px-4 py-4 space-y-2">
-            {navLinks.map((link) => (
-              <button
-                key={link.label}
-                onClick={() => handleNavigation(link.path)}
-                className={`block w-full text-left px-4 py-3 text-sm font-medium hover:bg-white/20 rounded-md transition-colors ${
-                  theme === 'dark' 
-                    ? 'text-white hover:text-white' 
-                    : 'text-gray-800 hover:text-gray-900'
-                }`}
-                data-testid={`link-mobile-${link.label.toLowerCase()}`}
+            <div className="px-4 py-4 space-y-2">
+              {navLinks.map((link) => (
+                <button
+                  key={link.label}
+                  onClick={() => handleNavigation(link.path)}
+                  className="block w-full text-left px-4 py-3 text-sm font-medium hover:bg-white/20 rounded-md transition-colors text-white hover:text-white"
+                  data-testid={`link-mobile-${link.label.toLowerCase()}`}
+                >
+                  {link.label}
+                </button>
+              ))}
+              <div className="flex items-center gap-2 px-4 py-2">
+                <span className="text-sm text-white/80">Theme:</span>
+                <ThemeToggle />
+              </div>
+              <Button
+                variant="default"
+                onClick={() => handleNavigation("/join-team")}
+                className="w-full bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90 transition-opacity"
+                data-testid="button-mobile-join"
               >
-                {link.label}
-              </button>
-            ))}
-            <div className="flex items-center gap-2 px-4 py-2">
-              <span className="text-sm text-white/80">Theme:</span>
-              <ThemeToggle />
+                Join Team
+              </Button>
             </div>
-            <Button
-              variant="default"
-              onClick={() => handleNavigation("/join-team")}
-              className="w-full bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90 transition-opacity"
-              data-testid="button-mobile-join"
-            >
-              Join Team
-            </Button>
           </div>
-        </div>
         </>
       )}
     </nav>

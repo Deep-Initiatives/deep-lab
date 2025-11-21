@@ -189,8 +189,8 @@ export default function WorkflowOverviewPage() {
                     <h3 className="text-xl font-bold mb-6 text-center">Resource Distribution</h3>
                     
                     {/* Enhanced Donut Chart */}
-                    <div className="mb-6 mx-auto flex-shrink-0" style={{ width: '224px', height: '224px', position: 'relative', boxSizing: 'border-box' }}>
-                      <svg viewBox="0 0 100 100" className="transform -rotate-90" preserveAspectRatio="xMidYMid meet" style={{ display: 'block', width: '224px', height: '224px', position: 'absolute', top: 0, left: 0 }}>
+                    <div className="relative w-56 h-56 mb-6">
+                      <svg viewBox="0 0 100 100" className="transform -rotate-90">
                         {/* Dedicated Specialists (75%) - Enhanced with gradient */}
                         <defs>
                           <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
