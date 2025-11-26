@@ -33,7 +33,7 @@ export default function ProjectsPage() {
   const [, setLocation] = useLocation();
 
   const categories: (AppCategory | "All")[] = ["All", "AI Agent", "Web App", "Tool", "Service"];
-  const statusFilters = ["in development", "in progress", "prototype", "beta testing"];
+  const statusFilters = ["in development", "prototype", "beta testing"];
 
   // Fetch all apps from the database
   const { data: apps, isLoading, error } = useQuery<App[]>({
@@ -64,9 +64,6 @@ export default function ProjectsPage() {
     // Handle status matching with variations
     if (selectedStatusLower === "in development") {
       return matchesSearch && appStatusLower.includes("development");
-    }
-    if (selectedStatusLower === "in progress") {
-      return matchesSearch && (appStatusLower.includes("progress") || appStatusLower.includes("active"));
     }
     if (selectedStatusLower === "prototype") {
       return matchesSearch && appStatusLower.includes("prototype");
