@@ -568,8 +568,8 @@ export function Navigation() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-          ? "backdrop-blur-xl border-b border-[#B620E0]/30"
-          : ""
+        ? "backdrop-blur-xl border-b border-[#B620E0]/30"
+        : ""
         }`}
       style={{
         background: "#311B50"
@@ -621,11 +621,11 @@ export function Navigation() {
             <Button
               size="sm"
               variant="default"
-              onClick={() => handleNavigation("/join-team")}
-              data-testid="button-join-team"
+              onClick={() => handleNavigation("/submit-idea")}
+              data-testid="button-submit-idea"
               className="bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90 transition-opacity"
             >
-              Join Team
+              Submit Idea
             </Button>
           </div>
 
@@ -633,8 +633,8 @@ export function Navigation() {
             size="icon"
             variant="ghost"
             className={`md:hidden hover:bg-white/20 ${theme === 'dark'
-                ? 'text-white hover:text-white'
-                : 'text-gray-800 hover:text-gray-900'
+              ? 'text-white hover:text-white'
+              : 'text-gray-800 hover:text-gray-900'
               }`}
             onClick={() => {
               setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -677,11 +677,11 @@ export function Navigation() {
               </div>
               <Button
                 variant="default"
-                onClick={() => handleNavigation("/join-team")}
+                onClick={() => handleNavigation("/submit-idea")}
                 className="w-full bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90 transition-opacity"
-                data-testid="button-mobile-join"
+                data-testid="button-mobile-submit-idea"
               >
-                Join Team
+                Submit Idea
               </Button>
             </div>
           </div>
