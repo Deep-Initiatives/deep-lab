@@ -625,7 +625,7 @@ export function Navigation() {
               data-testid="button-submit-idea"
               className="bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90 transition-opacity"
             >
-              Submit Idea
+              Submit an Idea
             </Button>
           </div>
 
