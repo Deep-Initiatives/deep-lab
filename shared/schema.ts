@@ -32,6 +32,7 @@ export const pods = pgTable("pods", {
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date"),
   technologies: json("technologies").$type<string[]>().default([]),
+  industry: text("industry"), // AI4SDGs, Blockchain, ClimateTech, Emerging Technologies, Platform Development, Research
   coordinatorId: uuid("coordinator_id").references(() => users.id),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").$defaultFn(() => new Date()),
@@ -45,6 +46,7 @@ export const apps = pgTable("apps", {
   category: text("category").notNull(), // AI Agent, Web App, Tool, Service
   status: text("status").notNull(), // Live, Beta, Prototype, In Development
   technologies: json("technologies").$type<string[]>().default([]),
+  industry: text("industry"), // AI4SDGs, Blockchain, ClimateTech, Emerging Technologies, Platform Development, Research
   icon: text("icon"),
   demoUrl: text("demo_url"),
   githubUrl: text("github_url"),
@@ -125,6 +127,7 @@ export const insertPodSchema = createInsertSchema(pods).pick({
   startDate: true,
   endDate: true,
   technologies: true,
+  industry: true,
   coordinatorId: true,
 });
 
@@ -134,6 +137,7 @@ export const insertAppSchema = createInsertSchema(apps).pick({
   category: true,
   status: true,
   technologies: true,
+  industry: true,
   icon: true,
   demoUrl: true,
   githubUrl: true,
@@ -226,6 +230,10 @@ export type AppCategory = "AI Agent" | "Web App" | "Tool" | "Service";
 export type AppStatus = "Live" | "Beta" | "Prototype" | "In Development";
 export type PodStatus = "Active" | "Planning" | "Completed" | "On Hold";
 export type BlogCategory = "Announcement" | "Partnership" | "Technology" | "Platform" | "Research" | "AI System";
+export type Industry = "AI4SDGs" | "Blockchain" | "ClimateTech" | "Emerging Technologies" | "Platform Development" | "Research";
+
+// Project category types (for UI organization)
+export type ProjectCategory = "Lined Up" | "In Progress" | "Completed";
 
 // Stats types
 export interface LabStats {
