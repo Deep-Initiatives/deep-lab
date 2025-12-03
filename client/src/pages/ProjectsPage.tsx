@@ -23,7 +23,8 @@ import {
   filterProjects,
   getAllTechnologies,
   getAllIndustries,
-  sortProjects
+  sortProjects,
+  formatStatus
 } from "@/lib/projectUtils";
 
 const categoryIcons: Record<AppCategory, any> = {
@@ -197,7 +198,7 @@ export default function ProjectsPage() {
                   <div>
                     <h3 className="text-2xl font-bold">{app.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary">{app.status}</Badge>
+                      <Badge variant="secondary">{formatStatus(app.status)}</Badge>
                       <Badge variant="outline">{app.category}</Badge>
                       {app.industry && (
                         <Badge className={`border ${getIndustryColor(app.industry)}`}>

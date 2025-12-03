@@ -10,7 +10,7 @@ export function getProjectCategory(status: string, type: "app" | "pod"): Project
         // App status mapping
         if (normalizedStatus === "prototype") return "Lined Up";
         if (normalizedStatus === "in development" || normalizedStatus === "beta") return "In Progress";
-        if (normalizedStatus === "live") return "Completed";
+        if (normalizedStatus === "live" || normalizedStatus === "completed") return "Completed";
     } else {
         // Pod status mapping
         if (normalizedStatus === "planning") return "Lined Up";
@@ -20,6 +20,14 @@ export function getProjectCategory(status: string, type: "app" | "pod"): Project
 
     // Default fallback
     return "In Progress";
+}
+
+/**
+ * Formats status for display (e.g. "Live" -> "Completed")
+ */
+export function formatStatus(status: string): string {
+    if (status.toLowerCase() === "live") return "Completed";
+    return status;
 }
 
 /**
@@ -141,7 +149,7 @@ export function formatCategory(category: ProjectCategory): string {
 /**
  * Sorts projects by various criteria
  */
-export function sortProjects<T extends { name: string; createdAt?: Date | string }>(
+export function sortProjects<T extends { name: string; createdAt?: Date | string | null }>(
     projects: T[],
     sortBy: "name" | "date" | "newest" | "oldest"
 ): T[] {

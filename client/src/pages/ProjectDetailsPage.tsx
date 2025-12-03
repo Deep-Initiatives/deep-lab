@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, ExternalLink, Github, Calendar, Users, TrendingUp, Code, Globe, Cpu, Wrench, Sparkles } from "lucide-react";
 import type { App, Pod } from "@shared/schema";
 
+import { formatStatus } from "@/lib/projectUtils";
+
 interface ProjectDetailsPageProps {
   projectId: string;
 }
@@ -21,6 +23,7 @@ const categoryIcons: Record<string, any> = {
 
 const statusColors = {
   Live: "bg-green-500",
+  Completed: "bg-green-500",
   Beta: "bg-blue-500",
   Prototype: "bg-yellow-500",
   "In Development": "bg-purple-500",
@@ -98,8 +101,8 @@ export function ProjectDetailsPage({ projectId }: ProjectDetailsPageProps) {
                       <p className="text-muted-foreground mt-1">{project.category}</p>
                     </div>
                   </div>
-                  <Badge className={`${statusColors[project.status as keyof typeof statusColors]} text-white`}>
-                    {project.status}
+                  <Badge className={`${statusColors[project.status as keyof typeof statusColors] || statusColors.Completed} text-white`}>
+                    {formatStatus(project.status)}
                   </Badge>
                 </div>
               </CardHeader>
@@ -118,7 +121,7 @@ export function ProjectDetailsPage({ projectId }: ProjectDetailsPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {project.technologies.map((tech, index) => (
+                  {(project.technologies || []).map((tech, index) => (
                     <Badge key={index} variant="outline" className="text-sm">
                       {tech}
                     </Badge>
@@ -183,7 +186,7 @@ export function ProjectDetailsPage({ projectId }: ProjectDetailsPageProps) {
                     <h4 className="font-semibold">{associatedPod.name}</h4>
                     <p className="text-sm text-muted-foreground">{associatedPod.description}</p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Progress</span>
@@ -234,11 +237,11 @@ export function ProjectDetailsPage({ projectId }: ProjectDetailsPageProps) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Status</span>
-                  <span className="font-medium">{project.status}</span>
+                  <span className="font-medium">{formatStatus(project.status)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Technologies</span>
-                  <span className="font-medium">{project.technologies.length}</span>
+                  <span className="font-medium">{(project.technologies || []).length}</span>
                 </div>
                 {associatedPod && (
                   <div className="flex justify-between">
