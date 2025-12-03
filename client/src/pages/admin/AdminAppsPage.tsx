@@ -20,7 +20,7 @@ export function AdminAppsPage() {
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  
+
   const [formData, setFormData] = useState<Partial<InsertApp>>({
     name: "",
     description: "",
@@ -42,7 +42,7 @@ export function AdminAppsPage() {
     mutationFn: async (appData: InsertApp) => {
       const response = await fetch("/api/admin/apps", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
@@ -70,7 +70,7 @@ export function AdminAppsPage() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<InsertApp> }) => {
       const response = await fetch(`/api/admin/apps/${id}`, {
         method: "PUT",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
@@ -136,7 +136,7 @@ export function AdminAppsPage() {
 
   const filteredApps = apps?.filter(app => {
     const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.description.toLowerCase().includes(searchTerm.toLowerCase());
+      app.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || app.status === statusFilter;
     return matchesSearch && matchesStatus;
   }) || [];
@@ -144,7 +144,8 @@ export function AdminAppsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "In Development": return "bg-blue-100 text-blue-800";
-      case "Live": return "bg-green-100 text-green-800";
+      case "Live":
+      case "Completed": return "bg-green-100 text-green-800";
       case "Beta": return "bg-yellow-100 text-yellow-800";
       case "Prototype": return "bg-purple-100 text-purple-800";
       default: return "bg-gray-100 text-gray-800";
@@ -177,140 +178,140 @@ export function AdminAppsPage() {
             <h1 className="text-3xl font-bold text-foreground">Apps Management</h1>
             <p className="text-muted-foreground">Manage your application portfolio and track development progress</p>
           </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white border-0 hover:opacity-90">
-              <Plus className="h-4 w-4 mr-2" />
-              Add App
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New App</DialogTitle>
-              <DialogDescription>
-                Add a new application to your portfolio.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">App Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Enter app name"
-                />
-              </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Enter app description"
-                  rows={3}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 text-white border-0 hover:opacity-90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add App
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Create New App</DialogTitle>
+                <DialogDescription>
+                  Add a new application to your portfolio.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
                 <div>
-                  <Label htmlFor="status">Status</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value) => setFormData({ ...formData, status: value as any })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="In Development">In Development</SelectItem>
-                      <SelectItem value="Beta">Beta</SelectItem>
-                      <SelectItem value="Live">Live</SelectItem>
-                      <SelectItem value="Prototype">Prototype</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="name">App Name</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Enter app name"
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value) => setFormData({ ...formData, category: value as any })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="AI Agent">AI Agent</SelectItem>
-                      <SelectItem value="Web App">Web App</SelectItem>
-                      <SelectItem value="Tool">Tool</SelectItem>
-                      <SelectItem value="Service">Service</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Enter app description"
+                    rows={3}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) => setFormData({ ...formData, status: value as any })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="In Development">In Development</SelectItem>
+                        <SelectItem value="Beta">Beta</SelectItem>
+                        <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="Prototype">Prototype</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value) => setFormData({ ...formData, category: value as any })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AI Agent">AI Agent</SelectItem>
+                        <SelectItem value="Web App">Web App</SelectItem>
+                        <SelectItem value="Tool">Tool</SelectItem>
+                        <SelectItem value="Service">Service</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="demoUrl">Demo URL (Optional)</Label>
+                  <Input
+                    id="demoUrl"
+                    value={formData.demoUrl || ""}
+                    onChange={(e) => setFormData({ ...formData, demoUrl: e.target.value })}
+                    placeholder="https://example.com"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateApp} disabled={createAppMutation.isPending}>
+                    {createAppMutation.isPending ? "Creating..." : "Create App"}
+                  </Button>
                 </div>
               </div>
-              <div>
-                <Label htmlFor="demoUrl">Demo URL (Optional)</Label>
-                <Input
-                  id="demoUrl"
-                  value={formData.demoUrl}
-                  onChange={(e) => setFormData({ ...formData, demoUrl: e.target.value })}
-                  placeholder="https://example.com"
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleCreateApp} disabled={createAppMutation.isPending}>
-                  {createAppMutation.isPending ? "Creating..." : "Create App"}
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
       {/* Filters */}
       <div className="sticky top-24 z-30 bg-background/80 backdrop-blur-sm">
         <Card className="backdrop-blur-sm bg-background/80 border-border shadow-xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Filters
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <Label htmlFor="search">Search</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="search"
-                  placeholder="Search apps..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Filter className="h-5 w-5" />
+              Filters
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <Label htmlFor="search">Search</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="search"
+                    placeholder="Search apps..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="sm:w-48">
+                <Label htmlFor="status">Status</Label>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="In Development">In Development</SelectItem>
+                    <SelectItem value="Beta">Beta</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Prototype">Prototype</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            <div className="sm:w-48">
-              <Label htmlFor="status">Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="In Development">In Development</SelectItem>
-                  <SelectItem value="Beta">Beta</SelectItem>
-                  <SelectItem value="Live">Live</SelectItem>
-                  <SelectItem value="Prototype">Prototype</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
+          </CardContent>
         </Card>
       </div>
 
@@ -448,7 +449,7 @@ export function AdminAppsPage() {
                   <SelectContent>
                     <SelectItem value="In Development">In Development</SelectItem>
                     <SelectItem value="Beta">Beta</SelectItem>
-                    <SelectItem value="Live">Live</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
                     <SelectItem value="Prototype">Prototype</SelectItem>
                   </SelectContent>
                 </Select>
@@ -475,7 +476,7 @@ export function AdminAppsPage() {
               <Label htmlFor="edit-demoUrl">Demo URL (Optional)</Label>
               <Input
                 id="edit-demoUrl"
-                value={formData.demoUrl}
+                value={formData.demoUrl || ""}
                 onChange={(e) => setFormData({ ...formData, demoUrl: e.target.value })}
                 placeholder="https://example.com"
               />
