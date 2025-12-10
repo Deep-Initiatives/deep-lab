@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Users, Code, ArrowRight } from "lucide-react";
 import type { App, AppCategory } from "@shared/schema";
+import { formatStatus } from "@/lib/projectUtils";
 
 interface AppsShowcaseProps {
   apps: App[];
@@ -37,8 +38,8 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
       ? apps
       : apps.filter((app) => app.category === selectedCategory);
 
-  // Show only first 12 projects on homepage
-  const displayedApps = filteredApps.slice(0, 12);
+  // Show only first 6 projects on homepage
+  const displayedApps = filteredApps.slice(0, 6);
 
   return (
     <section id="projects" className="py-20 md:py-32 bg-card">
@@ -56,7 +57,7 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
           {categories.map((category) => {
             const isActive = selectedCategory === category;
             const Icon = category !== "All" ? categoryIcons[category as AppCategory] : null;
-            
+
             // Get category-specific gradient for active state
             const getCategoryGradient = (cat: AppCategory | "All") => {
               if (cat === "All") return "from-chart-1 via-chart-2 to-chart-3";
@@ -67,11 +68,10 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                  isActive
-                    ? `bg-gradient-to-r ${getCategoryGradient(category)} text-white shadow-lg scale-105`
-                    : "bg-muted text-muted-foreground hover-elevate"
-                }`}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${isActive
+                  ? `bg-gradient-to-r ${getCategoryGradient(category)} text-white shadow-lg scale-105`
+                  : "bg-muted text-muted-foreground hover-elevate"
+                  }`}
                 data-testid={`filter-${category.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 {Icon && <Icon className="h-4 w-4" />}
@@ -93,14 +93,14 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                 data-testid={`card-app-${app.id}`}
               >
                 <div className={`h-1 bg-gradient-to-r ${gradientColor}`} />
-                
+
                 <CardHeader className="space-y-0 pb-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className={`p-2.5 rounded-lg bg-gradient-to-br ${gradientColor}`}>
                       <Icon className="h-5 w-5 text-white" />
                     </div>
                     <Badge variant="secondary" className="text-xs">
-                      {app.status}
+                      {formatStatus(app.status)}
                     </Badge>
                   </div>
                   <h3 className="text-xl font-semibold group-hover:text-chart-2 transition-colors">
@@ -112,7 +112,7 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                   <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
                     {app.description}
                   </p>
-                  
+
                   <div className="flex flex-wrap gap-1.5 mt-4">
                     {app.technologies?.slice(0, 3).map((tech, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
@@ -150,13 +150,13 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                           <div>
                             <h3 className="text-2xl font-bold">{app.name}</h3>
                             <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="secondary">{app.status}</Badge>
+                              <Badge variant="secondary">{formatStatus(app.status)}</Badge>
                               <Badge variant="outline">{app.category}</Badge>
                             </div>
                           </div>
                         </DialogTitle>
                       </DialogHeader>
-                      
+
                       <div className="space-y-6">
                         <div>
                           <h4 className="font-semibold mb-2">Description</h4>
