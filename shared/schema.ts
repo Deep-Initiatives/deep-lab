@@ -44,7 +44,7 @@ export const apps = pgTable("apps", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(), // AI Agent, Web App, Tool, Service
-  status: text("status").notNull(), // Live, Beta, Prototype, In Development
+  status: text("status").notNull(), // Lined Up, In Progress, Completed (legacy: Prototype, In Development, Beta, Live)
   technologies: json("technologies").$type<string[]>().default([]),
   industry: text("industry"), // AI4SDGs, Blockchain, ClimateTech, Emerging Technologies, Platform Development, Research
   icon: text("icon"),

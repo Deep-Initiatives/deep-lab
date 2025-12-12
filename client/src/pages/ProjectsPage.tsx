@@ -142,7 +142,7 @@ export default function ProjectsPage() {
             </div>
             <div className="flex flex-col gap-1 items-end">
               <Badge variant="secondary" className="text-xs">
-                {app.status}
+                {formatStatus(app.status)}
               </Badge>
               {app.industry && (
                 <Badge className={`text-xs border ${getIndustryColor(app.industry)}`}>

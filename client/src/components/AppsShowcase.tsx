@@ -27,19 +27,11 @@ const categoryColors: Record<AppCategory, string> = {
 };
 
 export function AppsShowcase({ apps }: AppsShowcaseProps) {
-  const [selectedCategory, setSelectedCategory] = useState<AppCategory | "All">("All");
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [, setLocation] = useLocation();
 
-  const categories: (AppCategory | "All")[] = ["All", "AI Agent", "Web App", "Tool", "Service"];
-
-  const filteredApps =
-    selectedCategory === "All"
-      ? apps
-      : apps.filter((app) => app.category === selectedCategory);
-
   // Show only first 6 projects on homepage
-  const displayedApps = filteredApps.slice(0, 6);
+  const displayedApps = apps.slice(0, 6);
 
   return (
     <section id="projects" className="py-20 md:py-32 bg-card">
@@ -51,34 +43,6 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Explore our growing collection of AI-powered applications, tools, and services
           </p>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {categories.map((category) => {
-            const isActive = selectedCategory === category;
-            const Icon = category !== "All" ? categoryIcons[category as AppCategory] : null;
-
-            // Get category-specific gradient for active state
-            const getCategoryGradient = (cat: AppCategory | "All") => {
-              if (cat === "All") return "from-chart-1 via-chart-2 to-chart-3";
-              return categoryColors[cat as AppCategory];
-            };
-
-            return (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${isActive
-                  ? `bg-gradient-to-r ${getCategoryGradient(category)} text-white shadow-lg scale-105`
-                  : "bg-muted text-muted-foreground hover-elevate"
-                  }`}
-                data-testid={`filter-${category.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                {Icon && <Icon className="h-4 w-4" />}
-                {category}
-              </button>
-            );
-          })}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -225,7 +189,7 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
           </div>
         )}
 
-        {apps.length > 12 && filteredApps.length > 12 && (
+        {apps.length > 6 && (
           <div className="text-center mt-12">
             <Button
               onClick={() => setLocation("/projects")}

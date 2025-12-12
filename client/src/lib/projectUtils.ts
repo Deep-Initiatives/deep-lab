@@ -23,10 +23,17 @@ export function getProjectCategory(status: string, type: "app" | "pod"): Project
 }
 
 /**
- * Formats status for display (e.g. "Live" -> "Completed")
+ * Formats status for display - maps database statuses to UI-friendly labels
  */
 export function formatStatus(status: string): string {
-    if (status.toLowerCase() === "live") return "Completed";
+    const normalized = status.toLowerCase().trim();
+
+    // Map to standardized UI labels
+    if (normalized === "prototype") return "Lined Up";
+    if (normalized === "in development" || normalized === "beta") return "In Progress";
+    if (normalized === "live" || normalized === "completed") return "Completed";
+
+    // Return original if no mapping found
     return status;
 }
 
