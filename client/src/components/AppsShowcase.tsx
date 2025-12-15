@@ -4,12 +4,14 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Users, Code, ArrowRight } from "lucide-react";
-import type { App, AppCategory } from "@shared/schema";
+import { ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Users, Code, ArrowRight, TrendingUp } from "lucide-react";
+import type { App, AppCategory, Pod } from "@shared/schema";
 import { formatStatus } from "@/lib/projectUtils";
+import { Progress } from "@/components/ui/progress";
 
 interface AppsShowcaseProps {
   apps: App[];
+  pods?: Pod[];
 }
 
 const categoryIcons: Record<AppCategory, any> = {
@@ -26,12 +28,30 @@ const categoryColors: Record<AppCategory, string> = {
   Service: "from-chart-4 to-chart-5",
 };
 
-export function AppsShowcase({ apps }: AppsShowcaseProps) {
+export function AppsShowcase({ apps, pods }: AppsShowcaseProps) {
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [, setLocation] = useLocation();
 
+  // Priority projects to show at the top
+  const priorityProjects = [
+    "AI Avatar",
+    "AI Assisted Proposal Refinement",
+    "Internal NewsFeed/Newsletter",
+    "Community Hub Portal"
+  ];
+
+  const sortedApps = [...apps].sort((a, b) => {
+    const aIndex = priorityProjects.indexOf(a.name);
+    const bIndex = priorityProjects.indexOf(b.name);
+
+    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+    if (aIndex !== -1) return -1;
+    if (bIndex !== -1) return 1;
+    return 0;
+  });
+
   // Show only first 6 projects on homepage
-  const displayedApps = apps.slice(0, 6);
+  const displayedApps = sortedApps.slice(0, 6);
 
   return (
     <section id="projects" className="py-20 md:py-32 bg-card">
@@ -76,6 +96,36 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                   <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
                     {app.description}
                   </p>
+
+                  {/* Pod Progress Section - Only show if pod data is available and app is In Progress */}
+                  {pods && app.podId && (() => {
+                    const linkedPod = pods.find(p => p.id === app.podId);
+                    if (linkedPod && formatStatus(app.status) === "In Progress") {
+                      return (
+                        <div className="mt-4 space-y-3 pt-3 border-t border-border/50">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-muted-foreground font-medium">Development Progress</span>
+                              <span className="font-mono font-semibold text-primary">{linkedPod.progress}%</span>
+                            </div>
+                            <Progress value={linkedPod.progress} className="h-1.5" />
+                          </div>
+
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1.5">
+                              <Users className="h-3.5 w-3.5" />
+                              <span>{linkedPod.teamSize} members</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <TrendingUp className="h-3.5 w-3.5" />
+                              <span>Since {new Date(linkedPod.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
 
                   <div className="flex flex-wrap gap-1.5 mt-4">
                     {app.technologies?.slice(0, 3).map((tech, index) => (

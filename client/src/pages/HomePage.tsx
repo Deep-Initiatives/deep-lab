@@ -3,7 +3,6 @@ import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { Introduction } from "@/components/Introduction";
 import { AppsShowcase } from "@/components/AppsShowcase";
-import { PodsSection } from "@/components/PodsSection";
 import { Timeline } from "@/components/Timeline";
 import { CTASection } from "@/components/CTASection";
 import { Footer } from "@/components/Footer";
@@ -81,8 +80,7 @@ export default function HomePage() {
       <Navigation />
       <Hero stats={stats} />
       <Introduction />
-      <AppsShowcase apps={apps} />
-      <PodsSection pods={pods} />
+      <AppsShowcase apps={apps} pods={pods} />
       <Timeline milestones={milestones} />
       <CTASection />
       <Footer />
