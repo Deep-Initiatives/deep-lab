@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Plus, Edit, Trash2, ExternalLink, Search, Filter } from "lucide-react";
 import type { App, InsertApp } from "@shared/schema";
+import { formatStatus } from "@/lib/projectUtils";
 
 export function AdminAppsPage() {
   const { token } = useAuth();
@@ -24,7 +25,7 @@ export function AdminAppsPage() {
   const [formData, setFormData] = useState<Partial<InsertApp>>({
     name: "",
     description: "",
-    status: "In Development",
+    status: "In Progress",
     category: "AI Agent",
     technologies: [],
     demoUrl: "",
@@ -57,7 +58,7 @@ export function AdminAppsPage() {
       setFormData({
         name: "",
         description: "",
-        status: "In Development",
+        status: "In Progress",
         category: "AI Agent",
         technologies: [],
         demoUrl: "",
@@ -143,10 +144,12 @@ export function AdminAppsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "In Development": return "bg-blue-100 text-blue-800";
-      case "Live":
-      case "Completed": return "bg-green-100 text-green-800";
-      case "Beta": return "bg-yellow-100 text-yellow-800";
+      case "In Progress":
+      case "In Development":
+      case "Beta": return "bg-blue-100 text-blue-800";
+      case "Completed":
+      case "Live": return "bg-green-100 text-green-800";
+      case "Lined Up":
       case "Prototype": return "bg-purple-100 text-purple-800";
       default: return "bg-gray-100 text-gray-800";
     }
@@ -223,10 +226,9 @@ export function AdminAppsPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="In Development">In Development</SelectItem>
-                        <SelectItem value="Beta">Beta</SelectItem>
+                        <SelectItem value="Lined Up">Lined Up</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
                         <SelectItem value="Completed">Completed</SelectItem>
-                        <SelectItem value="Prototype">Prototype</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -303,10 +305,9 @@ export function AdminAppsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="In Development">In Development</SelectItem>
-                    <SelectItem value="Beta">Beta</SelectItem>
+                    <SelectItem value="Lined Up">Lined Up</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
                     <SelectItem value="Completed">Completed</SelectItem>
-                    <SelectItem value="Prototype">Prototype</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -327,7 +328,7 @@ export function AdminAppsPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <Badge className={getStatusColor(app.status)}>
-                    {app.status}
+                    {formatStatus(app.status)}
                   </Badge>
                   <Badge variant="secondary" className={getCategoryColor(app.category)}>
                     {app.category}
@@ -447,10 +448,9 @@ export function AdminAppsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="In Development">In Development</SelectItem>
-                    <SelectItem value="Beta">Beta</SelectItem>
+                    <SelectItem value="Lined Up">Lined Up</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
                     <SelectItem value="Completed">Completed</SelectItem>
-                    <SelectItem value="Prototype">Prototype</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
