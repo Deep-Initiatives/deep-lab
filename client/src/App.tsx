@@ -11,6 +11,8 @@ import HomePage from "@/pages/HomePage";
 import { ProjectDetailsPage } from "@/pages/ProjectDetailsPage";
 import BlogPage from "@/pages/BlogPage";
 import BlogDetailPage from "@/pages/BlogDetailPage";
+import InternalBlogPage from "@/pages/internal/InternalBlogPage";
+import InternalBlogDetailPage from "@/pages/internal/InternalBlogDetailPage";
 import ContactPage from "@/pages/ContactPage";
 import ViewAllIdeasPage from "@/pages/ViewAllIdeasPage";
 import SubmitIdeaPage from "@/pages/SubmitIdeaPage";
@@ -28,6 +30,8 @@ function Router() {
       <Route path="/project/:id" component={({ params }) => <ProjectDetailsPage projectId={params.id} />} />
       <Route path="/blog" component={BlogPage} />
       <Route path="/blog/:id" component={BlogDetailPage} />
+      <Route path="/internal-blogs" component={InternalBlogPage} />
+      <Route path="/internal-blogs/:id" component={InternalBlogDetailPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/ideas" component={ViewAllIdeasPage} />
       <Route path="/submit-idea" component={SubmitIdeaPage} />

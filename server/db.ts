@@ -1,17 +1,17 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { 
-  users, 
-  pods, 
-  apps, 
+import {
+  users,
+  pods,
+  apps,
   milestones,
   blogs,
   applications,
   ideaSubmissions,
   contactSubmissions,
-  type User, 
-  type Pod, 
-  type App, 
+  type User,
+  type Pod,
+  type App,
   type TimelineMilestone,
   type Blog,
   type Application,
@@ -70,12 +70,12 @@ export class DatabaseStorage {
 
   async updateUser(id: string, userData: Partial<InsertUser>): Promise<User> {
     const updateData: any = { ...userData };
-    
+
     // Hash password if it's being updated
     if (userData.password) {
       updateData.password = await hashPassword(userData.password);
     }
-    
+
     const result = await db.update(users)
       .set({
         ...updateData,
@@ -83,7 +83,7 @@ export class DatabaseStorage {
       })
       .where(eq(users.id, id))
       .returning();
-    
+
     return result[0];
   }
 
@@ -121,10 +121,10 @@ export class DatabaseStorage {
   async updatePod(id: string, podData: Partial<InsertPod>): Promise<Pod | undefined> {
     // Convert date strings to Date objects and ensure technologies is an array
     const processedData: any = { ...podData };
-    
+
     // Handle updatedAt
     processedData.updatedAt = new Date();
-    
+
     // Handle startDate
     if (podData.startDate !== undefined) {
       if (typeof podData.startDate === 'string') {
@@ -136,7 +136,7 @@ export class DatabaseStorage {
         processedData.startDate = podData.startDate;
       }
     }
-    
+
     // Handle endDate
     if (podData.endDate !== undefined) {
       if (typeof podData.endDate === 'string') {
@@ -152,12 +152,12 @@ export class DatabaseStorage {
         processedData.endDate = null;
       }
     }
-    
+
     // Handle technologies
     if (podData.technologies !== undefined) {
       processedData.technologies = Array.isArray(podData.technologies) ? podData.technologies as string[] : [];
     }
-    
+
     const result = await db
       .update(pods)
       .set(processedData)
@@ -188,6 +188,7 @@ export class DatabaseStorage {
   async createApp(appData: InsertApp): Promise<App> {
     const processedData = {
       ...appData,
+      startDate: appData.startDate ? new Date(appData.startDate) : new Date(),
       technologies: Array.isArray(appData.technologies) ? appData.technologies as string[] : [],
     };
     const result = await db.insert(apps).values(processedData).returning();
@@ -196,15 +197,27 @@ export class DatabaseStorage {
 
   async updateApp(id: string, appData: Partial<InsertApp>): Promise<App | undefined> {
     const processedData: any = { ...appData };
-    
+
     // Handle updatedAt
     processedData.updatedAt = new Date();
-    
+
+    // Handle startDate
+    if (appData.startDate !== undefined) {
+      if (typeof appData.startDate === 'string') {
+        const startDateStr = appData.startDate as string;
+        if (startDateStr.trim() !== '') {
+          processedData.startDate = new Date(startDateStr);
+        }
+      } else if (appData.startDate instanceof Date) {
+        processedData.startDate = appData.startDate;
+      }
+    }
+
     // Handle technologies
     if (appData.technologies !== undefined) {
       processedData.technologies = Array.isArray(appData.technologies) ? appData.technologies as string[] : [];
     }
-    
+
     const result = await db
       .update(apps)
       .set(processedData)
@@ -271,17 +284,17 @@ export class DatabaseStorage {
       tags: Array.isArray(blogData.tags) ? blogData.tags as string[] : [],
       publishedAt: blogData.publishedAt ? new Date(blogData.publishedAt) : new Date(),
     };
-    
+
     const result = await db.insert(blogs).values(processedData).returning();
     return result[0];
   }
 
   async updateBlog(id: string, blogData: Partial<InsertBlog>): Promise<Blog | undefined> {
     const processedData: any = { ...blogData };
-    
+
     // Handle updatedAt
     processedData.updatedAt = new Date();
-    
+
     // Handle publishedAt
     if (blogData.publishedAt !== undefined) {
       if (typeof blogData.publishedAt === 'string') {
@@ -293,12 +306,12 @@ export class DatabaseStorage {
         processedData.publishedAt = blogData.publishedAt;
       }
     }
-    
+
     // Handle tags
     if (blogData.tags !== undefined) {
       processedData.tags = Array.isArray(blogData.tags) ? blogData.tags as string[] : [];
     }
-    
+
     const result = await db
       .update(blogs)
       .set(processedData)
@@ -320,8 +333,8 @@ export class DatabaseStorage {
   async getLabStats(): Promise<LabStats> {
     const inceptionDate = new Date('2025-06-01');
     const now = new Date();
-    const monthsDiff = (now.getFullYear() - inceptionDate.getFullYear()) * 12 + 
-                      (now.getMonth() - inceptionDate.getMonth());
+    const monthsDiff = (now.getFullYear() - inceptionDate.getFullYear()) * 12 +
+      (now.getMonth() - inceptionDate.getMonth());
 
     const [totalAppsResult, activePodsResult] = await Promise.all([
       db.select({ count: count() }).from(apps).where(eq(apps.isActive, true)),
