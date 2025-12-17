@@ -6,18 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Search, Calendar, User, Clock, ArrowRight, ExternalLink } from "lucide-react";
+import { Search, Calendar, User, Clock, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-
-interface ExternalBlog {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  circle: string;
-  permalink: string;
-  featured_image: string;
-}
+import { Blog } from "@shared/schema";
 
 // Custom tablet writing icon
 const TabletWritingIcon = ({ className }: { className?: string }) => (
@@ -51,36 +42,34 @@ const TabletWritingIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function BlogPage() {
+export default function InternalBlogPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  // Categories are less relevant if not provided by external API, or we can extract from 'circle'
-  // const [selectedCategory, setSelectedCategory] = useState("all"); 
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [, setLocation] = useLocation();
 
-  const { data: blogPosts = [], isLoading, error } = useQuery<ExternalBlog[]>({
-    queryKey: ["external-blogs"],
+  const { data: blogPosts = [], isLoading, error } = useQuery<Blog[]>({
+    queryKey: ["/api/blogs"],
     queryFn: async () => {
-      const response = await fetch("https://deep-communities.ai/wp-json/df/v1/assigned-blogs?channel=deep-labs");
+      const response = await fetch("/api/blogs");
       if (!response.ok) throw new Error("Failed to fetch blogs");
       return response.json();
     },
   });
 
-  const getExcerpt = (html: string) => {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = html;
-    const text = tempDiv.textContent || tempDiv.innerText || "";
-    return text.slice(0, 150) + (text.length > 150 ? "..." : "");
-  };
+  const categories = ["all", "Technology", "AI", "Development", "Innovation"];
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      getExcerpt(post.content).toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+      post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || post.category === selectedCategory;
+    return matchesSearch && matchesCategory;
   });
 
-  // Decide if we want a featured post logic (e.g. latest one?)
-  const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
-  const standardPosts = filteredPosts.length > 0 ? filteredPosts.slice(1) : [];
+  const featuredPost = blogPosts.find(post => post.featured);
+
+  const handleReadMore = (blogId: string) => {
+    setLocation(`/internal-blogs/${blogId}`);
+  };
 
   return (
     <>
@@ -103,17 +92,37 @@ export default function BlogPage() {
             </p>
           </div>
 
-          {/* Search */}
-          <div className="mb-12 max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder="Search blog posts..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-12 text-lg"
-              />
-            </div>
+          {/* Search and Filters */}
+          <div className="mb-12">
+            <Card className="border-2 hover:border-chart-1 transition-all shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input
+                        placeholder="Search blog posts..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {categories.map((category) => (
+                      <Button
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        onClick={() => setSelectedCategory(category)}
+                        className={selectedCategory === category ? "bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 capitalize" : "capitalize"}
+                      >
+                        {category}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Loading State */}
@@ -136,48 +145,46 @@ export default function BlogPage() {
           {!isLoading && !error && (
             <>
               {/* Featured Post */}
-              {featuredPost && !searchTerm && (
+              {featuredPost && (
                 <div className="mb-16">
-                  <h2 className="text-2xl font-bold text-foreground mb-6">Latest Post</h2>
+                  <h2 className="text-2xl font-bold text-foreground mb-6">Featured Post</h2>
                   <Card className="overflow-hidden hover:shadow-lg transition-shadow border-2 hover:border-chart-2 shadow-lg">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                      <div className="p-8 flex flex-col justify-center">
+                      <div className="p-8">
                         <div className="flex items-center gap-2 mb-4">
-                          <Badge className="bg-gradient-to-r from-chart-1 to-chart-2 text-white">Latest</Badge>
-                          {featuredPost.circle && <Badge variant="outline">{featuredPost.circle}</Badge>}
+                          <Badge className="bg-gradient-to-r from-chart-1 to-chart-2 text-white">Featured</Badge>
+                          <Badge variant="outline">{featuredPost.category}</Badge>
                         </div>
                         <h3 className="text-2xl font-bold text-foreground mb-4">
                           {featuredPost.title}
                         </h3>
-                        <p className="text-muted-foreground mb-6">{getExcerpt(featuredPost.content)}</p>
+                        <p className="text-muted-foreground mb-6">{featuredPost.excerpt}</p>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
                           <div className="flex items-center gap-1">
                             <User className="h-4 w-4" />
                             <span>{featuredPost.author}</span>
                           </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            <span>{new Date(featuredPost.publishedAt).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{featuredPost.readTime} min read</span>
+                          </div>
                         </div>
                         <Button
-                          asChild
-                          className="bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90 w-fit"
+                          onClick={() => handleReadMore(featuredPost.id)}
+                          className="bg-gradient-to-r from-chart-1 to-chart-2 text-white border-0 hover:opacity-90"
                         >
-                          <a href={featuredPost.permalink} target="_blank" rel="noopener noreferrer">
-                            Read on Deep Communities
-                            <ExternalLink className="h-4 w-4 ml-2" />
-                          </a>
+                          Read More
+                          <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       </div>
-                      <div className="bg-muted flex items-center justify-center relative min-h-[300px]">
-                        {featuredPost.featured_image ? (
-                          <img
-                            src={featuredPost.featured_image}
-                            alt={featuredPost.title}
-                            className="absolute inset-0 w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-chart-1/20 to-chart-2/20 flex items-center justify-center">
-                            <span className="text-muted-foreground">No Image</span>
-                          </div>
-                        )}
+                      <div className="bg-muted flex items-center justify-center">
+                        <div className="w-full h-64 bg-gradient-to-br from-chart-1/20 to-chart-2/20 flex items-center justify-center">
+                          <span className="text-muted-foreground">Featured Image</span>
+                        </div>
                       </div>
                     </div>
                   </Card>
@@ -186,56 +193,52 @@ export default function BlogPage() {
 
               {/* Blog Posts Grid */}
               <div className="mb-16">
-                <h2 className="text-2xl font-bold text-foreground mb-6">
-                  {searchTerm ? 'Search Results' : 'More Posts'}
-                </h2>
+                <h2 className="text-2xl font-bold text-foreground mb-6">All Posts</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {(searchTerm ? filteredPosts : standardPosts).map((post) => (
-                    <Card key={post.id} className="hover:shadow-lg transition-shadow border-2 hover:border-chart-3 shadow-lg flex flex-col">
-                      <div className="bg-muted h-48 flex items-center justify-center relative overflow-hidden">
-                        {post.featured_image ? (
-                          <img
-                            src={post.featured_image}
-                            alt={post.title}
-                            className="absolute inset-0 w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                          />
-                        ) : (
-                          <span className="text-muted-foreground">No Image</span>
-                        )}
+                  {filteredPosts.map((post) => (
+                    <Card key={post.id} className="hover:shadow-lg transition-shadow border-2 hover:border-chart-3 shadow-lg">
+                      <div className="bg-muted h-48 flex items-center justify-center">
+                        <span className="text-muted-foreground">Post Image</span>
                       </div>
-                      <CardContent className="p-6 flex-1 flex flex-col">
+                      <CardContent className="p-6">
                         <div className="flex items-center gap-2 mb-3">
-                          {post.circle && <Badge variant="outline">{post.circle}</Badge>}
+                          <Badge variant="outline">{post.category}</Badge>
+                          {post.featured && (
+                            <Badge className="bg-gradient-to-r from-chart-1 to-chart-2 text-white">Featured</Badge>
+                          )}
                         </div>
                         <h3 className="text-xl font-semibold text-foreground mb-3 line-clamp-2">
                           {post.title}
                         </h3>
-                        <p className="text-muted-foreground mb-4 line-clamp-3 flex-1">{getExcerpt(post.content)}</p>
+                        <p className="text-muted-foreground mb-4 line-clamp-3">{post.excerpt}</p>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                           <div className="flex items-center gap-1">
                             <User className="h-4 w-4" />
                             <span>{post.author}</span>
                           </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{post.readTime} min</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mb-4">
+                          {post.tags?.slice(0, 2).map((tag, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
                         </div>
                         <Button
                           variant="outline"
-                          className="w-full mt-auto"
-                          asChild
+                          className="w-full"
+                          onClick={() => handleReadMore(post.id)}
                         >
-                          <a href={post.permalink} target="_blank" rel="noopener noreferrer">
-                            Read Article
-                            <ExternalLink className="h-4 w-4 ml-2" />
-                          </a>
+                          Read More
+                          <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       </CardContent>
                     </Card>
                   ))}
-
-                  {(searchTerm ? filteredPosts : standardPosts).length === 0 && (
-                    <div className="col-span-full text-center py-10 text-muted-foreground">
-                      No posts found.
-                    </div>
-                  )}
                 </div>
               </div>
             </>

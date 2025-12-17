@@ -7,16 +7,16 @@ import { generateToken, verifyToken, comparePassword, extractTokenFromHeader, ha
 function authenticateToken(req: any, res: any, next: any) {
   const authHeader = req.headers['authorization'];
   const token = extractTokenFromHeader(authHeader);
-  
+
   if (!token) {
     return res.status(401).json({ error: 'Access token required' });
   }
-  
+
   const payload = verifyToken(token);
   if (!payload) {
     return res.status(403).json({ error: 'Invalid or expired token' });
   }
-  
+
   req.user = payload;
   next();
 }
@@ -26,28 +26,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/login", async (req, res) => {
     try {
       const { username, password } = req.body;
-      
+
       if (!username || !password) {
         return res.status(400).json({ error: 'Username and password required' });
       }
-      
+
       const user = await storage.getUserByUsername(username);
       if (!user) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
-      
+
       const isValidPassword = await comparePassword(password, user.password);
       if (!isValidPassword) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
-      
+
       const token = generateToken({
         userId: user.id,
         username: user.username,
         role: user.role
       });
-      
-      res.json({ 
+
+      res.json({
         token,
         user: {
           id: user.id,
@@ -78,8 +78,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       console.log("✅ Blog admin user created:", blogAdminUser.username);
-      
-      res.json({ 
+
+      res.json({
         message: "Blog admin user created successfully",
         user: {
           id: blogAdminUser.id,
@@ -136,7 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update user if there are changes
       if (Object.keys(updateData).length > 0) {
         const updatedUser = await storage.updateUser(userId, updateData);
-        
+
         res.json({
           message: "Profile updated successfully",
           user: {
@@ -389,6 +389,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const app = await storage.createApp(req.body);
       res.status(201).json(app);
     } catch (error) {
+      console.error("Error creating app:", error);
       res.status(500).json({ error: "Failed to create app" });
     }
   });
@@ -401,6 +402,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(app);
     } catch (error) {
+      console.error("Error updating app:", error);
       res.status(500).json({ error: "Failed to update app" });
     }
   });
@@ -678,16 +680,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { status, notes, podData } = req.body;
       const ideaId = req.params.id;
-      
+
       // Get the current idea to check if we need to create an app or pod
       const currentIdea = await storage.getIdeaSubmission(ideaId);
       if (!currentIdea) {
         return res.status(404).json({ error: "Idea submission not found" });
       }
-      
+
       const previousStatus = currentIdea.status?.toLowerCase().trim();
       const normalizedStatus = status?.toLowerCase().trim();
-      
+
       // If status is being changed to "rejected", delete associated app/pod if they exist
       if (normalizedStatus === "rejected" && (previousStatus === "approved" || previousStatus === "in_development")) {
         try {
@@ -697,7 +699,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (associatedApp) {
             await storage.deleteApp(associatedApp.id);
           }
-          
+
           // Delete associated pod if it exists (check regardless of previous status to handle edge cases)
           const allPods = await storage.getAllPods();
           const associatedPod = allPods.find(pod => pod.name.toLowerCase() === currentIdea.title.toLowerCase());
@@ -708,17 +710,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Don't fail the status update if deletion fails - log it but continue
         }
       }
-      
+
       // Update the idea status
       const idea = await storage.updateIdeaSubmissionStatus(ideaId, status, notes);
-      
+
       // If status is "approved", automatically create an app/project
       if (normalizedStatus === "approved") {
         try {
           // Check if an app with the same name already exists
           const allApps = await storage.getAllApps();
           const existingApp = allApps.find(app => app.name.toLowerCase() === idea.title.toLowerCase());
-          
+
           if (!existingApp) {
             // Prepare app data
             const appData = {
@@ -732,7 +734,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               githubUrl: null,
               podId: null,
             };
-            
+
             // Create a new app from the approved idea
             await storage.createApp(appData);
           }
@@ -740,18 +742,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Don't fail the status update if app creation fails - log it but continue
         }
       }
-      
+
       // If status is "in_development", create a pod with the provided pod data
       if (normalizedStatus === "in_development") {
         if (!podData || (typeof podData === 'object' && Object.keys(podData).length === 0)) {
           return res.status(400).json({ error: "Pod data is required when changing status to 'in_development'" });
         }
-        
+
         try {
           // Check if a pod with the same name already exists
           const allPods = await storage.getAllPods();
           const existingPod = allPods.find(pod => pod.name.toLowerCase() === (podData.name || idea.title).toLowerCase());
-          
+
           if (!existingPod) {
             // Create a new pod from the idea with provided pod data
             const podDataToCreate = {
@@ -765,14 +767,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               technologies: Array.isArray(podData.technologies) ? podData.technologies : (podData.technologies ? [podData.technologies] : (Array.isArray(idea.requiredExpertise) ? idea.requiredExpertise : (idea.requiredExpertise ? [idea.requiredExpertise] : []))),
               coordinatorId: podData.coordinatorId || null,
             };
-            
+
             await storage.createPod(podDataToCreate);
           }
         } catch (podCreationError) {
           return res.status(500).json({ error: "Failed to create pod", details: podCreationError instanceof Error ? podCreationError.message : String(podCreationError) });
         }
       }
-      
+
       res.json(idea);
     } catch (error) {
       console.error("Error updating idea submission status:", error);
@@ -795,7 +797,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const ideaId = req.params.id;
       const idea = await storage.getIdeaSubmission(ideaId);
-      
+
       if (!idea) {
         return res.status(404).json({ error: "Idea submission not found" });
       }
@@ -807,9 +809,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if an app with the same name already exists
       const allApps = await storage.getAllApps();
       const existingApp = allApps.find(app => app.name.toLowerCase() === idea.title.toLowerCase());
-      
+
       if (existingApp) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: "App already exists for this idea",
           app: existingApp
         });
@@ -830,7 +832,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`✅ Manually created app "${newApp.name}" (ID: ${newApp.id}) from approved idea "${idea.title}" (ID: ${idea.id})`);
 
-      res.json({ 
+      res.json({
         message: "App created successfully",
         app: newApp
       });

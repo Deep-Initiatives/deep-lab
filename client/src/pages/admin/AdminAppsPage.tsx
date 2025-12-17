@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Plus, Edit, Trash2, ExternalLink, Search, Filter } from "lucide-react";
+import { Plus, Edit, Trash2, ExternalLink, Search, Filter, Users } from "lucide-react";
 import type { App, InsertApp } from "@shared/schema";
 import { formatStatus } from "@/lib/projectUtils";
 
@@ -29,7 +30,10 @@ export function AdminAppsPage() {
     category: "AI Agent",
     technologies: [],
     demoUrl: "",
-  });
+    progress: 0,
+    teamSize: 1,
+    startDate: new Date(),
+  } as Partial<InsertApp>);
 
   const queryClient = useQueryClient();
 
@@ -62,6 +66,9 @@ export function AdminAppsPage() {
         category: "AI Agent",
         technologies: [],
         demoUrl: "",
+        progress: 0,
+        teamSize: 1,
+        startDate: new Date().toISOString().split('T')[0],
       });
     },
   });
@@ -118,6 +125,9 @@ export function AdminAppsPage() {
       category: app.category,
       technologies: app.technologies,
       demoUrl: app.demoUrl || "",
+      progress: app.progress || 0,
+      teamSize: app.teamSize || 1,
+      startDate: app.startDate ? new Date(app.startDate).toISOString().split('T')[0] : "",
     });
     setIsEditDialogOpen(true);
   };
@@ -215,6 +225,15 @@ export function AdminAppsPage() {
                     rows={3}
                   />
                 </div>
+                <div>
+                  <Label htmlFor="technologies">Technologies (comma separated)</Label>
+                  <Input
+                    id="technologies"
+                    value={formData.technologies ? formData.technologies.join(", ") : ""}
+                    onChange={(e) => setFormData({ ...formData, technologies: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })}
+                    placeholder="React, Node.js, TypeScript"
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="status">Status</Label>
@@ -249,6 +268,38 @@ export function AdminAppsPage() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="progress">Progress (%)</Label>
+                    <Input
+                      id="progress"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={formData.progress}
+                      onChange={(e) => setFormData({ ...formData, progress: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="teamSize">Team Size</Label>
+                    <Input
+                      id="teamSize"
+                      type="number"
+                      min="1"
+                      value={formData.teamSize}
+                      onChange={(e) => setFormData({ ...formData, teamSize: parseInt(e.target.value) || 1 })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="startDate">Start Date</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ""}
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="demoUrl">Demo URL (Optional)</Label>
@@ -338,6 +389,21 @@ export function AdminAppsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* Progress Bar */}
+                <div>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
+                    <span>Progress</span>
+                    <span>{app.progress || 0}%</span>
+                  </div>
+                  <Progress value={app.progress || 0} className="h-2" />
+                </div>
+
+                {/* Team Size */}
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Users className="h-4 w-4" />
+                  <span>{app.teamSize || 1} members</span>
+                </div>
+
                 {app.technologies && app.technologies.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {app.technologies.slice(0, 3).map((tech, index) => (
@@ -437,6 +503,15 @@ export function AdminAppsPage() {
                 rows={3}
               />
             </div>
+            <div>
+              <Label htmlFor="edit-technologies">Technologies (comma separated)</Label>
+              <Input
+                id="edit-technologies"
+                value={formData.technologies ? formData.technologies.join(", ") : ""}
+                onChange={(e) => setFormData({ ...formData, technologies: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })}
+                placeholder="React, Node.js, TypeScript"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-status">Status</Label>
@@ -471,6 +546,38 @@ export function AdminAppsPage() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-progress">Progress (%)</Label>
+                <Input
+                  id="edit-progress"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.progress}
+                  onChange={(e) => setFormData({ ...formData, progress: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-teamSize">Team Size</Label>
+                <Input
+                  id="edit-teamSize"
+                  type="number"
+                  min="1"
+                  value={formData.teamSize}
+                  onChange={(e) => setFormData({ ...formData, teamSize: parseInt(e.target.value) || 1 })}
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-startDate">Start Date</Label>
+              <Input
+                id="edit-startDate"
+                type="date"
+                value={formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ""}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              />
             </div>
             <div>
               <Label htmlFor="edit-demoUrl">Demo URL (Optional)</Label>

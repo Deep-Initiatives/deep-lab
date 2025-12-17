@@ -45,6 +45,9 @@ export const apps = pgTable("apps", {
   description: text("description").notNull(),
   category: text("category").notNull(), // AI Agent, Web App, Tool, Service
   status: text("status").notNull(), // Lined Up, In Progress, Completed (legacy: Prototype, In Development, Beta, Live)
+  progress: integer("progress").notNull().default(0), // 0-100
+  teamSize: integer("team_size").notNull().default(1),
+  startDate: timestamp("start_date").notNull().defaultNow(),
   technologies: json("technologies").$type<string[]>().default([]),
   industry: text("industry"), // AI4SDGs, Blockchain, ClimateTech, Emerging Technologies, Platform Development, Research
   icon: text("icon"),
@@ -136,6 +139,9 @@ export const insertAppSchema = createInsertSchema(apps).pick({
   description: true,
   category: true,
   status: true,
+  progress: true,
+  teamSize: true,
+  startDate: true,
   technologies: true,
   industry: true,
   icon: true,
