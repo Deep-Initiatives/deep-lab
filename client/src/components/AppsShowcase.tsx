@@ -31,39 +31,11 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [, setLocation] = useLocation();
 
-  // Priority projects to show at the top
-  const priorityProjects = [
-    "AI Avatar",
-    "AI Assisted Proposal Refinement",
-    "BGI Events App",
-    "BGI Avatar (Nexus Chat)",
-    "Community Hub Portal",
-    "Internal NewsFeed/Newsletter"
-
-  ];
-
-  // Image mapping for specific projects
-  const projectImages: Record<string, string> = {
-    "AI Avatar": "/avatar.png",
-    "AI Assisted Proposal Refinement": "/aiproposal.png",
-    "Internal NewsFeed/Newsletter": "/newsflash.png",
-    "BGI Events App": "/bgi-summit.png",
-    // "Community Hub Portal": "/bginexus.png",
-    "BGI Avatar (Nexus Chat)": "/bginexus.png"
-  };
-
-  const sortedApps = [...apps].sort((a, b) => {
-    const aIndex = priorityProjects.indexOf(a.name);
-    const bIndex = priorityProjects.indexOf(b.name);
-
-    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
-    if (aIndex !== -1) return -1;
-    if (bIndex !== -1) return 1;
-    return 0;
-  });
-
-  // Limit to top 6 projects
-  const displayApps = sortedApps.slice(0, 6);
+  // Filter to featured projects, sort alphabetically, limit to 6
+  const displayApps = apps
+    .filter(app => app.featured)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .slice(0, 6);
 
   return (
     <section id="projects" className="py-20 md:py-32 bg-card">
@@ -81,7 +53,6 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
           {displayApps.map((app) => {
             const Icon = categoryIcons[app.category as AppCategory];
             const gradientColor = categoryColors[app.category as AppCategory];
-            const projectImage = projectImages[app.name];
 
             return (
               <div key={app.id}>
@@ -92,9 +63,9 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                   {/* Image Placeholder - Distinct Area */}
                   <div className="p-4 pb-0 bg-background">
                     <div className={`h-48 w-full rounded-2xl bg-muted/30 relative overflow-hidden flex items-center justify-center border border-border/50`}>
-                      {projectImage ? (
+                      {app.imageUrl ? (
                         <img
-                          src={projectImage}
+                          src={app.imageUrl}
                           alt={app.name}
                           className="w-full h-full object-cover"
                         />
@@ -169,9 +140,9 @@ export function AppsShowcase({ apps }: AppsShowcaseProps) {
                       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
                           <div className={`h-32 mb-4 rounded-t-lg -mx-6 -mt-6 bg-gradient-to-br ${gradientColor} opacity-10 relative overflow-hidden flex items-center justify-center`}>
-                            {projectImage ? (
+                            {app.imageUrl ? (
                               <img
-                                src={projectImage}
+                                src={app.imageUrl}
                                 alt={app.name}
                                 className="w-full h-full object-cover opacity-50"
                               />

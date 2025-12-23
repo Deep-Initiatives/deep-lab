@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Plus, Edit, Trash2, ExternalLink, Search, Filter, Users } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Plus, Edit, Trash2, ExternalLink, Search, Filter, Users, Star, Upload, Loader2 } from "lucide-react";
 import type { App, InsertApp } from "@shared/schema";
 import { formatStatus } from "@/lib/projectUtils";
 
@@ -30,10 +31,42 @@ export function AdminAppsPage() {
     category: "AI Agent",
     technologies: [],
     demoUrl: "",
+    imageUrl: "",
+    featured: false,
     progress: 0,
     teamSize: 1,
     startDate: new Date(),
   } as Partial<InsertApp>);
+
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append("image", file);
+
+    try {
+      const response = await fetch("/api/admin/upload", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: formDataUpload,
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      const { imageUrl } = await response.json();
+      setFormData((prev) => ({ ...prev, imageUrl }));
+    } catch (error) {
+      console.error("Upload error:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const queryClient = useQueryClient();
 
@@ -66,6 +99,8 @@ export function AdminAppsPage() {
         category: "AI Agent",
         technologies: [],
         demoUrl: "",
+        imageUrl: "",
+        featured: false,
         progress: 0,
         teamSize: 1,
         startDate: new Date().toISOString().split('T')[0],
@@ -125,6 +160,8 @@ export function AdminAppsPage() {
       category: app.category,
       technologies: app.technologies,
       demoUrl: app.demoUrl || "",
+      imageUrl: app.imageUrl || "",
+      featured: app.featured || false,
       progress: app.progress || 0,
       teamSize: app.teamSize || 1,
       startDate: app.startDate ? new Date(app.startDate).toISOString().split('T')[0] : "",
@@ -310,6 +347,52 @@ export function AdminAppsPage() {
                     placeholder="https://example.com"
                   />
                 </div>
+                <div>
+                  <Label htmlFor="image">Project Image</Label>
+                  <div className="mt-2 space-y-3">
+                    {formData.imageUrl && (
+                      <div className="relative w-full h-32 rounded-lg overflow-hidden border">
+                        <img
+                          src={formData.imageUrl}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        disabled={isUploading}
+                        className="cursor-pointer"
+                      />
+                      {isUploading && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Or enter URL manually:
+                    </p>
+                    <Input
+                      value={formData.imageUrl || ""}
+                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                      placeholder="https://example.com/image.png"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="featured">Featured on Landing Page</Label>
+                    <p className="text-sm text-muted-foreground">Show this project in the portfolio grid</p>
+                  </div>
+                  <Switch
+                    id="featured"
+                    checked={formData.featured || false}
+                    onCheckedChange={(checked) => setFormData({ ...formData, featured: checked })}
+                  />
+                </div>
                 <div className="flex justify-end space-x-2">
                   <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                     Cancel
@@ -384,6 +467,12 @@ export function AdminAppsPage() {
                   <Badge variant="secondary" className={getCategoryColor(app.category)}>
                     {app.category}
                   </Badge>
+                  {app.featured && (
+                    <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">
+                      <Star className="h-3 w-3 mr-1" />
+                      Featured
+                    </Badge>
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -476,7 +565,7 @@ export function AdminAppsPage() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit App</DialogTitle>
             <DialogDescription>
@@ -586,6 +675,52 @@ export function AdminAppsPage() {
                 value={formData.demoUrl || ""}
                 onChange={(e) => setFormData({ ...formData, demoUrl: e.target.value })}
                 placeholder="https://example.com"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-image">Project Image</Label>
+              <div className="mt-2 space-y-3">
+                {formData.imageUrl && (
+                  <div className="relative w-full h-32 rounded-lg overflow-hidden border">
+                    <img
+                      src={formData.imageUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="edit-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    disabled={isUploading}
+                    className="cursor-pointer"
+                  />
+                  {isUploading && (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Or enter URL manually:
+                </p>
+                <Input
+                  value={formData.imageUrl || ""}
+                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                  placeholder="https://example.com/image.png"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+              <div className="space-y-0.5">
+                <Label htmlFor="edit-featured">Featured on Landing Page</Label>
+                <p className="text-sm text-muted-foreground">Show this project in the portfolio grid</p>
+              </div>
+              <Switch
+                id="edit-featured"
+                checked={formData.featured || false}
+                onCheckedChange={(checked) => setFormData({ ...formData, featured: checked })}
               />
             </div>
             <div className="flex justify-end space-x-2">
