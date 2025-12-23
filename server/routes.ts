@@ -12,7 +12,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configure multer for file uploads
-const uploadDir = path.join(__dirname, "../client/public/uploads");
+// In production, use a persistent uploads folder at project root
+// In development, use client/public/uploads for immediate serving by Vite
+const isProduction = process.env.NODE_ENV === "production";
+const uploadDir = isProduction
+  ? path.join(__dirname, "..", "uploads")
+  : path.join(__dirname, "..", "client", "public", "uploads");
+
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
