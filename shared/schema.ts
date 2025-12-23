@@ -51,6 +51,8 @@ export const apps = pgTable("apps", {
   technologies: json("technologies").$type<string[]>().default([]),
   industry: text("industry"), // AI4SDGs, Blockchain, ClimateTech, Emerging Technologies, Platform Development, Research
   icon: text("icon"),
+  imageUrl: text("image_url"), // Project image for cards
+  featured: boolean("featured").notNull().default(false), // Show on landing page
   demoUrl: text("demo_url"),
   githubUrl: text("github_url"),
   podId: uuid("pod_id").references(() => pods.id),
@@ -145,6 +147,8 @@ export const insertAppSchema = createInsertSchema(apps).pick({
   technologies: true,
   industry: true,
   icon: true,
+  imageUrl: true,
+  featured: true,
   demoUrl: true,
   githubUrl: true,
   podId: true,

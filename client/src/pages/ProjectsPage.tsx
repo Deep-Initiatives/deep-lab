@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -10,7 +11,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import {
   ExternalLink, Sparkles, Cpu, Wrench, Globe, Calendar, Code,
-  Search, Loader2, Filter, X, SlidersHorizontal
+  Search, Loader2, Filter, X, SlidersHorizontal, ImageIcon
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -130,18 +131,36 @@ export default function ProjectsPage() {
     return (
       <Card
         key={app.id}
-        className="group backdrop-blur-md bg-background/50 border-border overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-chart-2/20"
+        className="group h-full flex flex-col backdrop-blur-md bg-background border-none shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl overflow-hidden"
         data-testid={`card-app-${app.id}`}
       >
-        <div className={`h-1 bg-gradient-to-r ${gradientColor}`} />
+        {/* Image Area */}
+        <div className="p-4 pb-0 bg-background">
+          <div className="h-48 w-full rounded-2xl bg-muted/30 relative overflow-hidden flex items-center justify-center border border-border/50">
+            {app.imageUrl ? (
+              <img
+                src={app.imageUrl}
+                alt={app.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <>
+                <div className={`absolute inset-0 bg-gradient-to-br ${gradientColor} opacity-10`} />
+                <ImageIcon className="h-12 w-12 text-muted-foreground/30" />
+              </>
+            )}
+          </div>
+        </div>
 
-        <CardHeader className="space-y-0 pb-4">
-          <div className="flex items-start justify-between mb-3">
-            <div className={`p-2.5 rounded-lg bg-gradient-to-br ${gradientColor}`}>
+        {/* Content Area */}
+        <div className="flex-1 flex flex-col p-6 pt-4">
+          {/* Header Row: Icon + Status */}
+          <div className="flex items-start justify-between mb-4">
+            <div className={`p-2.5 rounded-xl bg-gradient-to-br ${gradientColor} shadow-sm`}>
               <Icon className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col gap-1 items-end">
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs font-medium px-2.5 py-1 bg-muted text-muted-foreground hover:bg-muted/80">
                 {formatStatus(app.status)}
               </Badge>
               {app.industry && (
@@ -151,42 +170,52 @@ export default function ProjectsPage() {
               )}
             </div>
           </div>
-          <h3 className="text-xl font-semibold group-hover:text-chart-2 transition-colors">
+
+          {/* Title */}
+          <h3 className="text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary transition-colors">
             {app.name}
           </h3>
-        </CardHeader>
 
-        <CardContent className="pb-4">
-          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+          {/* Description */}
+          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4 flex-1">
             {app.description}
           </p>
 
-          <div className="flex flex-wrap gap-1.5 mt-4">
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+              <span className="font-medium">Progress</span>
+              <span>{app.progress}%</span>
+            </div>
+            <Progress value={app.progress} className="h-1.5" />
+          </div>
+
+          {/* Tags - Pill Style */}
+          <div className="flex flex-wrap gap-2 mt-auto">
             {app.technologies?.slice(0, 3).map((tech, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
+              <Badge key={index} variant="outline" className="text-[11px] px-3 py-1 font-normal border-border/50 text-muted-foreground bg-background/50 backdrop-blur-sm rounded-full">
                 {tech}
               </Badge>
             ))}
             {app.technologies && app.technologies.length > 3 && (
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-[11px] px-3 py-1 font-normal border-border/50 text-muted-foreground bg-background/50 backdrop-blur-sm rounded-full">
                 +{app.technologies.length - 3}
               </Badge>
             )}
           </div>
-        </CardContent>
+        </div>
 
-        <CardFooter className="pt-0">
+        {/* Footer - Full Width Button */}
+        <CardFooter className="p-4 pt-0 bg-background">
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                variant="ghost"
-                size="sm"
-                className="w-full group/btn"
+                variant="secondary"
+                className="w-full text-foreground bg-muted/50 hover:bg-muted font-medium transition-all rounded-xl h-10"
                 onClick={() => setSelectedApp(app)}
                 data-testid={`button-details-${app.id}`}
               >
                 View Details
-                <ExternalLink className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
@@ -265,7 +294,7 @@ export default function ProjectsPage() {
             </DialogContent>
           </Dialog>
         </CardFooter>
-      </Card>
+      </Card >
     );
   };
 
