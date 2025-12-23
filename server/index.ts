@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
+import path from "path";
+import fs from "fs";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -54,6 +56,11 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
+    // Serve uploaded images in production
+    const uploadsPath = path.resolve(import.meta.dirname, "..", "uploads");
+    if (fs.existsSync(uploadsPath)) {
+      app.use("/uploads", express.static(uploadsPath));
+    }
     serveStatic(app);
   }
 
