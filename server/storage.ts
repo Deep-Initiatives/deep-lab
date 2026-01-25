@@ -9,55 +9,56 @@ export interface IStorage {
   updateUser(id: string, userData: Partial<InsertUser>): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: string): Promise<void>;
-  
+
   // Apps
   getAllApps(): Promise<App[]>;
+  getPublicApps(): Promise<App[]>;
   getAppById(id: string): Promise<App | undefined>;
   createApp(app: any): Promise<App>;
   updateApp(id: string, app: any): Promise<App | undefined>;
   deleteApp(id: string): Promise<boolean>;
-  
+
   // Pods
   getAllPods(): Promise<Pod[]>;
   getPodById(id: string): Promise<Pod | undefined>;
   createPod(pod: any): Promise<Pod>;
   updatePod(id: string, pod: any): Promise<Pod | undefined>;
   deletePod(id: string): Promise<boolean>;
-  
+
   // Timeline
   getAllMilestones(): Promise<TimelineMilestone[]>;
   createMilestone(milestone: any): Promise<TimelineMilestone>;
   updateMilestone(id: string, milestone: any): Promise<TimelineMilestone | undefined>;
   deleteMilestone(id: string): Promise<boolean>;
-  
+
   // Blogs
   getAllBlogs(): Promise<Blog[]>;
   getBlogById(id: string): Promise<Blog | undefined>;
   createBlog(blog: any): Promise<Blog>;
   updateBlog(id: string, blog: any): Promise<Blog | undefined>;
   deleteBlog(id: string): Promise<boolean>;
-  
+
   // Applications
   createApplication(application: InsertApplication): Promise<Application>;
   getAllApplications(): Promise<Application[]>;
   getApplication(id: string): Promise<Application | undefined>;
   updateApplicationStatus(id: string, status: string, notes?: string): Promise<Application>;
   deleteApplication(id: string): Promise<void>;
-  
+
   // Idea Submissions
   createIdeaSubmission(idea: InsertIdeaSubmission): Promise<IdeaSubmission>;
   getAllIdeaSubmissions(): Promise<IdeaSubmission[]>;
   getIdeaSubmission(id: string): Promise<IdeaSubmission | undefined>;
   updateIdeaSubmissionStatus(id: string, status: string, notes?: string): Promise<IdeaSubmission>;
   deleteIdeaSubmission(id: string): Promise<void>;
-  
+
   // Contact Submissions
   createContactSubmission(contact: InsertContactSubmission): Promise<ContactSubmission>;
   getAllContactSubmissions(): Promise<ContactSubmission[]>;
   getContactSubmission(id: string): Promise<ContactSubmission | undefined>;
   updateContactSubmissionStatus(id: string, status: string): Promise<ContactSubmission>;
   deleteContactSubmission(id: string): Promise<void>;
-  
+
   // Stats
   getLabStats(): Promise<LabStats>;
 }
@@ -96,6 +97,10 @@ export class DatabaseStorage implements IStorage {
   // App methods
   async getAllApps(): Promise<App[]> {
     return await dbStorage.getAllApps();
+  }
+
+  async getPublicApps(): Promise<App[]> {
+    return await dbStorage.getPublicApps();
   }
 
   async getAppById(id: string): Promise<App | undefined> {
