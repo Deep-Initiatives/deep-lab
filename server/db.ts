@@ -177,6 +177,10 @@ export class DatabaseStorage {
 
   // App methods
   async getAllApps(): Promise<App[]> {
+    return await db.select().from(apps).orderBy(desc(apps.createdAt));
+  }
+
+  async getPublicApps(): Promise<App[]> {
     return await db.select().from(apps).where(eq(apps.isActive, true)).orderBy(desc(apps.createdAt));
   }
 

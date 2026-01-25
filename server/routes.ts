@@ -68,6 +68,38 @@ function authenticateToken(req: any, res: any, next: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Public API to fetch active projects for external sites
+  app.get("/api/public/projects", async (_req, res) => {
+    try {
+      // Allow CORS for this endpoint
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "GET");
+
+      const activeApps = await storage.getPublicApps();
+
+      // Filter out internal/sensitive data if necessary, though currently schema is safe
+      // Mapping to ensure clean structure for consumers
+      const publicData = activeApps.map(app => ({
+        id: app.id,
+        name: app.name,
+        description: app.description,
+        category: app.category,
+        status: app.status,
+        imageUrl: app.imageUrl ? (app.imageUrl.startsWith("http") ? app.imageUrl : `${_req.protocol}://${_req.get("host")}${app.imageUrl}`) : null,
+        demoUrl: app.demoUrl,
+        technologies: app.technologies,
+        industry: app.industry,
+        featured: app.featured,
+        startDate: app.startDate,
+      }));
+
+      res.json(publicData);
+    } catch (error) {
+      console.error("Public API Error:", error);
+      res.status(500).json({ error: "Failed to fetch projects" });
+    }
+  });
+
   // Admin login
   app.post("/api/admin/login", async (req, res) => {
     try {
