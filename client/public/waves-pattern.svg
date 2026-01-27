@@ -1,0 +1,29 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0 150 C 100 50, 300 250, 400 150" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 160 C 110 60, 310 260, 400 160" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 170 C 120 70, 320 270, 400 170" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 180 C 130 80, 330 280, 400 180" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 190 C 140 90, 340 290, 400 190" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 200 C 150 100, 350 300, 400 200" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 140 C 90 40, 290 240, 400 140" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 130 C 80 30, 280 230, 400 130" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 120 C 70 20, 270 220, 400 120" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M0 110 C 60 10, 260 210, 400 110" stroke="url(#gradient1)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  
+  <path d="M400 0 C 300 100, 100 0, 0 100" stroke="url(#gradient2)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M400 10 C 310 110, 110 10, 0 110" stroke="url(#gradient2)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M400 20 C 320 120, 120 20, 0 120" stroke="url(#gradient2)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M400 30 C 330 130, 130 30, 0 130" stroke="url(#gradient2)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  <path d="M400 40 C 340 140, 140 40, 0 140" stroke="url(#gradient2)" stroke-width="0.5" stroke-opacity="0.3" fill="none"/>
+  
+  <defs>
+    <linearGradient id="gradient1" x1="0" y1="0" x2="400" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB923C" />
+      <stop offset="1" stop-color="#A855F7" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="400" y1="0" x2="0" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3B82F6" />
+      <stop offset="1" stop-color="#E879F9" />
+    </linearGradient>
+  </defs>
+</svg>
