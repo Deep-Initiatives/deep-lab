@@ -441,7 +441,9 @@ export function AdminAppsPage() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="Lined Up">Lined Up</SelectItem>
                     <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Paused">Paused</SelectItem>
                     <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

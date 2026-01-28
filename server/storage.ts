@@ -11,9 +11,10 @@ export interface IStorage {
   deleteUser(id: string): Promise<void>;
 
   // Apps
-  getAllApps(): Promise<App[]>;
+  getAllApps(filter?: { status?: string }): Promise<App[]>;
   getPublicApps(): Promise<App[]>;
   getAppById(id: string): Promise<App | undefined>;
+  getAppStats(): Promise<{ linedUp: number; inProgress: number; completed: number; paused: number; cancelled: number }>;
   createApp(app: any): Promise<App>;
   updateApp(id: string, app: any): Promise<App | undefined>;
   deleteApp(id: string): Promise<boolean>;
@@ -95,8 +96,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   // App methods
-  async getAllApps(): Promise<App[]> {
-    return await dbStorage.getAllApps();
+  async getAllApps(filter?: { status?: string }): Promise<App[]> {
+    return await dbStorage.getAllApps(filter);
+  }
+
+  async getAppStats() {
+    return await dbStorage.getAppStats();
   }
 
   async getPublicApps(): Promise<App[]> {

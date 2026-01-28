@@ -367,14 +367,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all apps
-  app.get("/api/apps", async (_req, res) => {
+  // Get all apps (with optional status filtering)
+  app.get("/api/apps", async (req, res) => {
     try {
-      const apps = await storage.getAllApps();
+      const status = req.query.status as string | undefined;
+      const apps = await storage.getAllApps({ status });
       res.json(apps);
     } catch (error) {
       console.error("Error fetching apps:", error);
       res.status(500).json({ error: "Failed to fetch apps" });
+    }
+  });
+
+  // Get app stats
+  app.get("/api/apps/stats", async (_req, res) => {
+    try {
+      const stats = await storage.getAppStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching app stats:", error);
+      res.status(500).json({ error: "Failed to fetch app stats" });
     }
   });
 
@@ -723,7 +735,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Public: Submit idea
   app.post("/api/ideas", async (req, res) => {
     try {
-      const idea = await storage.createIdeaSubmission(req.body);
+      const ideaData = {
+        ...req.body,
+        status: "under_review" // Default for new submissions
+      };
+      const idea = await storage.createIdeaSubmission(ideaData);
       res.status(201).json(idea);
     } catch (error) {
       console.error("Error creating idea submission:", error);

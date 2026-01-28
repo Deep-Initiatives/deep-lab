@@ -176,8 +176,57 @@ export class DatabaseStorage {
   }
 
   // App methods
-  async getAllApps(): Promise<App[]> {
-    return await db.select().from(apps).where(eq(apps.isActive, true)).orderBy(desc(apps.createdAt));
+  async getAllApps(filter?: { status?: string }): Promise<App[]> {
+    const allApps = await db.select().from(apps).where(eq(apps.isActive, true)).orderBy(desc(apps.createdAt));
+
+    if (filter?.status) {
+      const normalizedStatus = filter.status.toLowerCase();
+      return allApps.filter(app => {
+        if (app.status.toLowerCase() === normalizedStatus) return true;
+        const category = this.getProjectCategory(app.status, "app").toLowerCase();
+        return category === normalizedStatus;
+      });
+    }
+
+    return allApps;
+  }
+
+  // Helper for category logic (duplicated from projectUtils to ensure consistency on server)
+  private getProjectCategory(status: string, type: "app"): string {
+    const normalized = status.toLowerCase().trim();
+    if (normalized === "prototype" || normalized === "lined up") return "Lined Up";
+    if (normalized === "in development" || normalized === "beta" || normalized === "in progress") return "In Progress";
+    if (normalized === "live" || normalized === "completed") return "Completed";
+    if (normalized === "paused") return "In Progress"; // or separate?? User asked for "Paused" status. Usually Paused is "In Progress" but halted.
+    // If user wants specific counts for Paused, we should handle that in stats.
+    return "In Progress";
+  }
+
+  async getAppStats() {
+    const allApps = await this.getAllApps();
+    const stats = {
+      linedUp: 0,
+      inProgress: 0,
+      completed: 0,
+      paused: 0,
+      cancelled: 0
+    };
+
+    allApps.forEach(app => {
+      const status = app.status.toLowerCase().trim();
+
+      // Category counts
+      const cat = this.getProjectCategory(app.status, "app");
+      if (cat === "Lined Up") stats.linedUp++;
+      if (cat === "In Progress") stats.inProgress++;
+      if (cat === "Completed") stats.completed++;
+
+      // Specific status counts
+      if (status === "paused") stats.paused++;
+      if (status === "cancelled") stats.cancelled++;
+    });
+
+    return stats;
   }
 
   async getPublicApps(): Promise<App[]> {

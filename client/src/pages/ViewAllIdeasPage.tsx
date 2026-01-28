@@ -37,14 +37,12 @@ export default function ViewAllIdeasPage() {
 
   // Calculate stats
   const stats = {
-    pending: ideas?.filter(i => i.status === "pending").length || 0,
     under_review: ideas?.filter(i => i.status === "under_review").length || 0,
     in_development: ideas?.filter(i => i.status === "in_development").length || 0,
     completed: ideas?.filter(i => i.status === "completed" || i.status === "approved").length || 0,
   };
 
   const statusCategories = [
-    { id: "pending", label: "Pending", count: stats.pending, icon: Clock, color: "text-pink-500", bg: "bg-pink-500/10", border: "border-pink-500/20" },
     { id: "under_review", label: "Under Review", count: stats.under_review, icon: Monitor, color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20" },
     { id: "in_development", label: "In Development", count: stats.in_development, icon: Code, color: "text-lime-500", bg: "bg-lime-500/10", border: "border-lime-500/20" },
     { id: "completed", label: "Completed", count: stats.completed, icon: CheckCircle, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
