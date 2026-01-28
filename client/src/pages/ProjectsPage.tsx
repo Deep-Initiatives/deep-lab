@@ -53,30 +53,53 @@ export default function ProjectsPage() {
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [, setLocation] = useLocation();
 
-  // Fetch all apps
+  // Fetch stats separately for the top cards
+  const { data: statsData } = useQuery({
+    queryKey: ["/api/apps/stats"],
+    queryFn: async () => {
+      const res = await fetch("/api/apps/stats");
+      if (!res.ok) throw new Error("Failed to fetch stats");
+      return res.json();
+    }
+  });
+
+  // Fetch apps with server-side filtering for category
   const { data: apps, isLoading, error } = useQuery<App[]>({
-    queryKey: ["/api/apps"],
+    queryKey: ["/api/apps", selectedCategory],
+    queryFn: async () => {
+      const url = selectedCategory === "All"
+        ? "/api/apps"
+        : `/api/apps?status=${encodeURIComponent(selectedCategory)}`;
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch apps");
+      return res.json();
+    }
   });
 
   // Derived state
   const allTechnologies = useMemo(() => apps ? getAllTechnologies(apps) : [], [apps]);
 
+  // Use server stats if available, otherwise fallback (though server stats should be robust)
   const stats = useMemo(() => {
-    if (!apps) return { linedUp: 0, inProgress: 0, completed: 0 };
-    return {
-      linedUp: apps.filter(a => getProjectCategory(a.status, "app") === "Lined Up").length,
-      inProgress: apps.filter(a => getProjectCategory(a.status, "app") === "In Progress").length,
-      completed: apps.filter(a => getProjectCategory(a.status, "app") === "Completed").length,
-    };
-  }, [apps]);
+    if (statsData) return statsData;
+    return { linedUp: 0, inProgress: 0, completed: 0 };
+  }, [statsData]);
 
   const filteredAndSortedApps = useMemo(() => {
     if (!apps) return [];
 
+    // Client-side filtering for Tech, Industry, Search 
+    // (Category is already handled by server query, so passed as "All" or ignored in filter helper if we pass "All" effectively)
+    // Actually `filterProjects` expects `selectedCategory`.
+    // If we already filtered by category on server, `apps` only contains matches.
+    // So we can pass "All" to filterProjects to skip re-checking category, OR pass actual category (redundant but safe).
+    // Passing "All" is safer if server returned subset.
+
     const filtered = filterProjects(
       apps,
       {
-        category: selectedCategory,
+        category: "All", // Already filtered by server
         technologies: selectedTechnologies,
         industries: selectedIndustries,
         searchTerm,
@@ -85,7 +108,7 @@ export default function ProjectsPage() {
     );
 
     return sortProjects(filtered, sortBy);
-  }, [apps, selectedCategory, selectedTechnologies, selectedIndustries, searchTerm, sortBy]);
+  }, [apps, selectedTechnologies, selectedIndustries, searchTerm, sortBy]);
 
   const toggleTechnology = (tech: string) => {
     setSelectedTechnologies(prev =>
@@ -203,8 +226,8 @@ export default function ProjectsPage() {
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8 md:mb-12">
           {[
             { label: "Lined Up", count: stats.linedUp, icon: Minimize2, color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/20", decoration: "bg-purple-500/10", border: "border-purple-500/20" },
-            { label: "In Progress", count: stats.inProgress, icon: Loader2, color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/20", decoration: "bg-amber-500/10", border: "border-amber-500/20" },
-            { label: "Completed", count: stats.completed, icon: CheckCircle, color: "text-blue-500 dark:text-blue-400", bg: "bg-blue-100 dark:bg-blue-900/20", decoration: "bg-blue-500/10", border: "border-blue-500/20" },
+            { label: "In Progress", count: stats.inProgress + (stats.paused || 0), icon: Loader2, color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/20", decoration: "bg-amber-500/10", border: "border-amber-500/20" },
+            { label: "Completed", count: stats.completed + (stats.cancelled || 0), icon: CheckCircle, color: "text-blue-500 dark:text-blue-400", bg: "bg-blue-100 dark:bg-blue-900/20", decoration: "bg-blue-500/10", border: "border-blue-500/20" },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}

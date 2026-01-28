@@ -8,9 +8,9 @@ export function getProjectCategory(status: string, type: "app" | "pod"): Project
 
     if (type === "app") {
         // App status mapping
-        if (normalizedStatus === "prototype") return "Lined Up";
-        if (normalizedStatus === "in development" || normalizedStatus === "beta") return "In Progress";
-        if (normalizedStatus === "live" || normalizedStatus === "completed") return "Completed";
+        if (normalizedStatus === "prototype" || normalizedStatus === "lined up") return "Lined Up";
+        if (normalizedStatus === "in development" || normalizedStatus === "beta" || normalizedStatus === "paused") return "In Progress";
+        if (normalizedStatus === "live" || normalizedStatus === "completed" || normalizedStatus === "cancelled") return "Completed";
     } else {
         // Pod status mapping
         if (normalizedStatus === "planning") return "Lined Up";
@@ -32,6 +32,10 @@ export function formatStatus(status: string): string {
     if (normalized === "prototype") return "Lined Up";
     if (normalized === "in development" || normalized === "beta") return "In Progress";
     if (normalized === "live" || normalized === "completed") return "Completed";
+
+    // Capitalize properly for others
+    if (normalized === "paused") return "Paused";
+    if (normalized === "cancelled") return "Cancelled";
 
     // Return original if no mapping found
     return status;
