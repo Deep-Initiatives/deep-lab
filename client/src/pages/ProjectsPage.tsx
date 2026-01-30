@@ -154,7 +154,9 @@ export default function ProjectsPage() {
             { id: "All", label: "All Projects", count: apps?.length || 0 },
             { id: "Lined Up", label: "Lined Up", count: stats.linedUp },
             { id: "In Progress", label: "In Progress", count: stats.inProgress },
+            { id: "Paused", label: "Paused", count: stats.paused || 0 },
             { id: "Completed", label: "Completed", count: stats.completed },
+            { id: "Cancelled", label: "Cancelled", count: stats.cancelled || 0 },
           ].map((cat) => (
             <Button
               key={cat.id}
@@ -226,8 +228,8 @@ export default function ProjectsPage() {
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-8 md:mb-12">
           {[
             { label: "Lined Up", count: stats.linedUp, icon: Minimize2, color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/20", decoration: "bg-purple-500/10", border: "border-purple-500/20" },
-            { label: "In Progress", count: stats.inProgress + (stats.paused || 0), icon: Loader2, color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/20", decoration: "bg-amber-500/10", border: "border-amber-500/20" },
-            { label: "Completed", count: stats.completed + (stats.cancelled || 0), icon: CheckCircle, color: "text-blue-500 dark:text-blue-400", bg: "bg-blue-100 dark:bg-blue-900/20", decoration: "bg-blue-500/10", border: "border-blue-500/20" },
+            { label: "In Progress", count: stats.inProgress, icon: Loader2, color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/20", decoration: "bg-amber-500/10", border: "border-amber-500/20" },
+            { label: "Completed", count: stats.completed, icon: CheckCircle, color: "text-blue-500 dark:text-blue-400", bg: "bg-blue-100 dark:bg-blue-900/20", decoration: "bg-blue-500/10", border: "border-blue-500/20" },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}

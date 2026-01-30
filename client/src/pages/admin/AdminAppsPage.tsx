@@ -193,12 +193,14 @@ export function AdminAppsPage() {
     switch (status) {
       case "In Progress":
       case "In Development":
-      case "Beta": return "bg-blue-100 text-blue-800";
+      case "Beta": return "bg-blue-100 text-blue-800 border-blue-200";
       case "Completed":
-      case "Live": return "bg-green-100 text-green-800";
+      case "Live": return "bg-green-100 text-green-800 border-green-200";
       case "Lined Up":
-      case "Prototype": return "bg-purple-100 text-purple-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "Prototype": return "bg-purple-100 text-purple-800 border-purple-200";
+      case "Paused": return "bg-amber-100 text-amber-800 border-amber-200";
+      case "Cancelled": return "bg-red-100 text-red-800 border-red-200";
+      default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -284,7 +286,9 @@ export function AdminAppsPage() {
                       <SelectContent>
                         <SelectItem value="Lined Up">Lined Up</SelectItem>
                         <SelectItem value="In Progress">In Progress</SelectItem>
+                        <SelectItem value="Paused">Paused</SelectItem>
                         <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="Cancelled">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -616,7 +620,9 @@ export function AdminAppsPage() {
                   <SelectContent>
                     <SelectItem value="Lined Up">Lined Up</SelectItem>
                     <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Paused">Paused</SelectItem>
                     <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
