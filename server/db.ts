@@ -197,8 +197,7 @@ export class DatabaseStorage {
     if (normalized === "prototype" || normalized === "lined up") return "Lined Up";
     if (normalized === "in development" || normalized === "beta" || normalized === "in progress") return "In Progress";
     if (normalized === "live" || normalized === "completed") return "Completed";
-    if (normalized === "paused") return "In Progress"; // or separate?? User asked for "Paused" status. Usually Paused is "In Progress" but halted.
-    // If user wants specific counts for Paused, we should handle that in stats.
+    if (normalized === "paused" || normalized === "cancelled") return "Paused / Cancelled";
     return "In Progress";
   }
 

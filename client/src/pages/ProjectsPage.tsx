@@ -154,9 +154,8 @@ export default function ProjectsPage() {
             { id: "All", label: "All Projects", count: apps?.length || 0 },
             { id: "Lined Up", label: "Lined Up", count: stats.linedUp },
             { id: "In Progress", label: "In Progress", count: stats.inProgress },
-            { id: "Paused", label: "Paused", count: stats.paused || 0 },
             { id: "Completed", label: "Completed", count: stats.completed },
-            { id: "Cancelled", label: "Cancelled", count: stats.cancelled || 0 },
+            { id: "Paused / Cancelled", label: "Paused / Cancelled", count: (stats.paused || 0) + (stats.cancelled || 0) },
           ].map((cat) => (
             <Button
               key={cat.id}

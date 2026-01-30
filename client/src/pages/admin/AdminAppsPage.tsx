@@ -185,7 +185,10 @@ export function AdminAppsPage() {
   const filteredApps = apps?.filter(app => {
     const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
+    const matchesStatus = statusFilter === "all" ||
+      (statusFilter === "Paused / Cancelled" ?
+        (app.status === "Paused" || app.status === "Cancelled") :
+        app.status === statusFilter);
     return matchesSearch && matchesStatus;
   }) || [];
 
@@ -445,9 +448,8 @@ export function AdminAppsPage() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="Lined Up">Lined Up</SelectItem>
                     <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Paused">Paused</SelectItem>
                     <SelectItem value="Completed">Completed</SelectItem>
-                    <SelectItem value="Cancelled">Cancelled</SelectItem>
+                    <SelectItem value="Paused / Cancelled">Paused / Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

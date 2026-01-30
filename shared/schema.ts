@@ -243,7 +243,7 @@ export type BlogCategory = "Announcement" | "Partnership" | "Technology" | "Plat
 export type Industry = "AI4SDGs" | "Blockchain" | "ClimateTech" | "Emerging Technologies" | "Platform Development" | "Research";
 
 // Project category types (for UI organization)
-export type ProjectCategory = "Lined Up" | "In Progress" | "Completed";
+export type ProjectCategory = "Lined Up" | "In Progress" | "Completed" | "Paused / Cancelled";
 
 // Stats types
 export interface LabStats {

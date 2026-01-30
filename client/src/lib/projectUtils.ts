@@ -9,8 +9,9 @@ export function getProjectCategory(status: string, type: "app" | "pod"): Project
     if (type === "app") {
         // App status mapping
         if (normalizedStatus === "prototype" || normalizedStatus === "lined up") return "Lined Up";
-        if (normalizedStatus === "in development" || normalizedStatus === "beta" || normalizedStatus === "paused") return "In Progress";
-        if (normalizedStatus === "live" || normalizedStatus === "completed" || normalizedStatus === "cancelled") return "Completed";
+        if (normalizedStatus === "in development" || normalizedStatus === "beta") return "In Progress";
+        if (normalizedStatus === "live" || normalizedStatus === "completed") return "Completed";
+        if (normalizedStatus === "paused" || normalizedStatus === "cancelled") return "Paused / Cancelled";
     } else {
         // Pod status mapping
         if (normalizedStatus === "planning") return "Lined Up";
@@ -67,6 +68,7 @@ export function getCategoryGradient(category: ProjectCategory): string {
         "Lined Up": "from-yellow-500 to-orange-500",
         "In Progress": "from-blue-500 to-purple-500",
         "Completed": "from-green-500 to-emerald-500",
+        "Paused / Cancelled": "from-gray-500 to-slate-500",
     };
 
     return gradientMap[category];
