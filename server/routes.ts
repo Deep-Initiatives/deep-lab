@@ -6,6 +6,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import { Storage } from "@google-cloud/storage";
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -14,28 +15,18 @@ const __dirname = path.dirname(__filename);
 // Configure multer for file uploads
 // In production, use a persistent uploads folder at project root
 // In development, use client/public/uploads for immediate serving by Vite
-const isProduction = process.env.NODE_ENV === "production";
-const uploadDir = isProduction
-  ? path.join(__dirname, "..", "uploads")
-  : path.join(__dirname, "..", "client", "public", "uploads");
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const multerStorage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `project-${uniqueSuffix}${ext}`);
-  },
+// Configure Google Cloud Storage
+// Configure Google Cloud Storage
+const gcs = new Storage({
+  keyFilename: path.join(__dirname, "..", process.env.GCP_KEY_FILE || "labs-463322-e6044e04d06e.json"),
+  projectId: process.env.GCP_PROJECT_ID || "labs-463322",
 });
+const bucketName = process.env.GCP_BUCKET_NAME || "deep-lab-website";
+const bucket = gcs.bucket(bucketName);
 
+// Configure multer for memory storage to upload to GCS
 const upload = multer({
-  storage: multerStorage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (_req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp|svg/;
@@ -48,6 +39,7 @@ const upload = multer({
     }
   },
 });
+
 
 // Authentication middleware
 function authenticateToken(req: any, res: any, next: any) {
@@ -140,13 +132,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File upload endpoint for project images
-  app.post("/api/admin/upload", authenticateToken, upload.single("image"), (req: any, res) => {
+  app.post("/api/admin/upload", authenticateToken, upload.single("image"), async (req: any, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
       }
-      const imageUrl = `/uploads/${req.file.filename}`;
-      res.json({ imageUrl });
+
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const ext = path.extname(req.file.originalname);
+      const filename = `project-${uniqueSuffix}${ext}`;
+      const blob = bucket.file(filename);
+
+      const blobStream = blob.createWriteStream({
+        resumable: false,
+        gzip: true, // Optional: Compress content
+        metadata: {
+          contentType: req.file.mimetype,
+        },
+      });
+
+      blobStream.on("error", (err) => {
+        console.error("GCS Upload Error:", err);
+        res.status(500).json({ error: "Failed to upload file to GCS" });
+      });
+
+      blobStream.on("finish", () => {
+        // The public URL can be used to directly access the file via HTTP.
+        const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
+        res.json({ imageUrl: publicUrl });
+      });
+
+      blobStream.end(req.file.buffer);
+
     } catch (error) {
       console.error("Upload error:", error);
       res.status(500).json({ error: "Failed to upload file" });
