@@ -41,6 +41,7 @@ const upload = multer({
 });
 
 
+
 // Authentication middleware
 function authenticateToken(req: any, res: any, next: any) {
   const authHeader = req.headers['authorization'];
@@ -60,6 +61,32 @@ function authenticateToken(req: any, res: any, next: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve images from GCS via proxy - bypassing public bucket issues
+  app.get("/api/uploads/:filename", async (req, res) => {
+    const filename = req.params.filename;
+    const file = bucket.file(filename);
+
+    try {
+      const [exists] = await file.exists();
+      if (!exists) {
+        return res.status(404).send("Image not found");
+      }
+
+      const readStream = file.createReadStream();
+      readStream.on("error", (err) => {
+        console.error("Error streaming file from GCS:", err);
+        res.status(500).send("Error retrieving file");
+      });
+
+      // Set caching headers
+      res.setHeader("Cache-Control", "public, max-age=31536000"); // 1 year cache
+      readStream.pipe(res);
+    } catch (error) {
+      console.error("Error accessing GCS file:", error);
+      res.status(500).send("Error accessing file");
+    }
+  });
+
   // Public API to fetch active projects for external sites
   app.get("/api/public/projects", async (_req, res) => {
     try {
@@ -157,8 +184,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       blobStream.on("finish", () => {
-        // The public URL can be used to directly access the file via HTTP.
-        const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
+        // Return local proxy URL instead of GCS public URL to avoid permission issues
+        // The frontend will request /api/uploads/filename which proxies to GCS
+        const publicUrl = `/api/uploads/${filename}`;
         res.json({ imageUrl: publicUrl });
       });
 
