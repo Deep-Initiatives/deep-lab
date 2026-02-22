@@ -8,6 +8,10 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 import { Storage } from "@google-cloud/storage";
 
+const GLOBAL_SWITCHER_URL = "https://deep-projects.ai/wp-json/deep/v1/global-switcher";
+let switcherCache: { html: string; fetchedAt: number } | null = null;
+const SWITCHER_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,6 +65,28 @@ function authenticateToken(req: any, res: any, next: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Proxy the global switcher HTML through the backend to avoid client-side CORS/CSP issues
+  app.get("/api/global-switcher", async (_req, res) => {
+    try {
+      const now = Date.now();
+      if (switcherCache && now - switcherCache.fetchedAt < SWITCHER_CACHE_TTL_MS) {
+        return res.json({ html: switcherCache.html });
+      }
+
+      const response = await fetch(GLOBAL_SWITCHER_URL);
+      if (!response.ok) throw new Error(`Upstream responded ${response.status}`);
+
+      const data = await response.json() as { html?: string };
+      if (!data?.html) throw new Error("No html in upstream response");
+
+      switcherCache = { html: data.html, fetchedAt: now };
+      res.json({ html: data.html });
+    } catch (err) {
+      console.error("Global switcher proxy error:", err);
+      res.status(502).json({ error: "Failed to load global switcher" });
+    }
+  });
+
   // Serve images from GCS via proxy - bypassing public bucket issues
   app.get("/api/uploads/:filename", async (req, res) => {
     const filename = req.params.filename;

@@ -6,8 +6,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from "wouter";
 import logoMono from "@assets/logo.svg";
 
-const GLOBAL_SWITCHER_ENDPOINT =
-  "https://deepfunding.ai/wp-json/deep/v1/global-switcher";
+const GLOBAL_SWITCHER_ENDPOINT = "/api/global-switcher";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -387,10 +386,12 @@ export function Navigation() {
                 position: fixed !important;
                 left: 0 !important;
                 right: 0 !important;
+                top: 64px !important;
                 width: 100vw !important;
                 max-width: 100vw !important;
-                top: auto !important;
                 display: none !important;
+                height: auto !important;
+                min-height: 0 !important;
               }
               .df-switch-tabs-wrapper.active {
                 display: block !important;
@@ -398,63 +399,42 @@ export function Navigation() {
                 opacity: 1 !important;
                 transform: none !important;
                 height: auto !important;
-                max-height: calc(100vh - 80px) !important;
+                min-height: 100px !important;
+                max-height: calc(100vh - 64px) !important;
                 overflow-y: auto !important;
               }
+              /* Reset absolute positioning that collapses height */
               .df-switch-tabs-wrapper .df-switch-wrapper {
+                position: relative !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                display: block !important;
+                display: flex !important;
+                flex-direction: column !important;
                 visibility: visible !important;
+                height: auto !important;
+              }
+              .df-switch-tabs-wrapper .df-switch-tabs {
+                position: relative !important;
+                height: auto !important;
+                flex-wrap: wrap !important;
               }
               .df-switch-tabs-wrapper.active .df-switch-wrapper {
-                display: block !important;
+                display: flex !important;
                 visibility: visible !important;
                 opacity: 1 !important;
               }
               .df-switch-tabs-wrapper.active .df-switch-tabs,
               .df-switch-tabs-wrapper.active .df-switch-tab,
-              .df-switch-tabs-wrapper.active .nav,
               .df-switch-tabs-wrapper.active .nav-item,
               .df-switch-tabs-wrapper.active .nav-link {
                 display: block !important;
                 visibility: visible !important;
                 opacity: 1 !important;
+                height: auto !important;
               }
-              /* Ensure all content inside is visible */
               .df-switch-tabs-wrapper.active * {
                 visibility: visible !important;
                 opacity: 1 !important;
-              }
-              /* Ensure images, text, and other elements are visible */
-              .df-switch-tabs-wrapper.active img,
-              .df-switch-tabs-wrapper.active p,
-              .df-switch-tabs-wrapper.active h1,
-              .df-switch-tabs-wrapper.active h2,
-              .df-switch-tabs-wrapper.active h3,
-              .df-switch-tabs-wrapper.active h4,
-              .df-switch-tabs-wrapper.active span,
-              .df-switch-tabs-wrapper.active div,
-              .df-switch-tabs-wrapper.active a {
-                visibility: visible !important;
-                opacity: 1 !important;
-              }
-              .df-switch-tabs-wrapper.active img {
-                display: inline-block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-              }
-              /* Ensure nav items and links are visible */
-              .df-switch-tabs-wrapper.active .nav-item,
-              .df-switch-tabs-wrapper.active .nav-link,
-              .df-switch-tabs-wrapper.active [class*="nav"] {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-              }
-              /* Ensure the wrapper takes full width on mobile */
-              .df-switch-tabs-wrapper.active {
-                background: transparent !important;
               }
             }
             [data-global-switcher="true"],

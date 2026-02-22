@@ -143,7 +143,7 @@ async function initializeDatabase() {
         category: "Service",
         status: "Live",
         technologies: ["PyTorch", "Redis", "gRPC"],
-        demoUrl: "https://hivemind.deepfunding.ai/",
+        demoUrl: "https://hivemind.deep-projects.ai/",
         podId: createdPods[0].id, // AI Avatar pod
       },
       {
@@ -152,7 +152,7 @@ async function initializeDatabase() {
         category: "Web App",
         status: "Beta",
         technologies: ["Next.js", "AI Models", "Firestore"],
-        demoUrl: "https://newsletter.deepfunding.ai/",
+        demoUrl: "https://newsletter.deep-projects.ai/",
         podId: createdPods[3].id, // Community Hub Portal pod
       },
       {
@@ -161,7 +161,7 @@ async function initializeDatabase() {
         category: "AI Agent",
         status: "Beta",
         technologies: ["Gemini", "Nextjs", "Firestore"],
-        demoUrl: "https://proposal-refinement.deepfunding.ai/",
+        demoUrl: "https://proposal-refinement.deep-projects.ai/",
         podId: createdPods[1].id, // AI-based Idea Filtering pod
       },
       {

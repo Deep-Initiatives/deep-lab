@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 
 export function Footer() {
   const [location, setLocation] = useLocation();
-  
+
   const scrollToSection = (id: string) => {
     // If not on homepage, navigate there first, then scroll
     if (location !== "/") {
@@ -27,7 +27,7 @@ export function Footer() {
   return (
     <footer className="relative bg-background border-t border-border">
       <div className="absolute inset-0 bg-gradient-to-br from-chart-1/5 via-chart-2/5 to-chart-3/5 pointer-events-none" />
-      
+
       <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8">
           <div className="space-y-4">
@@ -86,7 +86,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://deepfunding.ai/"
+                  href="https://deep-projects.ai/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -134,7 +134,7 @@ export function Footer() {
               </p>
               <div className="flex items-center gap-4">
                 <a
-                  href="https://deepfunding.ai/terms/"
+                  href="https://deep-projects.ai/terms/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -143,7 +143,7 @@ export function Footer() {
                   Terms & Conditions
                 </a>
                 <a
-                  href="https://deepfunding.ai/privacy-policy/"
+                  href="https://deep-projects.ai/privacy-policy/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
