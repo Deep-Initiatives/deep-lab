@@ -76,52 +76,10 @@ export function Navigation() {
 
           function openSwitcher() {
             switcherWrapper?.classList.add("active");
-            // Force visibility on mobile
-            if (switcherWrapper && window.innerWidth <= 1200) {
-              // Get the toggle button position
-              let topPosition = 80; // Default navbar height
-              if (toggleButton) {
-                const toggleRect = toggleButton.getBoundingClientRect();
-                topPosition = toggleRect.top + toggleRect.height;
-              }
-              
-              switcherWrapper.style.setProperty("display", "block", "important");
-              switcherWrapper.style.setProperty("visibility", "visible", "important");
-              switcherWrapper.style.setProperty("opacity", "1", "important");
-              switcherWrapper.style.setProperty("z-index", "70", "important");
-              switcherWrapper.style.setProperty("position", "fixed", "important");
-              switcherWrapper.style.setProperty("left", "0", "important");
-              switcherWrapper.style.setProperty("right", "0", "important");
-              switcherWrapper.style.setProperty("top", topPosition + "px", "important");
-              switcherWrapper.style.setProperty("width", "100vw", "important");
-              switcherWrapper.style.setProperty("max-width", "100vw", "important");
-              switcherWrapper.style.setProperty("max-height", "calc(100vh - " + topPosition + "px)", "important");
-              switcherWrapper.style.setProperty("overflow-y", "auto", "important");
-              
-              // Ensure wrapper content is visible
-              const switchWrapper = switcherWrapper.querySelector(".df-switch-wrapper");
-              if (switchWrapper) {
-                switchWrapper.style.setProperty("display", "block", "important");
-                switchWrapper.style.setProperty("visibility", "visible", "important");
-                switchWrapper.style.setProperty("opacity", "1", "important");
-                switchWrapper.style.setProperty("width", "100%", "important");
-              }
-            }
-            // Don't add overlay class to prevent blur on switcher dropdown
-            // document.body.classList.add("profile-icon-overlay");
           }
 
           function closeSwitcher() {
             switcherWrapper?.classList.remove("active");
-            // Hide on mobile
-            if (switcherWrapper && window.innerWidth <= 1200) {
-              switcherWrapper.style.setProperty("display", "none", "important");
-            }
-            setTimeout(() => {
-              if (!switcherWrapper?.classList.contains("active")) {
-                // document.body.classList.remove("profile-icon-overlay");
-              }
-            }, 10);
           }
 
           // Toggle click - works on all screen sizes
@@ -300,6 +258,28 @@ export function Navigation() {
         switcherContainerRef.current = container;
 
         appendScripts(container);
+
+        // Deep-lab specific: move active state from Funding to Lab
+        const fundingBtn = container.querySelector('.funding-switch-tab');
+        const labBtn = container.querySelector('.lab-switch-tab');
+        if (fundingBtn) fundingBtn.classList.remove('active');
+        if (labBtn) {
+          labBtn.classList.add('active');
+          labBtn.removeAttribute('disabled');
+        }
+
+        // Insert Back button at top of switcher wrapper
+        const switcherWrapper = container.querySelector('.df-switch-tabs-wrapper');
+        if (switcherWrapper && !switcherWrapper.querySelector('.switcher-back-btn')) {
+          const backBtn = document.createElement('button');
+          backBtn.className = 'switcher-back-btn';
+          backBtn.innerHTML = '&#10094; Back';
+          backBtn.addEventListener('click', () => {
+            switcherWrapper.classList.remove('active');
+          });
+          switcherWrapper.insertBefore(backBtn, switcherWrapper.firstChild);
+        }
+
         updatePosition();
 
         // Override the overlay class addition to prevent blur on switcher
@@ -350,22 +330,22 @@ export function Navigation() {
             .globalswitcher * {
               border: none !important;
             }
-            .df-switch-tabs-wrapper {
-              z-index: 70 !important;
-              position: fixed !important;
-            }
-            /* Ensure wrapper and all children are visible when active */
-            .df-switch-tabs-wrapper.active {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-            .df-switch-tabs-wrapper.active .df-switch-wrapper {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-            /* Mobile visibility and responsiveness */
+              /* Back button */
+              .switcher-back-btn {
+                display: none;
+              }
+              /* Ensure wrapper and all children are visible when active */
+              .df-switch-tabs-wrapper.active {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+              .df-switch-tabs-wrapper.active .df-switch-wrapper {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+            /* Mobile full-screen switcher - matches deep-projects.ai */
             @media (max-width: 1200px) {
               .globalswitcher {
                 display: flex !important;
@@ -382,59 +362,162 @@ export function Navigation() {
                 border: none !important;
                 outline: none !important;
               }
+              /* Wrapper: full-screen dark overlay below navbar */
               .df-switch-tabs-wrapper {
                 position: fixed !important;
+                top: 0 !important;
                 left: 0 !important;
                 right: 0 !important;
-                top: 64px !important;
+                bottom: 0 !important;
                 width: 100vw !important;
                 max-width: 100vw !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
                 display: none !important;
-                height: auto !important;
-                min-height: 0 !important;
+                background: #0D0620 !important;
+                overflow-y: auto !important;
+                z-index: 9999 !important;
+                padding: 16px !important;
+                padding-top: 0 !important;
+                box-sizing: border-box !important;
               }
               .df-switch-tabs-wrapper.active {
                 display: block !important;
                 visibility: visible !important;
                 opacity: 1 !important;
-                transform: none !important;
-                height: auto !important;
-                min-height: 100px !important;
-                max-height: calc(100vh - 64px) !important;
-                overflow-y: auto !important;
               }
-              /* Reset absolute positioning that collapses height */
+              /* Back button - mobile only */
+              .df-switch-tabs-wrapper .switcher-back-btn {
+                display: flex !important;
+                align-items: center !important;
+                gap: 4px !important;
+                background: none !important;
+                border: none !important;
+                color: #7F56D9 !important;
+                font-family: "DM Sans", sans-serif !important;
+                font-size: 16px !important;
+                font-weight: 600 !important;
+                cursor: pointer !important;
+                padding: 16px 0 12px !important;
+                margin: 0 !important;
+              }
+              /* Inner wrapper: vertical flex layout */
               .df-switch-tabs-wrapper .df-switch-wrapper {
                 position: relative !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 display: flex !important;
                 flex-direction: column !important;
-                visibility: visible !important;
                 height: auto !important;
               }
+              /* Tabs list: vertical stack */
               .df-switch-tabs-wrapper .df-switch-tabs {
                 position: relative !important;
-                height: auto !important;
-                flex-wrap: wrap !important;
-              }
-              .df-switch-tabs-wrapper.active .df-switch-wrapper {
                 display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
+                flex-direction: column !important;
+                gap: 8px !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                background: transparent !important;
+                backdrop-filter: none !important;
+                border: none !important;
+                list-style: none !important;
               }
-              .df-switch-tabs-wrapper.active .df-switch-tabs,
-              .df-switch-tabs-wrapper.active .df-switch-tab,
-              .df-switch-tabs-wrapper.active .nav-item,
-              .df-switch-tabs-wrapper.active .nav-link {
+              /* Each tab card: full width */
+              .df-switch-tabs-wrapper .df-switch-tab {
+                width: 100% !important;
                 display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
                 height: auto !important;
               }
+              .df-switch-tabs-wrapper .df-switch-tab a {
+                display: block !important;
+                text-decoration: none !important;
+                width: 100% !important;
+                padding: 0 !important;
+                border: none !important;
+              }
+              .df-switch-tabs-wrapper .df-switch-tab button {
+                width: 100% !important;
+                border-radius: 12px !important;
+                border: 1px solid #344054 !important;
+                background: rgba(19, 7, 45, 0.9) !important;
+                padding: 20px 16px !important;
+                text-align: left !important;
+                cursor: pointer !important;
+                height: auto !important;
+                display: block !important;
+              }
+              .df-switch-tabs-wrapper .df-switch-tab button .logo-text {
+                color: #EAECF0 !important;
+                font-family: Orbitron !important;
+                font-size: 20px !important;
+                font-weight: 700 !important;
+                line-height: 20px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+                margin-bottom: 10px !important;
+              }
+              .df-switch-tabs-wrapper .df-switch-tab button p {
+                color: #98A2B3 !important;
+                font-family: "DM Sans", sans-serif !important;
+                font-size: 14px !important;
+                font-weight: 600 !important;
+                line-height: 20px !important;
+                text-align: left !important;
+                margin: 0 !important;
+              }
+              .df-switch-tabs-wrapper .df-switch-tab button svg {
+                width: 32px !important;
+                height: 32px !important;
+                flex-shrink: 0 !important;
+              }
+              /* Initiatives card gradient border */
+              .df-switch-tabs-wrapper .init_switch_tab {
+                border: 1px solid transparent !important;
+                background: linear-gradient(#14082E, #14082E) padding-box,
+                  linear-gradient(243deg, #32C5FF -11%, #B620E0 44%, #F7B500 107%) border-box !important;
+                border-radius: 12px !important;
+              }
+              .df-switch-tabs-wrapper .init_switch_tab button {
+                border: none !important;
+                background: transparent !important;
+              }
+              /* Coming Soon badge */
+              .df-switch-tabs-wrapper .coming-soon {
+                font-size: 12px !important;
+                padding: 4px 12px !important;
+                border-radius: 60px !important;
+                border: 1px solid #A39EB2 !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+                color: #D2D0D7 !important;
+                font-family: "DM Sans", sans-serif !important;
+                font-weight: 600 !important;
+                line-height: 20px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+              }
+              /* Active/selected card */
+              .df-switch-tabs-wrapper .df-switch-tab button.active {
+                border: 1px solid #EAECF0 !important;
+                background: #E9E7EC !important;
+              }
+              .df-switch-tabs-wrapper .df-switch-tab button.active .logo-text {
+                color: #120B29 !important;
+              }
+              .df-switch-tabs-wrapper .df-switch-tab button.active p {
+                color: #667085 !important;
+              }
+              /* Ensure all content visible */
               .df-switch-tabs-wrapper.active * {
                 visibility: visible !important;
                 opacity: 1 !important;
+              }
+              /* Deep initiative left panel hidden on mobile */
+              .df-switch-tabs-wrapper .deep-initiative-left {
+                display: none !important;
               }
             }
             [data-global-switcher="true"],
