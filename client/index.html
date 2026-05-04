@@ -12,6 +12,98 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chat Messenger Widget -->
+    <script
+      defer
+      src="https://www.gstatic.com/ces-console/fast/chat-messenger/prod/v1.15/chat-messenger.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://www.gstatic.com/ces-console/fast/chat-messenger/prod/v1.15/themes/chat-messenger-default.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://www.gstatic.com/ces-console/fast/chat-messenger/prod/v1.15/themes/chat-messenger-layout.css"
+    />
+    
+    <style>
+      /* 1. Position the entire widget unit */
+      chat-messenger {
+        z-index: 9999 !important;
+        position: fixed !important;
+        bottom: 24px !important;
+        right: 24px !important;
+        width: auto !important;
+        height: auto !important;
+      }
+
+      /* 3. Ensure the bubble itself is positioned correctly */
+      chat-messenger-chat-bubble {
+        position: absolute !important;
+        bottom: 0 !important;
+        right: 0 !important;
+      }
+
+      chat-messenger-chat-bubble.hide-label::after {
+        display: none !important;
+      }
+
+      chat-messenger-chat-bubble.hide-label::before {
+        display: none !important;
+      }
+
+      chat-messenger-chat-bubble::before {
+        content: "";
+        position: absolute;
+        right: 52px;
+        bottom: 60px;
+
+        width: 10px;
+        height: 10px;
+        background: white;
+
+        transform: rotate(45deg);
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      /* 4. FORCE the text label onto the bubble using a pseudo-element */
+      chat-messenger-chat-bubble::after {
+        content: "Need Help? Submit a ticket here..." !important;
+
+        position: absolute;
+        right: 60px;
+        bottom: 70px;
+
+        background: white;
+        color: #202124;
+
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+
+        padding: 10px 14px;
+        border-radius: 12px;
+
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+        white-space: nowrap;
+
+        /* subtle animation (optional but nice) */
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInBubble 0.4s ease forwards;
+      }
+
+      /* Optional animation */
+      @keyframes fadeInBubble {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

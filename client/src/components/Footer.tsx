@@ -95,6 +95,17 @@ export function Footer() {
                   Deep Funding
                 </a>
               </li>
+              <li>
+                <a
+                  href="https://deep-support-1074304298808.us-central1.run.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="link-footer-support"
+                >
+                  Support
+                </a>
+              </li>
             </ul>
           </div>
 
