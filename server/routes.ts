@@ -145,6 +145,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/external-blogs", async (_req, res) => {
+    const EXTERNAL_BLOGS_URL = "https://deep-communities.ai/wp-json/df/v1/assigned-blogs?channel=deep-labs";
+    const DF_API_KEY = process.env.DF_API_KEY || "deepfundingapikey345";
+
+    try {
+      const response = await fetch(EXTERNAL_BLOGS_URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "df-api-key": DF_API_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        return res.status(response.status).json({ error: `Failed to fetch external blogs: ${text}` });
+      }
+
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("External blogs proxy error:", error);
+      res.status(502).json({ error: "Failed to fetch external blogs" });
+    }
+  });
+
   // Admin login
   app.post("/api/admin/login", async (req, res) => {
     try {

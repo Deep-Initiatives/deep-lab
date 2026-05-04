@@ -59,9 +59,10 @@ export default function BlogPage() {
   const { data: blogPosts = [], isLoading, error } = useQuery<ExternalBlog[]>({
     queryKey: ["external-blogs"],
     queryFn: async () => {
-      const response = await fetch("https://deep-communities.ai/wp-json/df/v1/assigned-blogs?channel=deep-labs");
+      const response = await fetch("/api/external-blogs");
       if (!response.ok) throw new Error("Failed to fetch blogs");
-      return response.json();
+      const json = await response.json();
+      return json.data || [];
     },
   });
 
