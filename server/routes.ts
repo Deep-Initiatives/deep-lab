@@ -6,7 +6,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
-import { Storage } from "@google-cloud/storage";
+import { Storage, type StorageOptions } from "@google-cloud/storage";
 
 const GLOBAL_SWITCHER_URL = "https://deep-projects.ai/wp-json/deep/v1/global-header";
 const GLOBAL_SWITCHER_AUTH_KEY = process.env.GLOBAL_SWITCHER_AUTH_KEY || "globalauthswitcherauthkey";
@@ -20,12 +20,36 @@ const __dirname = path.dirname(__filename);
 // Configure multer for file uploads
 // In production, use a persistent uploads folder at project root
 // In development, use client/public/uploads for immediate serving by Vite
-// Configure Google Cloud Storage
-// Configure Google Cloud Storage
-const gcs = new Storage({
-  keyFilename: path.join(__dirname, "..", process.env.GCP_KEY_FILE || "labs-463322-e6044e04d06e.json"),
-  projectId: process.env.GCP_PROJECT_ID || "labs-463322",
-});
+
+const gcpProjectId = process.env.GCP_PROJECT_ID || "labs-463322";
+const gcpKeyFile = process.env.GCP_KEY_FILE || "labs-463322-52d85b3b8885.json";
+const gcpKeyPath = path.join(__dirname, "..", gcpKeyFile);
+const gcpCredentialsJson = process.env.GCP_CREDENTIALS;
+
+const storageOptions: StorageOptions = {
+  projectId: gcpProjectId,
+};
+
+if (gcpCredentialsJson) {
+  try {
+    storageOptions.credentials = JSON.parse(gcpCredentialsJson);
+    console.log("Using GCP credentials from GCP_CREDENTIALS environment variable");
+  } catch (error) {
+    console.error("Failed to parse GCP_CREDENTIALS JSON:", error);
+  }
+} else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  console.log("Using GOOGLE_APPLICATION_CREDENTIALS environment variable for GCP auth");
+} else if (fs.existsSync(gcpKeyPath)) {
+  storageOptions.keyFilename = gcpKeyPath;
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = process.env.GOOGLE_APPLICATION_CREDENTIALS || gcpKeyPath;
+  console.log(`Using local service account key file at ${gcpKeyPath}`);
+  console.log(`Falling back to GOOGLE_APPLICATION_CREDENTIALS=${process.env.GOOGLE_APPLICATION_CREDENTIALS}`);
+} else {
+  console.warn(`Google Cloud service account key file not found: ${gcpKeyPath}`);
+  console.warn("Falling back to Application Default Credentials. Set GOOGLE_APPLICATION_CREDENTIALS or GCP_CREDENTIALS if needed.");
+}
+
+const gcs = new Storage(storageOptions);
 const bucketName = process.env.GCP_BUCKET_NAME || "deep-lab-website";
 const bucket = gcs.bucket(bucketName);
 

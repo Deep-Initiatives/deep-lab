@@ -12,3 +12,4 @@ env/*
 .env.test.local
 .env.production.local
 .env/
+labs-463322-52d85b3b8885.json
