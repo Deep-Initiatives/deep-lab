@@ -9,7 +9,7 @@ import fs from "fs";
 import { Storage } from "@google-cloud/storage";
 
 const GLOBAL_SWITCHER_URL = "https://deep-projects.ai/wp-json/deep/v1/global-header";
-const GLOBAL_SWITCHER_AUTH_KEY = process.env.GLOBAL_SWITCHER_AUTH_KEY || "deepfundingApi252";
+const GLOBAL_SWITCHER_AUTH_KEY = process.env.GLOBAL_SWITCHER_AUTH_KEY || "globalauthswitcherauthkey";
 let switcherCache: { html: string; fetchedAt: number } | null = null;
 const SWITCHER_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
